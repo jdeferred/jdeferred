@@ -1,13 +1,28 @@
-<!-- Copyright 2013 Ray Tsang Licensed under the Apache License, Version 
-	2.0 (the "License"); you may not use this file except in compliance with 
-	the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
-	the specific language governing permissions and limitations under the License. -->
+<!--
+  Copyright 2013 Ray Tsang
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+	    <groupId>org.sonatype.oss</groupId>
+	    <artifactId>oss-parent</artifactId>
+	    <version>7</version>
+  	</parent>
+  	
 	<groupId>org.jdeferred</groupId>
 	<artifactId>jdeferred-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -18,11 +33,9 @@
 	<inceptionYear>2013</inceptionYear>
 
 	<scm>
-		<scm>
-			<connection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</connection>
-			<developerConnection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</developerConnection>
-			<url>git@github.com:git://github.com/jdeferred/jdeferred.git</url>
-		</scm>
+		<connection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</connection>
+		<developerConnection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</developerConnection>
+		<url>git@github.com:git://github.com/jdeferred/jdeferred.git</url>
 	</scm>
 
 	<issueManagement>
@@ -45,7 +58,12 @@
 	</developers>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<version.junit>4.11</version.junit>
+		<version.maven.bundle>2.3.7</version.maven.bundle>
+		<version.maven.compiler>3.0</version.maven.compiler>
+		<version.maven.release>2.2.2</version.maven.release>
 	</properties>
 
 	<dependencyManagement>
@@ -67,15 +85,51 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>${version.maven.bundle}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>${version.maven.release}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${version.maven.compiler}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<verbose>true</verbose>
-					<compilerVersion>1.6</compilerVersion>
 					<source>1.6</source>
 					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-DocURL>http://jdeferred.org/</Bundle-DocURL>
+						<Export-Package>${project.groupId}.*;version=${project.version};-split-package:=error</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<mavenExecutorId>forked-path</mavenExecutorId>
 				</configuration>
 			</plugin>
 		</plugins>
