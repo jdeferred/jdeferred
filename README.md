@@ -149,7 +149,7 @@ promise.then(…);
 Runnable r = new Runnable() {
   public void run() {
     while (…) {
-      deferred.progress(myProgress);
+      deferred.notify(myProgress);
     }
     deferred.resolve("done");
   }
