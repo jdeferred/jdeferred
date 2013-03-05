@@ -11,7 +11,7 @@
 	<groupId>org.jdeferred</groupId>
 	<artifactId>jdeferred-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<url>http://jdeferred.github.com</url>
+	<url>http://jdeferred.org</url>
 	<name>JDeferred Common Parent</name>
 	<packaging>pom</packaging>
 	<description>JDeferred common parent POM module.</description>
