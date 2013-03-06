@@ -130,6 +130,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
 		</plugins>
