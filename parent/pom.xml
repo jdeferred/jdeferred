@@ -131,6 +131,7 @@
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 		</plugins>
