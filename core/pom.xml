@@ -24,7 +24,6 @@
 	</parent>
 	
 	<artifactId>jdeferred-core</artifactId>
-	<url>https://github.com/saturnism/jdeferred</url>
 	<name>JDeferred Core Library</name>
 	<packaging>bundle</packaging>
 	<description>Java Deferred/Promise library similar to JQuery.</description>
