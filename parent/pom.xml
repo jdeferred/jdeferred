@@ -33,9 +33,9 @@
 	<inceptionYear>2013</inceptionYear>
 
 	<scm>
-		<connection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</connection>
-		<developerConnection>scm:git:git@github.com:git://github.com/jdeferred/jdeferred.git</developerConnection>
-		<url>git@github.com:git://github.com/jdeferred/jdeferred.git</url>
+		<connection>scm:git:git@github.com:jdeferred/jdeferred.git</connection>
+		<developerConnection>scm:git:git@github.com:jdeferred/jdeferred.git</developerConnection>
+		<url>git@github.com:jdeferred/jdeferred.git</url>
 	</scm>
 
 	<issueManagement>
