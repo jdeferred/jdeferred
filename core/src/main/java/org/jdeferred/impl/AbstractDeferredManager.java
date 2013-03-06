@@ -23,9 +23,13 @@ import org.jdeferred.DeferredManager;
 import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
 import org.jdeferred.multiple.CombinedPromise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractDeferredManager implements DeferredManager {
+	final protected Logger log = LoggerFactory.getLogger(AbstractDeferredManager.class);
+	
 	protected abstract void submit(Runnable runnable);
 	protected abstract void submit(Callable callable);
 	
@@ -43,7 +47,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * @return
 	 */
 	public abstract boolean isAutoSubmit();
-
+	
 	@Override
 	public CombinedPromise when(Runnable... runnables) {
 		assertNotEmpty(runnables);

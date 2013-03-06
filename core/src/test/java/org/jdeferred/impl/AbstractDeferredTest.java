@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -48,6 +49,34 @@ public abstract class AbstractDeferredTest<V> {
 	public void tearDown() throws Exception {
 		waitForCompletion();
 		holder.clear();
+	}
+	
+	protected <R> Callable<R> successCallable(final R result, final int waitMs) {
+		return new Callable<R>() {
+
+			@Override
+			public R call() throws Exception {
+				if (waitMs > 0) {
+					Thread.sleep(waitMs);
+				}
+				
+				return result;
+			}
+		};
+	}
+	
+	protected Callable<Void> failedCallable(final Exception exception, final int waitMs) {
+		return new Callable<Void>() {
+
+			@Override
+			public Void call() throws Exception {
+				if (waitMs > 0) {
+					Thread.sleep(waitMs);
+				}
+				
+				throw exception;
+			}
+		};
 	}
 	
 	protected void waitForCompletion() {

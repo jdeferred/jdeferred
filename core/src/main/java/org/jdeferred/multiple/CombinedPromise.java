@@ -92,7 +92,7 @@ public class CombinedPromise extends
 					if (!deferred.isPending())
 						return;
 
-					results.setResult(index, new OneResult(index, promise,
+					results.set(index, new OneResult(index, promise,
 							result));
 					int finished = done.incrementAndGet();
 

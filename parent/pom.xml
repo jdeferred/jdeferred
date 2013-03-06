@@ -60,7 +60,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    	
 		<version.junit>4.11</version.junit>
+		<version.slf4j>1.7.2</version.slf4j>
 		<version.maven.bundle>2.3.7</version.maven.bundle>
 		<version.maven.compiler>3.0</version.maven.compiler>
 		<version.maven.release>2.3.2</version.maven.release>
@@ -74,6 +76,18 @@
 				<version>${version.junit}</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-jdk14</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -81,6 +95,14 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
 		</dependency>
 	</dependencies>
 

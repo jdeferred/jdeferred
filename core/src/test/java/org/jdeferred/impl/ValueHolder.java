@@ -20,6 +20,13 @@ import org.junit.Assert;
 public class ValueHolder<T> {
 	private T value;
 	
+	public ValueHolder() {
+	}
+	
+	public ValueHolder(T value) {
+		this.value = value;
+	}
+	
 	public void set(T value) {
 		this.value = value;
 	}

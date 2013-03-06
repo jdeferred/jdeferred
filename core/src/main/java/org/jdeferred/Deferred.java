@@ -55,7 +55,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @param resolve
 	 * @return
 	 */
-	Deferred<D, F, P> resolve(D resolve);
+	Deferred<D, F, P> resolve(final D resolve);
 
 	/**
 	 * This should be called when a task has completed unsuccessfully, 
@@ -80,7 +80,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @param resolve
 	 * @return
 	 */
-	Deferred<D, F, P> reject(F reject);
+	Deferred<D, F, P> reject(final F reject);
 
 	/**
 	 * This should be called when a task is still executing and progress had been made, 
@@ -105,7 +105,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @param resolve
 	 * @return
 	 */
-	Deferred<D, F, P> notify(P progress);
+	Deferred<D, F, P> notify(final P progress);
 
 	/**
 	 * Return an {@link Promise} instance (i.e., an observer).  You can register callbacks in this observer.

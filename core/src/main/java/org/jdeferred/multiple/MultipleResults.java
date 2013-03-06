@@ -31,11 +31,11 @@ public class MultipleResults implements Iterable<OneResult> {
 		this.results = new CopyOnWriteArrayList<OneResult>(new OneResult[size]);
 	}
 	
-	protected void setResult(int index, OneResult result) {
+	protected void set(int index, OneResult result) {
 		results.set(index, result);
 	}
 	
-	public OneResult getResult(int index) {
+	public OneResult get(int index) {
 		return results.get(index);
 	}
 

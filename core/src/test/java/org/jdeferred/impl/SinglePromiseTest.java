@@ -15,12 +15,14 @@
  */
 package org.jdeferred.impl;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jdeferred.AlwaysCallback;
 import org.jdeferred.DeferredCallable;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
+import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,20 +30,11 @@ import org.junit.Test;
 public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 	@Test
 	public void testDoneWait() {
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				return 100;
-			}
-		};
-		
-		deferredManager.when(task).done(new DoneCallback() {
+		deferredManager.when(successCallable(100, 1000))
+		.done(new DoneCallback() {
 			public void onDone(Object result) {
-				holder.set((Integer) result);
 				Assert.assertEquals(result, 100);
+				holder.set((Integer) result);
 			}
 		}).fail(new FailCallback() {
 			public void onFail(Object result) {
@@ -56,17 +49,8 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 	
 	@Test
 	public void testFailWait() {
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				throw new RuntimeException("oops");
-			}
-		};
-		
-		deferredManager.when(task).done(new DoneCallback() {
+		deferredManager.when(failedCallable(new RuntimeException("oops"), 1000))
+		.done(new DoneCallback() {
 			public void onDone(Object result) {
 				Assert.fail("Should not be here");
 			}
@@ -83,13 +67,8 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 	
 	@Test
 	public void testFailNoWait() {
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				throw new RuntimeException("oops");
-			}
-		};
-		
-		deferredManager.when(task).done(new DoneCallback() {
+		deferredManager.when(failedCallable(new RuntimeException("oops"), 0))
+		.done(new DoneCallback() {
 			public void onDone(Object result) {
 				Assert.fail("Should not be here");
 			}
@@ -105,16 +84,11 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 
 	@Test
 	public void testDoneNoWait() {
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				return 100;
-			}
-		};
-		
-		deferredManager.when(task).done(new DoneCallback() {
+		deferredManager.when(successCallable(100, 0))
+		.done(new DoneCallback() {
 			public void onDone(Object result) {
-				holder.set((Integer) result);
 				Assert.assertEquals(result, 100);
+				holder.set((Integer) result);
 			}
 		}).fail(new FailCallback() {
 			public void onFail(Object result) {
@@ -124,6 +98,62 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 		
 		waitForCompletion();
 		holder.assertEquals(100);
+	}
+	
+	@Test
+	public void testAlwaysDone() {
+		final ValueHolder<Boolean> alwaysTriggered = new ValueHolder<Boolean>(false);
+		
+		deferredManager.when(successCallable(100, 1000))
+		.done(new DoneCallback() {
+			public void onDone(Object result) {
+				Assert.assertEquals(result, 100);
+				holder.set((Integer) result);
+			}
+		}).fail(new FailCallback() {
+			public void onFail(Object result) {
+				Assert.fail("Shouldn't be here");
+			}
+		}).always(new AlwaysCallback<Integer, Throwable>() {
+			@Override
+			public void onAlways(State state, Integer resolved, Throwable rejected) {
+				Assert.assertEquals(State.RESOLVED, state);
+				Assert.assertEquals((Integer) 100, resolved);
+				alwaysTriggered.set(true);
+			}
+		});
+		
+		waitForCompletion();
+		holder.assertEquals(100);
+		alwaysTriggered.assertEquals(true);
+	}
+	
+	@Test
+	public void testAlwaysFail() {
+		final ValueHolder<Boolean> alwaysTriggered = new ValueHolder<Boolean>(false);
+		
+		deferredManager.when(failedCallable(new RuntimeException("oops"), 1000))
+		.done(new DoneCallback() {
+			public void onDone(Object result) {
+				Assert.fail("Shouldn't be here");
+			}
+		}).fail(new FailCallback<Throwable>() {
+			public void onFail(Throwable result) {
+				Assert.assertEquals("oops", result.getMessage());
+				holder.set(1);
+			}
+		}).always(new AlwaysCallback<Void, Throwable>() {
+			@Override
+			public void onAlways(State state, Void resolved, Throwable rejected) {
+				Assert.assertEquals(State.REJECTED, state);
+				Assert.assertEquals("oops", rejected.getMessage());
+				alwaysTriggered.set(true);
+			}
+		});
+		
+		waitForCompletion();
+		holder.assertEquals(1);
+		alwaysTriggered.assertEquals(true);
 	}
 	
 	@Test
@@ -145,13 +175,12 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 		};
 		
 		// single threaded only
-		final ValueHolder<Integer> count = new ValueHolder<Integer>();
-		count.set(0);
+		final AtomicInteger count = new AtomicInteger(0);
 		
 		deferredManager.when(task).done(new DoneCallback() {
 			public void onDone(Object result) {
-				holder.set((Integer) result);
 				Assert.assertEquals(55, result);
+				holder.set((Integer) result);
 			}
 		}).fail(new FailCallback() {
 			public void onFail(Object result) {
@@ -159,12 +188,12 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 			}
 		}).progress(new ProgressCallback() {
 			public void onProgress(Object progress) {
-				count.set(count.get() + 1);
+				count.incrementAndGet();
 			}
 		});
 		
 		waitForCompletion();
 		holder.assertEquals(55);
-		count.assertEquals(10);
+		Assert.assertEquals(10, count.get());
 	}
 }

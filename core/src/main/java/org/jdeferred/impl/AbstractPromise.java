@@ -26,6 +26,8 @@ import org.jdeferred.FailFilter;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.ProgressFilter;
 import org.jdeferred.Promise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,6 +36,8 @@ import org.jdeferred.Promise;
  *
  */
 public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
+	final protected Logger log = LoggerFactory.getLogger(AbstractPromise.class);
+	
 	protected State state = State.PENDING;
 
 	protected final List<DoneCallback<D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<D>>();
@@ -98,25 +102,41 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
-			callback.onDone(resolved);
+			try {
+				callback.onDone(resolved);
+			} catch (Exception e) {
+				log.error("an uncaught exception occured in a DoneCallback", e);
+			}
 		}
 	}
 	
 	protected void triggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
-			callback.onFail(rejected);
+			try {
+				callback.onFail(rejected);
+			} catch (Exception e) {
+				log.error("an uncaught exception occured in a FailCallback", e);
+			}
 		}
 	}
 	
 	protected void triggerProgress(P progress) {
 		for (ProgressCallback<P> callback : progressCallbacks) {
-			callback.onProgress(progress);
+			try {
+				callback.onProgress(progress);
+			} catch (Exception e) {
+				log.error("an uncaught exception occured in a ProgressCallback", e);
+			}
 		}
 	}
 	
 	protected void triggerAlways(State state, D resolve, F reject) {
 		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
-			callback.onAlways(state, resolve, reject);
+			try {
+				callback.onAlways(state, resolve, reject);
+			} catch (Exception e) {
+				log.error("an uncaught exception occured in a AlwaysCallback", e);
+			}
 		}
 	}
 

@@ -37,6 +37,12 @@ public class CombinedPromiseProgress {
 	public int getTotal() {
 		return total;
 	}
+
+	@Override
+	public String toString() {
+		return "CombinedPromiseProgress [fulfilled=" + fulfilled + ", total="
+				+ total + "]";
+	}
 	
 
 }

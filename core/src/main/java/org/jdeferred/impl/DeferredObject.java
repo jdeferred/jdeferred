@@ -57,7 +57,8 @@ import org.jdeferred.Promise;
  */
 public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements Deferred<D, F, P> {
 	
-	public Deferred<D, F, P> resolve(D resolve) {
+	@Override
+	public Deferred<D, F, P> resolve(final D resolve) {
 		State state;
 		synchronized (this) {
 			if (!isPending())
@@ -66,12 +67,16 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 			this.state = state = State.RESOLVED;
 			this.resolveResult = resolve;
 		}
-		triggerDone(resolve);
-		triggerAlways(state, resolve, null);
+		try {
+			triggerDone(resolve);
+		} finally {
+			triggerAlways(state, resolve, null);
+		}
 		return this;
 	}
 
-	public Deferred<D, F, P> notify(P progress) {
+	@Override
+	public Deferred<D, F, P> notify(final P progress) {
 		synchronized (this) {
 			if (!isPending())
 				throw new IllegalStateException("Deferred object already finished, cannot notify progress");
@@ -82,7 +87,8 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 		return this;
 	}
 
-	public Deferred<D, F, P> reject(F reject) {
+	@Override
+	public Deferred<D, F, P> reject(final F reject) {
 		State state;
 		synchronized (this) {
 			if (!isPending())
@@ -90,8 +96,11 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 			this.state = state = State.REJECTED;
 			this.rejectResult = reject;
 		}
-		triggerFail(reject);
-		triggerAlways(state, null, reject);
+		try {
+			triggerFail(reject);
+		} finally {
+			triggerAlways(state, null, reject);
+		}
 		return this;
 	}
 
