@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	final protected Logger log = LoggerFactory.getLogger(AbstractPromise.class);
 	
-	protected State state = State.PENDING;
+	protected volatile State state = State.PENDING;
 
 	protected final List<DoneCallback<D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<D>>();
 	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
@@ -57,8 +57,8 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
 		doneCallbacks.add(callback);
 		
-		D result = null;
-		boolean resolved;
+		final D result;
+		final boolean resolved;
 		synchronized (this) {
 			resolved = isResolved();
 			result = resolveResult;
@@ -72,8 +72,8 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	public Promise<D, F, P> fail(FailCallback<F> callback) {
 		failCallbacks.add(callback);
 		
-		F result = null;
-		boolean rejected;
+		final F result;
+		final boolean rejected;
 		synchronized (this) {
 			rejected = isRejected();
 			result = rejectResult;
@@ -87,9 +87,9 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
 		alwaysCallbacks.add(callback);
 		
-		State state;
-		D resolveResult;
-		F rejectResult;
+		final State state;
+		final D resolveResult;
+		final F rejectResult;
 		synchronized (this) {
 			state = this.state;
 			resolveResult = this.resolveResult;

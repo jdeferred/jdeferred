@@ -22,27 +22,32 @@ package org.jdeferred.multiple;
  *
  */
 public class CombinedPromiseProgress {
-	private final int fulfilled;
+	private final int done;
+	private final int fail;
 	private final int total;
 	
-	public CombinedPromiseProgress(int fulfilled, int total) {
+	public CombinedPromiseProgress(int done, int fail, int total) {
 		super();
-		this.fulfilled = fulfilled;
+		this.done = done;
+		this.fail = fail;
 		this.total = total;
 	}
-	
-	public int getFulfilled() {
-		return fulfilled;
+
+	public int getDone() {
+		return done;
 	}
+
+	public int getFail() {
+		return fail;
+	}
+
 	public int getTotal() {
 		return total;
 	}
 
 	@Override
 	public String toString() {
-		return "CombinedPromiseProgress [fulfilled=" + fulfilled + ", total="
-				+ total + "]";
+		return "CombinedPromiseProgress [done=" + done + ", fail=" + fail
+				+ ", total=" + total + "]";
 	}
-	
-
 }

@@ -23,7 +23,6 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
-import org.jdeferred.impl.DeferredProxy;
 
 /**
  * This will return a special Promise called {@link CombinedPromise}. In short,
@@ -45,16 +44,15 @@ import org.jdeferred.impl.DeferredProxy;
  */
 @SuppressWarnings("rawtypes")
 public class CombinedPromise extends
-		DeferredProxy<MultipleResults, OneReject, CombinedPromiseProgress>
+		DeferredObject<MultipleResults, OneReject, CombinedPromiseProgress>
 		implements Promise<MultipleResults, OneReject, CombinedPromiseProgress> {
 	private final int numberOfPromises;
-	private final AtomicInteger done = new AtomicInteger(0);
+	private final AtomicInteger doneCount = new AtomicInteger();
+	private final AtomicInteger failCount = new AtomicInteger();
 	private final MultipleResults results;
 
 	@SuppressWarnings("unchecked")
 	public CombinedPromise(Promise... promises) {
-		super(
-				new DeferredObject<MultipleResults, OneReject, CombinedPromiseProgress>());
 		if (promises == null || promises.length == 0)
 			throw new IllegalArgumentException("Promises is null or empty");
 		this.numberOfPromises = promises.length;
@@ -65,39 +63,44 @@ public class CombinedPromise extends
 			final int index = count++;
 			promise.fail(new FailCallback<Object>() {
 				public void onFail(Object result) {
-					if (!deferred.isPending())
+					if (!CombinedPromise.this.isPending())
 						return;
 
-					deferred.reject(new OneReject(index, promise, result));
-				}
-			}).always(new AlwaysCallback() {
-				public void onAlways(State state, Object resolved,
-						Object rejected) {
-					if (!deferred.isPending())
-						return;
-
-					deferred.notify(new CombinedPromiseProgress(done.get(),
+					
+					final int fail = failCount.incrementAndGet();
+					CombinedPromise.this.notify(new CombinedPromiseProgress(
+							doneCount.get(),
+							fail,
 							numberOfPromises));
+					
+					CombinedPromise.this.reject(new OneReject(index, promise, result));
 				}
 			}).progress(new ProgressCallback() {
 				public void onProgress(Object progress) {
-					if (!deferred.isPending())
+					if (!CombinedPromise.this.isPending())
 						return;
 
-					deferred.notify(new OneProgress(done.get(),
+					CombinedPromise.this.notify(new OneProgress(
+							doneCount.get(),
+							failCount.get(),
 							numberOfPromises, index, promise, progress));
 				}
 			}).done(new DoneCallback() {
 				public void onDone(Object result) {
-					if (!deferred.isPending())
+					if (!CombinedPromise.this.isPending())
 						return;
 
 					results.set(index, new OneResult(index, promise,
 							result));
-					int finished = done.incrementAndGet();
+					int done = doneCount.incrementAndGet();
 
-					if (finished == numberOfPromises)
-						deferred.resolve(results);
+					CombinedPromise.this.notify(new CombinedPromiseProgress(
+							done,
+							failCount.get(),
+							numberOfPromises));
+					
+					if (done == numberOfPromises)
+						CombinedPromise.this.resolve(results);
 				}
 			});
 		}

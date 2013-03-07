@@ -30,8 +30,8 @@ public class OneProgress extends CombinedPromiseProgress {
 	private final Promise promise;
 	private final Object progress;
 	
-	public OneProgress(int fulfilled, int total, int index, Promise promise, Object progress) {
-		super(fulfilled, total);
+	public OneProgress(int done, int fail, int total, int index, Promise promise, Object progress) {
+		super(done, fail, total);
 		this.index = index;
 		this.promise = promise;
 		this.progress = progress;
@@ -52,7 +52,8 @@ public class OneProgress extends CombinedPromiseProgress {
 	@Override
 	public String toString() {
 		return "OneProgress [index=" + index + ", promise=" + promise
-				+ ", progress=" + progress + ", getFulfilled()="
-				+ getFulfilled() + ", getTotal()=" + getTotal() + "]";
+				+ ", progress=" + progress + ", getDone()=" + getDone()
+				+ ", getFail()=" + getFail() + ", getTotal()=" + getTotal()
+				+ "]";
 	}
 }

@@ -59,7 +59,7 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 	
 	@Override
 	public Deferred<D, F, P> resolve(final D resolve) {
-		State state;
+		final State state;
 		synchronized (this) {
 			if (!isPending())
 				throw new IllegalStateException("Deferred object already finished, cannot resolve again");

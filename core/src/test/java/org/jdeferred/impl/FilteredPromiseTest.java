@@ -30,6 +30,9 @@ import org.junit.Test;
 public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 	@Test
 	public void testNoOpFilter() {
+		final AtomicInteger doneCount = new AtomicInteger();
+		final AtomicInteger failCount = new AtomicInteger();
+		
 		deferredManager.when(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
@@ -40,11 +43,12 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 		.done(new DoneCallback<String>() {
 			@Override
 			public void onDone(String result) {
-				holder.set(result);
+				Assert.assertEquals("DONE", result);
+				doneCount.incrementAndGet();
 			}
 		});
 		
-		holder.assertEquals("DONE");
+		
 		
 		deferredManager.when(new Callable<String>() {
 			@Override
@@ -56,11 +60,10 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 		.done(new DoneCallback<String>() {
 			@Override
 			public void onDone(String result) {
-				holder.set(result);
+				Assert.assertEquals("DONE2", result);
+				doneCount.incrementAndGet();
 			}
 		});
-		
-		holder.assertEquals("DONE2");
 		
 		deferredManager.when(new Callable<String>() {
 			@Override
@@ -72,13 +75,12 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 		.fail(new FailCallback<Throwable>() {
 			@Override
 			public void onFail(Throwable result) {
-				holder.set(result.getMessage());
+				Assert.assertEquals("FAIL", result.getMessage());
+				failCount.incrementAndGet();
 			}
 		});
 		
-		holder.assertEquals("FAIL");
-		
-		final AtomicInteger counter = new AtomicInteger(0);
+		final AtomicInteger progressCount = new AtomicInteger();
 		
 		deferredManager.when(new DeferredRunnable<String>() {
 			@Override
@@ -96,14 +98,16 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 		.progress(new ProgressCallback<String>() {
 			@Override
 			public void onProgress(String progress) {
-				holder.set(progress);
-				counter.incrementAndGet();
+				Assert.assertEquals("HI", progress);
+				progressCount.incrementAndGet();
+				
 			}
 		});
 		
 		waitForCompletion();
-		holder.assertEquals("HI");
-		Assert.assertEquals(10, counter.get());
+		Assert.assertEquals(2, doneCount.get());
+		Assert.assertEquals(1, failCount.get());
+		Assert.assertEquals(10, progressCount.get());
 	}
 	
 	@Test

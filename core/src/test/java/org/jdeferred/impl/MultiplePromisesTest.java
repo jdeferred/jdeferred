@@ -288,7 +288,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 		}
 		Assert.assertEquals(1, alwaysCounter.get());
 		Assert.assertEquals(1, doneCounter.get());
-		Assert.assertEquals(1, combinedProgressCounter.get());
+		Assert.assertEquals(2, combinedProgressCounter.get());
 		Assert.assertEquals(10, task1ProgressCounter.get());
 		Assert.assertEquals(3, task2ProgressCounter.get());
 	}

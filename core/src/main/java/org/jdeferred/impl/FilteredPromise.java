@@ -24,13 +24,13 @@ import org.jdeferred.ProgressFilter;
 import org.jdeferred.Promise;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredProxy<D_OUT, F_OUT, P_OUT> implements Promise<D_OUT, F_OUT, P_OUT>{
+public class FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D_OUT, F_OUT, P_OUT> implements Promise<D_OUT, F_OUT, P_OUT>{
 	private final DoneFilter<D, D_OUT> doneFilter;
 	private final FailFilter<F, F_OUT> failFilter;
 	private final ProgressFilter<P, P_OUT> progressFilter;
 	
 	public FilteredPromise(final Promise<D, F, P> promise, final DoneFilter<D, D_OUT> doneFilter, final FailFilter<F, F_OUT> failFilter, final ProgressFilter<P, P_OUT> progressFilter) {
-		super(new DeferredObject<D_OUT, F_OUT, P_OUT>());
+		//super(new DeferredObject<D_OUT, F_OUT, P_OUT>());
 		this.doneFilter = doneFilter == null ? new NoOpDoneFilter() : doneFilter;
 		this.failFilter = failFilter == null ? new NoOpFailFilter() : failFilter;
 		this.progressFilter = progressFilter == null ? new NoOpProgressFilter() : progressFilter;
@@ -38,19 +38,19 @@ public class FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredProxy
 		promise.done(new DoneCallback<D>() {
 			@Override
 			public void onDone(D result) {
-				deferred.resolve(FilteredPromise.this.doneFilter.filterDone(result));
+				FilteredPromise.this.resolve(FilteredPromise.this.doneFilter.filterDone(result));
 			}
 		}).fail(new FailCallback<F>() {
 
 			@Override
 			public void onFail(F result) {
-				deferred.reject(FilteredPromise.this.failFilter.filterFail(result));
+				FilteredPromise.this.reject(FilteredPromise.this.failFilter.filterFail(result));
 			}
 		}).progress(new ProgressCallback<P>() {
 
 			@Override
 			public void onProgress(P progress) {
-				deferred.notify(FilteredPromise.this.progressFilter.filterProgress(progress));
+				FilteredPromise.this.notify(FilteredPromise.this.progressFilter.filterProgress(progress));
 			}
 		});
 	}

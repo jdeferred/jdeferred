@@ -67,19 +67,21 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 	
 	@Test
 	public void testFailNoWait() {
+		final AtomicInteger counter = new AtomicInteger();
 		deferredManager.when(failedCallable(new RuntimeException("oops"), 0))
 		.done(new DoneCallback() {
 			public void onDone(Object result) {
 				Assert.fail("Should not be here");
 			}
-		}).fail(new FailCallback() {
-			public void onFail(Object result) {
-				holder.set(-1);
+		}).fail(new FailCallback<Throwable>() {
+			public void onFail(Throwable result) {
+				counter.incrementAndGet();
+				Assert.assertEquals("oops", result.getMessage());
 			}
 		});
 		
 		waitForCompletion();
-		holder.assertEquals(-1);
+		Assert.assertEquals(1, counter.get());
 	}
 
 	@Test

@@ -20,6 +20,7 @@
 	    <groupId>org.sonatype.oss</groupId>
 	    <artifactId>oss-parent</artifactId>
 	    <version>7</version>
+	    <relativePath />
   	</parent>
   	
 	<groupId>org.jdeferred</groupId>
@@ -154,7 +155,20 @@
 					<mavenExecutorId>forked-path</mavenExecutorId>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<pushChanges>false</pushChanges>
+					<localCheckout>true</localCheckout>  
+					<tagNameFormat>{project.version}</tagNameFormat> 
 				</configuration>
+				<executions>
+		        <execution>
+		            <id>default</id>
+		            <goals>
+		                <goal>perform</goal>
+		            </goals>
+		            <configuration>
+		                <pomFileName>parent/pom.xml</pomFileName>
+		            </configuration>
+		        </execution>
+    </executions>
 			</plugin>
 		</plugins>
 	</build>
