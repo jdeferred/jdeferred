@@ -156,19 +156,19 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<pushChanges>false</pushChanges>
 					<localCheckout>true</localCheckout>  
-					<tagNameFormat>{project.version}</tagNameFormat> 
+					<tagNameFormat>${project.version}</tagNameFormat> 
 				</configuration>
 				<executions>
-		        <execution>
-		            <id>default</id>
-		            <goals>
-		                <goal>perform</goal>
-		            </goals>
-		            <configuration>
-		                <pomFileName>parent/pom.xml</pomFileName>
-		            </configuration>
-		        </execution>
-    </executions>
+			        <execution>
+			            <id>default</id>
+			            <goals>
+			                <goal>perform</goal>
+			            </goals>
+			            <configuration>
+			                <pomFileName>parent/pom.xml</pomFileName>
+			            </configuration>
+			        </execution>
+    			</executions>
 			</plugin>
 		</plugins>
 	</build>
