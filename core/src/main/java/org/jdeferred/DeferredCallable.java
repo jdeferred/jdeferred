@@ -2,6 +2,7 @@ package org.jdeferred;
 
 import java.util.concurrent.Callable;
 
+import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
 
 /**
@@ -16,6 +17,15 @@ import org.jdeferred.impl.DeferredObject;
  */
 public abstract class DeferredCallable<D, P> implements Callable<D> {
 	private final Deferred<D, Throwable, P> deferred = new DeferredObject<D, Throwable, P>();
+	private final StartPolicy startPolicy;
+	
+	public DeferredCallable() {
+		this.startPolicy = StartPolicy.DEFAULT;
+	}
+	
+	public DeferredCallable(StartPolicy startPolicy) {
+		this.startPolicy = startPolicy;
+	}
 	
 	/**
 	 * @see Deferred#notify(Object)
@@ -27,5 +37,9 @@ public abstract class DeferredCallable<D, P> implements Callable<D> {
 	
 	protected Deferred<D, Throwable, P> getDeferred() {
 		return deferred;
+	}
+
+	public StartPolicy getStartPolicy() {
+		return startPolicy;
 	}
 }

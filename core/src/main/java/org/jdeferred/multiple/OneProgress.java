@@ -24,7 +24,7 @@ import org.jdeferred.Promise;
  *
  */
 @SuppressWarnings("rawtypes")
-public class OneProgress extends CombinedPromiseProgress {
+public class OneProgress extends MasterProgress {
 	private final int index;
 	
 	private final Promise promise;

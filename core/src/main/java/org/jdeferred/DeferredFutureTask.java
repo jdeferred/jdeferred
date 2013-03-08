@@ -20,6 +20,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
+import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
 
 /**
@@ -41,26 +42,31 @@ import org.jdeferred.impl.DeferredObject;
  */
 public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	protected final Deferred<D, Throwable, P> deferred;
+	protected final StartPolicy startPolicy;
 	
 	public DeferredFutureTask(Callable<D> callable) {
 		super(callable);
 		this.deferred = new DeferredObject<D, Throwable, P>();
+		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
 	public DeferredFutureTask(Runnable runnable) {
 		super(runnable, null);
 		this.deferred = new DeferredObject<D, Throwable, P>();
+		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
 	public DeferredFutureTask(DeferredCallable<D, P> callable) {
 		super(callable);
 		this.deferred = callable.getDeferred();
+		this.startPolicy = callable.getStartPolicy();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public DeferredFutureTask(DeferredRunnable<P> runnable) {
 		super(runnable, null);
 		this.deferred = (Deferred<D, Throwable, P>) runnable.getDeferred();
+		this.startPolicy = runnable.getStartPolicy();
 	}
 	
 	public Promise<D, Throwable, P> promise() {
@@ -79,5 +85,9 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 		} catch (ExecutionException e) {
 			deferred.reject(e.getCause());
 		}
+	}
+
+	public StartPolicy getStartPolicy() {
+		return startPolicy;
 	}
 }

@@ -15,6 +15,10 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
@@ -197,5 +201,23 @@ public class SinglePromiseTest extends AbstractDeferredTest<Integer> {
 		waitForCompletion();
 		holder.assertEquals(55);
 		Assert.assertEquals(10, count.get());
+	}
+	
+	@Test
+	public void testFuture() {
+		final Callable<Integer> callable = successCallable(999, 100);
+		ExecutorService es = deferredManager.getExecutorService();
+		Future<Integer> future = es.submit(callable);
+		final AtomicInteger doneCount = new AtomicInteger();
+		deferredManager.when(future).done(new DoneCallback<Integer>() {
+			@Override
+			public void onDone(Integer result) {
+				Assert.assertEquals((Integer) 999, result);
+				doneCount.incrementAndGet();
+			}
+		});
+		
+		waitForCompletion();
+		Assert.assertEquals(1, doneCount.get());
 	}
 }

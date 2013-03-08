@@ -21,12 +21,12 @@ package org.jdeferred.multiple;
  * @author Ray Tsang
  *
  */
-public class CombinedPromiseProgress {
+public class MasterProgress {
 	private final int done;
 	private final int fail;
 	private final int total;
 	
-	public CombinedPromiseProgress(int done, int fail, int total) {
+	public MasterProgress(int done, int fail, int total) {
 		super();
 		this.done = done;
 		this.fail = fail;
@@ -47,7 +47,7 @@ public class CombinedPromiseProgress {
 
 	@Override
 	public String toString() {
-		return "CombinedPromiseProgress [done=" + done + ", fail=" + fail
+		return "MasterProgress [done=" + done + ", fail=" + fail
 				+ ", total=" + total + "]";
 	}
 }

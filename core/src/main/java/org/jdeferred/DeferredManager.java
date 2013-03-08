@@ -16,10 +16,11 @@
 package org.jdeferred;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import org.jdeferred.impl.DefaultDeferredManager;
-import org.jdeferred.multiple.CombinedPromise;
-import org.jdeferred.multiple.CombinedPromiseProgress;
+import org.jdeferred.multiple.MasterPromise;
+import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneReject;
 
@@ -54,12 +55,30 @@ import org.jdeferred.multiple.OneReject;
  * </pre>
  * 
  * @see DefaultDeferredManager
- * @see CombinedPromise
+ * @see MasterPromise
  * @author Ray Tsang
  * 
  */
 @SuppressWarnings({ "rawtypes" })
 public interface DeferredManager {
+	public static enum StartPolicy {
+		/**
+		 * Let Deferred Manager to determine whether to start the task at its own
+		 * discretion.
+		 */
+		DEFAULT,
+		
+		/**
+		 * Tells Deferred Manager to automatically start the task
+		 */
+		AUTO,
+		
+		/**
+		 * Tells Deferred Manager that this task will be manually started
+		 */
+		MANAUL
+	}
+	
 	/**
 	 * Simply returns the promise.
 	 * 
@@ -85,6 +104,15 @@ public interface DeferredManager {
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
 	public abstract <D> Promise<D, Throwable, Void> when(Callable<D> callable);
+	
+	/**
+	 * Wraps {@link Future} and waits for {@link Future#get()} to return a result
+	 * in the background.
+	 *  
+	 * @param future
+	 * @return {@link #when(Callable)}
+	 */
+	public abstract <D> Promise<D, Throwable, Void> when(Future<D> future);
 
 	/**
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
@@ -117,7 +145,7 @@ public interface DeferredManager {
 			DeferredFutureTask<D, P> task);
 
 	/**
-	 * This will return a special Promise called {@link CombinedPromise}. In
+	 * This will return a special Promise called {@link MasterPromise}. In
 	 * short,
 	 * <ul>
 	 * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises
@@ -133,9 +161,9 @@ public interface DeferredManager {
 	 * </ul>
 	 * 
 	 * @param promises
-	 * @return {@link CombinedPromise}
+	 * @return {@link MasterPromise}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Promise... promises);
 
 	/**
@@ -144,7 +172,7 @@ public interface DeferredManager {
 	 * @param runnables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Runnable... runnables);
 
 	/**
@@ -153,7 +181,7 @@ public interface DeferredManager {
 	 * @param callables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Callable<?>... callables);
 
 	/**
@@ -162,7 +190,7 @@ public interface DeferredManager {
 	 * @param runnables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredRunnable<?>... runnables);
 
 	/**
@@ -171,7 +199,7 @@ public interface DeferredManager {
 	 * @param callables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredCallable<?, ?>... callables);
 
 	/**
@@ -181,7 +209,10 @@ public interface DeferredManager {
 	 * @param tasks
 	 * @return {@link #when(Promise...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, CombinedPromiseProgress> when(
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredFutureTask<?, ?>... tasks);
+	
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+			Future<?> ... futures);
 
 }

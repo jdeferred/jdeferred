@@ -1,5 +1,6 @@
 package org.jdeferred;
 
+import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
 
 /**
@@ -13,6 +14,15 @@ import org.jdeferred.impl.DeferredObject;
  */
 public abstract class DeferredRunnable<P> implements Runnable {
 	private final Deferred<Void, Throwable, P> deferred = new DeferredObject<Void, Throwable, P>();
+	private final StartPolicy startPolicy;
+	
+	public DeferredRunnable() {
+		this.startPolicy = StartPolicy.DEFAULT;
+	}
+	
+	public DeferredRunnable(StartPolicy startPolicy) {
+		this.startPolicy = startPolicy;
+	}
 	
 	/**
 	 * @see Deferred#notify(Object)
@@ -24,5 +34,9 @@ public abstract class DeferredRunnable<P> implements Runnable {
 	
 	protected Deferred<Void, Throwable, P> getDeferred() {
 		return deferred;
+	}
+
+	public StartPolicy getStartPolicy() {
+		return startPolicy;
 	}
 }

@@ -16,6 +16,8 @@
 package org.jdeferred.impl;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
@@ -27,7 +29,7 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
-import org.jdeferred.multiple.CombinedPromiseProgress;
+import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneProgress;
 import org.jdeferred.multiple.OneReject;
@@ -253,9 +255,9 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 				public void onFail(OneReject result) {
 					Assert.fail("Shouldn't be here");
 				}
-			}).progress(new ProgressCallback<CombinedPromiseProgress>() {
+			}).progress(new ProgressCallback<MasterProgress>() {
 				@Override
-				public void onProgress(CombinedPromiseProgress progress) {
+				public void onProgress(MasterProgress progress) {
 					if (progress instanceof OneProgress) {
 						OneProgress oneProgress = (OneProgress) progress;
 						if (oneProgress.getIndex() == 0)
@@ -291,5 +293,28 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 		Assert.assertEquals(2, combinedProgressCounter.get());
 		Assert.assertEquals(10, task1ProgressCounter.get());
 		Assert.assertEquals(3, task2ProgressCounter.get());
+	}
+	
+	@Test
+	public void testFutures() {
+		final Callable<Integer> callable1 = successCallable(999, 100);
+		final Callable<String> callable2 = successCallable("HI", 1000);
+		
+		ExecutorService es = deferredManager.getExecutorService();
+		Future<Integer> future1 = es.submit(callable1);
+		Future<String> future2 = es.submit(callable2);
+		final AtomicInteger doneCount = new AtomicInteger();
+		deferredManager.when(future1, future2).done(new DoneCallback<MultipleResults>() {
+			@Override
+			public void onDone(MultipleResults result) {
+				Assert.assertEquals(2, result.size());
+				Assert.assertEquals(999, result.get(0).getResult());
+				Assert.assertEquals("HI", result.get(1).getResult());
+				doneCount.incrementAndGet();
+			}
+		});
+		
+		waitForCompletion();
+		Assert.assertEquals(1, doneCount.get());
 	}
 }

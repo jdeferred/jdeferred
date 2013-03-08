@@ -25,14 +25,14 @@ import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
 /**
- * This will return a special Promise called {@link CombinedPromise}. In short,
+ * This will return a special Promise called {@link MasterPromise}. In short,
  * <ul>
  * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises resolves
  * (i.e., all finished successfully) with {@link MultipleResults}.</li>
  * <li>{@link Promise#fail(FailCallback)} will be
  * triggered if any promises rejects (i.e., if any one failed) with {@link OneReject}.</li>
  * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever one
- * promise resolves or rejects ({#link {@link CombinedPromiseProgress}), 
+ * promise resolves or rejects ({#link {@link MasterProgress}), 
  * or whenever a promise was notified progress ({@link OneProgress}).</li>
  * <li>{@link Promise#always(AlwaysCallback)} will be triggered whenever
  * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
@@ -43,16 +43,16 @@ import org.jdeferred.impl.DeferredObject;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class CombinedPromise extends
-		DeferredObject<MultipleResults, OneReject, CombinedPromiseProgress>
-		implements Promise<MultipleResults, OneReject, CombinedPromiseProgress> {
+public class MasterPromise extends
+		DeferredObject<MultipleResults, OneReject, MasterProgress>
+		implements Promise<MultipleResults, OneReject, MasterProgress> {
 	private final int numberOfPromises;
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
 	private final MultipleResults results;
 
 	@SuppressWarnings("unchecked")
-	public CombinedPromise(Promise... promises) {
+	public MasterPromise(Promise... promises) {
 		if (promises == null || promises.length == 0)
 			throw new IllegalArgumentException("Promises is null or empty");
 		this.numberOfPromises = promises.length;
@@ -63,44 +63,44 @@ public class CombinedPromise extends
 			final int index = count++;
 			promise.fail(new FailCallback<Object>() {
 				public void onFail(Object result) {
-					if (!CombinedPromise.this.isPending())
+					if (!MasterPromise.this.isPending())
 						return;
 
 					
 					final int fail = failCount.incrementAndGet();
-					CombinedPromise.this.notify(new CombinedPromiseProgress(
+					MasterPromise.this.notify(new MasterProgress(
 							doneCount.get(),
 							fail,
 							numberOfPromises));
 					
-					CombinedPromise.this.reject(new OneReject(index, promise, result));
+					MasterPromise.this.reject(new OneReject(index, promise, result));
 				}
 			}).progress(new ProgressCallback() {
 				public void onProgress(Object progress) {
-					if (!CombinedPromise.this.isPending())
+					if (!MasterPromise.this.isPending())
 						return;
 
-					CombinedPromise.this.notify(new OneProgress(
+					MasterPromise.this.notify(new OneProgress(
 							doneCount.get(),
 							failCount.get(),
 							numberOfPromises, index, promise, progress));
 				}
 			}).done(new DoneCallback() {
 				public void onDone(Object result) {
-					if (!CombinedPromise.this.isPending())
+					if (!MasterPromise.this.isPending())
 						return;
 
 					results.set(index, new OneResult(index, promise,
 							result));
 					int done = doneCount.incrementAndGet();
 
-					CombinedPromise.this.notify(new CombinedPromiseProgress(
+					MasterPromise.this.notify(new MasterProgress(
 							done,
 							failCount.get(),
 							numberOfPromises));
 					
 					if (done == numberOfPromises)
-						CombinedPromise.this.resolve(results);
+						MasterPromise.this.resolve(results);
 				}
 			});
 		}

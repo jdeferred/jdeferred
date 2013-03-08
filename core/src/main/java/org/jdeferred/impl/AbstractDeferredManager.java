@@ -16,13 +16,15 @@
 package org.jdeferred.impl;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.jdeferred.DeferredCallable;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DeferredManager;
 import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.CombinedPromise;
+import org.jdeferred.multiple.MasterPromise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,63 +51,91 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	public abstract boolean isAutoSubmit();
 	
 	@Override
-	public CombinedPromise when(Runnable... runnables) {
+	public MasterPromise when(Runnable... runnables) {
 		assertNotEmpty(runnables);
-		DeferredFutureTask<Void, Void>[] tasks = new DeferredFutureTask[runnables.length];
+		
+		Promise[] promises = new Promise[runnables.length];
 
 		for (int i = 0; i < runnables.length; i++) {
 			if (runnables[i] instanceof DeferredRunnable)
-				tasks[i] = new DeferredFutureTask((DeferredRunnable) runnables[i]);
+				promises[i] = when((DeferredRunnable) runnables[i]);
 			else
-				tasks[i] = new DeferredFutureTask(runnables[i]);
+				promises[i] = when(runnables[i]);
 		}
 
-		return when(tasks);
+		return when(promises);
 	}
 
 	@Override
-	public CombinedPromise when(Callable<?>... callables) {
+	public MasterPromise when(Callable<?>... callables) {
 		assertNotEmpty(callables);
 
-		DeferredFutureTask<?, ?>[] tasks = new DeferredFutureTask<?, ?>[callables.length];
+		Promise[] promises = new Promise[callables.length]; 
 
 		for (int i = 0; i < callables.length; i++) {
 			if (callables[i] instanceof DeferredCallable)
-				tasks[i] = new DeferredFutureTask((DeferredCallable) callables[i]);
+				promises[i] = when((DeferredCallable) callables[i]);
 			else
-				tasks[i] = new DeferredFutureTask(callables[i]);
+				promises[i] = when(callables[i]);
 		}
 
-		return when(tasks);
+		return when(promises);
 	}
 	
 	@Override
-	public CombinedPromise when(DeferredRunnable<?>... runnables) {
-		return when((Runnable[]) runnables);
+	public MasterPromise when(DeferredRunnable<?>... runnables) {
+		assertNotEmpty(runnables);
+		
+		Promise[] promises = new Promise[runnables.length];
+
+		for (int i = 0; i < runnables.length; i++) {
+			promises[i] = when(runnables[i]);
+		}
+
+		return when(promises);
 	}
 
 	@Override
-	public CombinedPromise when(DeferredCallable<?, ?>... callables) {
-		return when((Callable[]) callables);
+	public MasterPromise when(DeferredCallable<?, ?>... callables) {
+		assertNotEmpty(callables);
+
+		Promise[] promises = new Promise[callables.length]; 
+
+		for (int i = 0; i < callables.length; i++) {
+			promises[i] = when(callables[i]);
+		}
+
+		return when(promises);
 	}
 
 	@Override
-	public CombinedPromise when(DeferredFutureTask<?, ?>... tasks) {
+	public MasterPromise when(DeferredFutureTask<?, ?>... tasks) {
 		assertNotEmpty(tasks);
 
 		Promise[] promises = new Promise[tasks.length];
 
 		for (int i = 0; i < tasks.length; i++) {
-			if (isAutoSubmit()) submit(tasks[i]);
-			promises[i] = tasks[i].promise();
+			promises[i] = when(tasks[i]);
 		}
 		return when(promises);
 	}
 
 	@Override
-	public CombinedPromise when(Promise... promises) {
+	public MasterPromise when(Future<?> ... futures) {
+		assertNotEmpty(futures);
+
+		Promise[] promises = new Promise[futures.length];
+
+		for (int i = 0; i < futures.length; i++) {
+			promises[i] = when(futures[i]);
+		}
+		return when(promises);
+	}
+
+	@Override
+	public MasterPromise when(Promise... promises) {
 		assertNotEmpty(promises);
-		return new CombinedPromise(promises);
+		return new MasterPromise(promises);
 	}
 
 	@Override
@@ -136,8 +166,31 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	@Override
 	public <D, P> Promise<D, Throwable, P> when(
 			DeferredFutureTask<D, P> task) {
-		if (isAutoSubmit()) submit(task);
+		if (task.getStartPolicy() == StartPolicy.AUTO 
+				|| (task.getStartPolicy() == StartPolicy.DEFAULT && isAutoSubmit()))
+			submit(task);
+		
 		return task.promise();
+	}
+	
+	@Override
+	public <D> Promise<D, Throwable, Void> when(final Future<D> future) {
+		// make sure the task is automatically started
+		
+		return when(new DeferredCallable<D, Void>(StartPolicy.AUTO) {
+			@Override
+			public D call() throws Exception {
+				try {
+					return future.get();
+				} catch (InterruptedException e) {
+					throw e;
+				} catch (ExecutionException e) {
+					if (e.getCause() instanceof Exception)
+						throw (Exception) e.getCause();
+					else throw e;
+				}
+			}
+		});
 	}
 	
 	protected void assertNotEmpty(Object[] objects) {
