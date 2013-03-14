@@ -37,9 +37,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings({"rawtypes"})
-public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
+public class MultiplePromisesTest extends AbstractDeferredTest {
 	@Test
 	public void testMultipleDoneWait() {
+		final AtomicInteger doneCount = new AtomicInteger();
+		
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
@@ -63,17 +65,18 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 				Assert.assertEquals(2, results.size());
 				Assert.assertEquals(100, results.get(0).getResult());
 				Assert.assertEquals("Hello", results.get(1).getResult());
-				holder.set(1);
+				doneCount.incrementAndGet();
 			}
 		});
 		
 		waitForCompletion();
-		Assert.assertEquals((Integer) 1, holder.get());
+		Assert.assertEquals(1, doneCount.get());
 	}
 	
 	@Test
 	public void testMultipleAlwaysWait() {
-		final AtomicInteger alwaysCounter = new AtomicInteger();
+		final AtomicInteger doneCount = new AtomicInteger();
+		final AtomicInteger alwaysCount = new AtomicInteger();
 		
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
@@ -98,7 +101,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 				Assert.assertEquals(2, results.size());
 				Assert.assertEquals(100, results.get(0).getResult());
 				Assert.assertEquals("Hello", results.get(1).getResult());
-				holder.set(1);
+				doneCount.incrementAndGet();
 			}
 		}).always(new AlwaysCallback<MultipleResults, OneReject>() {
 
@@ -108,17 +111,20 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 				Assert.assertEquals(2, results.size());
 				Assert.assertEquals(100, results.get(0).getResult());
 				Assert.assertEquals("Hello", results.get(1).getResult());
-				alwaysCounter.incrementAndGet();
+				alwaysCount.incrementAndGet();
 			}
 		});
 		
 		waitForCompletion();
-		Assert.assertEquals((Integer) 1, holder.get());
-		Assert.assertEquals(1, alwaysCounter.get());
+		Assert.assertEquals(1, doneCount.get());
+		Assert.assertEquals(1, alwaysCount.get());
 	}
 	
 	@Test
 	public void testMultipleFailWait() {
+		final AtomicInteger failCount = new AtomicInteger();
+		final AtomicInteger doneCount = new AtomicInteger();
+		
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
@@ -139,21 +145,25 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 			}
 		}).then(new DoneCallback<MultipleResults>() {
 			public void onDone(MultipleResults results) {
-				Assert.fail("Shouldn't be here");
+				doneCount.incrementAndGet();
 			}
 		}).fail(new FailCallback<OneReject>() {
 			public void onFail(OneReject result) {
 				Assert.assertEquals(0, result.getIndex());
-				holder.set(1);
+				failCount.incrementAndGet();
 			}
 		});
 		
 		waitForCompletion();
-		Assert.assertEquals((Integer) 1, holder.get());
+		Assert.assertEquals(0, doneCount.get());
+		Assert.assertEquals(1, failCount.get());
 	}
 	
 	@Test
 	public void testComplex() {
+		final AtomicInteger failCount = new AtomicInteger();
+		final AtomicInteger doneCount = new AtomicInteger();
+		
 		Promise p1 = deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
@@ -166,6 +176,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 		}).then(new DoneCallback<Integer>() {
 			public void onDone(Integer result) {
 				Assert.assertEquals((Integer) 100, result);
+				doneCount.incrementAndGet();
 			}
 		});
 		Promise p2 = deferredManager.when(new Callable<String>() {
@@ -181,6 +192,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 
 			public void onDone(String result) {
 				Assert.assertEquals("Hello", result);
+				doneCount.incrementAndGet();
 			}
 		});
 		
@@ -190,16 +202,17 @@ public class MultiplePromisesTest extends AbstractDeferredTest<Integer> {
 				Assert.assertEquals(2, results.size());
 				Assert.assertEquals(100, results.get(0).getResult());
 				Assert.assertEquals("Hello", results.get(1).getResult());
-				holder.set(1);
+				doneCount.incrementAndGet();
 			}
 		}).fail(new FailCallback<OneReject>() {
 			public void onFail(OneReject result) {
-				Assert.fail("shouldn't be here");
+				failCount.incrementAndGet();
 			}
 		});
 		
 		waitForCompletion();
-		Assert.assertEquals((Integer) 1, holder.get());
+		Assert.assertEquals(3, doneCount.get());
+		Assert.assertEquals(0, failCount.get());
 	}
 	
 	@Test

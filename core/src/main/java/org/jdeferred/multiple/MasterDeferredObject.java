@@ -25,7 +25,7 @@ import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
 /**
- * This will return a special Promise called {@link MasterPromise}. In short,
+ * This will return a special Promise called {@link MasterDeferredObject}. In short,
  * <ul>
  * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises resolves
  * (i.e., all finished successfully) with {@link MultipleResults}.</li>
@@ -43,7 +43,7 @@ import org.jdeferred.impl.DeferredObject;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class MasterPromise extends
+public class MasterDeferredObject extends
 		DeferredObject<MultipleResults, OneReject, MasterProgress>
 		implements Promise<MultipleResults, OneReject, MasterProgress> {
 	private final int numberOfPromises;
@@ -52,7 +52,7 @@ public class MasterPromise extends
 	private final MultipleResults results;
 
 	@SuppressWarnings("unchecked")
-	public MasterPromise(Promise... promises) {
+	public MasterDeferredObject(Promise... promises) {
 		if (promises == null || promises.length == 0)
 			throw new IllegalArgumentException("Promises is null or empty");
 		this.numberOfPromises = promises.length;
@@ -63,44 +63,44 @@ public class MasterPromise extends
 			final int index = count++;
 			promise.fail(new FailCallback<Object>() {
 				public void onFail(Object result) {
-					if (!MasterPromise.this.isPending())
+					if (!MasterDeferredObject.this.isPending())
 						return;
 
 					
 					final int fail = failCount.incrementAndGet();
-					MasterPromise.this.notify(new MasterProgress(
+					MasterDeferredObject.this.notify(new MasterProgress(
 							doneCount.get(),
 							fail,
 							numberOfPromises));
 					
-					MasterPromise.this.reject(new OneReject(index, promise, result));
+					MasterDeferredObject.this.reject(new OneReject(index, promise, result));
 				}
 			}).progress(new ProgressCallback() {
 				public void onProgress(Object progress) {
-					if (!MasterPromise.this.isPending())
+					if (!MasterDeferredObject.this.isPending())
 						return;
 
-					MasterPromise.this.notify(new OneProgress(
+					MasterDeferredObject.this.notify(new OneProgress(
 							doneCount.get(),
 							failCount.get(),
 							numberOfPromises, index, promise, progress));
 				}
 			}).done(new DoneCallback() {
 				public void onDone(Object result) {
-					if (!MasterPromise.this.isPending())
+					if (!MasterDeferredObject.this.isPending())
 						return;
 
 					results.set(index, new OneResult(index, promise,
 							result));
 					int done = doneCount.incrementAndGet();
 
-					MasterPromise.this.notify(new MasterProgress(
+					MasterDeferredObject.this.notify(new MasterProgress(
 							done,
 							failCount.get(),
 							numberOfPromises));
 					
 					if (done == numberOfPromises)
-						MasterPromise.this.resolve(results);
+						MasterDeferredObject.this.resolve(results);
 				}
 			});
 		}

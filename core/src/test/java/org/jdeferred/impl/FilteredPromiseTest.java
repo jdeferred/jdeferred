@@ -27,7 +27,7 @@ import org.jdeferred.ProgressCallback;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class FilteredPromiseTest extends AbstractDeferredTest<String> {
+public class FilteredPromiseTest extends AbstractDeferredTest {
 	@Test
 	public void testNoOpFilter() {
 		final AtomicInteger doneCount = new AtomicInteger();
@@ -112,6 +112,8 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 	
 	@Test
 	public void testDoneFilter() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
+		
 		Callable<Integer> task = new Callable<Integer>() {
 			public Integer call() {
 				return 100;
@@ -136,6 +138,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest<String> {
 	
 	@Test
 	public void testFailFilter() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
 		Callable<Integer> task = new Callable<Integer>() {
 			public Integer call() {
 				throw new RuntimeException("TEST");

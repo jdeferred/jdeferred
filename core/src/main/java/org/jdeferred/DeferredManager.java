@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.jdeferred.impl.DefaultDeferredManager;
-import org.jdeferred.multiple.MasterPromise;
+import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneReject;
@@ -55,7 +55,7 @@ import org.jdeferred.multiple.OneReject;
  * </pre>
  * 
  * @see DefaultDeferredManager
- * @see MasterPromise
+ * @see MasterDeferredObject
  * @author Ray Tsang
  * 
  */
@@ -145,7 +145,7 @@ public interface DeferredManager {
 			DeferredFutureTask<D, P> task);
 
 	/**
-	 * This will return a special Promise called {@link MasterPromise}. In
+	 * This will return a special Promise called {@link MasterDeferredObject}. In
 	 * short,
 	 * <ul>
 	 * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises
@@ -161,7 +161,7 @@ public interface DeferredManager {
 	 * </ul>
 	 * 
 	 * @param promises
-	 * @return {@link MasterPromise}
+	 * @return {@link MasterDeferredObject}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Promise... promises);

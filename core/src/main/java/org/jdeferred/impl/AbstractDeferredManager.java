@@ -24,7 +24,10 @@ import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DeferredManager;
 import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.MasterPromise;
+import org.jdeferred.multiple.MasterProgress;
+import org.jdeferred.multiple.MasterDeferredObject;
+import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.OneReject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +54,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	public abstract boolean isAutoSubmit();
 	
 	@Override
-	public MasterPromise when(Runnable... runnables) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Runnable... runnables) {
 		assertNotEmpty(runnables);
 		
 		Promise[] promises = new Promise[runnables.length];
@@ -67,7 +70,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public MasterPromise when(Callable<?>... callables) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Callable<?>... callables) {
 		assertNotEmpty(callables);
 
 		Promise[] promises = new Promise[callables.length]; 
@@ -83,7 +86,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 	
 	@Override
-	public MasterPromise when(DeferredRunnable<?>... runnables) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(DeferredRunnable<?>... runnables) {
 		assertNotEmpty(runnables);
 		
 		Promise[] promises = new Promise[runnables.length];
@@ -96,7 +99,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public MasterPromise when(DeferredCallable<?, ?>... callables) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(DeferredCallable<?, ?>... callables) {
 		assertNotEmpty(callables);
 
 		Promise[] promises = new Promise[callables.length]; 
@@ -109,7 +112,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public MasterPromise when(DeferredFutureTask<?, ?>... tasks) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(DeferredFutureTask<?, ?>... tasks) {
 		assertNotEmpty(tasks);
 
 		Promise[] promises = new Promise[tasks.length];
@@ -121,7 +124,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public MasterPromise when(Future<?> ... futures) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Future<?> ... futures) {
 		assertNotEmpty(futures);
 
 		Promise[] promises = new Promise[futures.length];
@@ -133,9 +136,9 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public MasterPromise when(Promise... promises) {
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
 		assertNotEmpty(promises);
-		return new MasterPromise(promises);
+		return new MasterDeferredObject(promises).promise();
 	}
 
 	@Override

@@ -23,9 +23,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-public abstract class AbstractDeferredTest<V> {
+public abstract class AbstractDeferredTest {
 	protected DefaultDeferredManager deferredManager;
-	protected ValueHolder<V> holder;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -37,7 +36,6 @@ public abstract class AbstractDeferredTest<V> {
 	
 	protected void createDeferredManager() {
 		this.deferredManager = new DefaultDeferredManager();
-		this.holder = new ValueHolder<V>();
 	}
 
 	@Before
@@ -48,7 +46,6 @@ public abstract class AbstractDeferredTest<V> {
 	@After
 	public void tearDown() throws Exception {
 		waitForCompletion();
-		holder.clear();
 	}
 	
 	protected <R> Callable<R> successCallable(final R result, final int waitMs) {

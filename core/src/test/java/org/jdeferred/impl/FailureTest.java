@@ -27,7 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class FailureTest extends AbstractDeferredTest<Integer> {
+public class FailureTest extends AbstractDeferredTest {
 	@Test
 	public void testBadCallback() {
 		final AtomicInteger counter = new AtomicInteger();
