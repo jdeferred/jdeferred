@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.jdeferred</groupId>
     <artifactId>jdeferred-parent</artifactId>
-    <version>1.0.0-Beta2-SNAPSHOT</version>
+    <version>1.0.0-CR1</version>
     <relativePath>parent/pom.xml</relativePath>
   </parent>
   <artifactId>jdeferred</artifactId>
