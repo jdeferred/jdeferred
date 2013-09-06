@@ -26,6 +26,7 @@ import org.jdeferred.FailFilter;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.ProgressFilter;
 import org.jdeferred.Promise;
+import org.jdeferred.multiple.MasterDeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +109,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				log.error("an uncaught exception occured in a DoneCallback", e);
 			}
 		}
+		
+		synchronized (this) {
+			this.notifyAll();
+		}
 	}
 	
 	protected void triggerFail(F rejected) {
@@ -117,6 +122,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a FailCallback", e);
 			}
+		}
+		
+		synchronized (this) {
+			this.notifyAll();
 		}
 	}
 	

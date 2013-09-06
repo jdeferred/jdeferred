@@ -24,68 +24,70 @@ import org.jdeferred.DeferredCallable;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
+import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class SinglePromiseTest extends AbstractDeferredTest {
 	@Test
 	public void testDoneWait() {
 		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
 		final AtomicInteger failCount = new AtomicInteger();
 		deferredManager.when(successCallable(100, 1000))
-		.done(new DoneCallback() {
-			public void onDone(Object result) {
-				Assert.assertEquals(result, 100);
-				holder.set((Integer) result);
-			}
-		}).fail(new FailCallback() {
-			public void onFail(Object result) {
-				failCount.incrementAndGet();
-			}
-		});
-		
+				.done(new DoneCallback() {
+					public void onDone(Object result) {
+						Assert.assertEquals(result, 100);
+						holder.set((Integer) result);
+					}
+				}).fail(new FailCallback() {
+					public void onFail(Object result) {
+						failCount.incrementAndGet();
+					}
+				});
+
 		waitForCompletion();
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
 	}
-	
+
 	@Test
 	public void testFailWait() {
 		final AtomicInteger failCount = new AtomicInteger();
 		final AtomicInteger doneCount = new AtomicInteger();
-		deferredManager.when(failedCallable(new RuntimeException("oops"), 1000))
-		.done(new DoneCallback() {
-			public void onDone(Object result) {
-				doneCount.incrementAndGet();
-			}
-		}).fail(new FailCallback() {
-			public void onFail(Object result) {
-				failCount.incrementAndGet();
-			}
-		});
-		
+		deferredManager
+				.when(failedCallable(new RuntimeException("oops"), 1000))
+				.done(new DoneCallback() {
+					public void onDone(Object result) {
+						doneCount.incrementAndGet();
+					}
+				}).fail(new FailCallback() {
+					public void onFail(Object result) {
+						failCount.incrementAndGet();
+					}
+				});
+
 		waitForCompletion();
 		Assert.assertEquals(0, doneCount.get());
 		Assert.assertEquals(1, failCount.get());
 	}
-	
+
 	@Test
 	public void testFailNoWait() {
 		final AtomicInteger counter = new AtomicInteger();
 		deferredManager.when(failedCallable(new RuntimeException("oops"), 0))
-		.done(new DoneCallback() {
-			public void onDone(Object result) {
-				Assert.fail("Should not be here");
-			}
-		}).fail(new FailCallback<Throwable>() {
-			public void onFail(Throwable result) {
-				counter.incrementAndGet();
-				Assert.assertEquals("oops", result.getMessage());
-			}
-		});
-		
+				.done(new DoneCallback() {
+					public void onDone(Object result) {
+						Assert.fail("Should not be here");
+					}
+				}).fail(new FailCallback<Throwable>() {
+					public void onFail(Throwable result) {
+						counter.incrementAndGet();
+						Assert.assertEquals("oops", result.getMessage());
+					}
+				});
+
 		waitForCompletion();
 		Assert.assertEquals(1, counter.get());
 	}
@@ -94,8 +96,7 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 	public void testDoneNoWait() {
 		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
 		final AtomicInteger failCount = new AtomicInteger();
-		deferredManager.when(successCallable(100, 0))
-		.done(new DoneCallback() {
+		deferredManager.when(successCallable(100, 0)).done(new DoneCallback() {
 			public void onDone(Object result) {
 				Assert.assertEquals(result, 100);
 				holder.set((Integer) result);
@@ -105,79 +106,82 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 				failCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
 	}
-	
+
 	@Test
 	public void testAlwaysDone() {
 		final AtomicInteger failCount = new AtomicInteger();
 		final AtomicInteger alwaysCount = new AtomicInteger();
 		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
-		
+
 		deferredManager.when(successCallable(100, 1000))
-		.done(new DoneCallback() {
-			public void onDone(Object result) {
-				Assert.assertEquals(result, 100);
-				holder.set((Integer) result);
-			}
-		}).fail(new FailCallback() {
-			public void onFail(Object result) {
-				failCount.incrementAndGet();
-			}
-		}).always(new AlwaysCallback<Integer, Throwable>() {
-			@Override
-			public void onAlways(State state, Integer resolved, Throwable rejected) {
-				Assert.assertEquals(State.RESOLVED, state);
-				Assert.assertEquals((Integer) 100, resolved);
-				alwaysCount.incrementAndGet();
-			}
-		});
-		
+				.done(new DoneCallback() {
+					public void onDone(Object result) {
+						Assert.assertEquals(result, 100);
+						holder.set((Integer) result);
+					}
+				}).fail(new FailCallback() {
+					public void onFail(Object result) {
+						failCount.incrementAndGet();
+					}
+				}).always(new AlwaysCallback<Integer, Throwable>() {
+					@Override
+					public void onAlways(State state, Integer resolved,
+							Throwable rejected) {
+						Assert.assertEquals(State.RESOLVED, state);
+						Assert.assertEquals((Integer) 100, resolved);
+						alwaysCount.incrementAndGet();
+					}
+				});
+
 		waitForCompletion();
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
 		Assert.assertEquals(1, alwaysCount.get());
 	}
-	
+
 	@Test
 	public void testAlwaysFail() {
 		final AtomicInteger doneCount = new AtomicInteger();
 		final AtomicInteger failCount = new AtomicInteger();
 		final AtomicInteger alwaysCount = new AtomicInteger();
-		
-		deferredManager.when(failedCallable(new RuntimeException("oops"), 1000))
-		.done(new DoneCallback() {
-			public void onDone(Object result) {
-				doneCount.incrementAndGet();
-			}
-		}).fail(new FailCallback<Throwable>() {
-			public void onFail(Throwable result) {
-				Assert.assertEquals("oops", result.getMessage());
-				failCount.incrementAndGet();
-			}
-		}).always(new AlwaysCallback<Void, Throwable>() {
-			@Override
-			public void onAlways(State state, Void resolved, Throwable rejected) {
-				Assert.assertEquals(State.REJECTED, state);
-				Assert.assertEquals("oops", rejected.getMessage());
-				alwaysCount.incrementAndGet();
-			}
-		});
-		
+
+		deferredManager
+				.when(failedCallable(new RuntimeException("oops"), 1000))
+				.done(new DoneCallback() {
+					public void onDone(Object result) {
+						doneCount.incrementAndGet();
+					}
+				}).fail(new FailCallback<Throwable>() {
+					public void onFail(Throwable result) {
+						Assert.assertEquals("oops", result.getMessage());
+						failCount.incrementAndGet();
+					}
+				}).always(new AlwaysCallback<Void, Throwable>() {
+					@Override
+					public void onAlways(State state, Void resolved,
+							Throwable rejected) {
+						Assert.assertEquals(State.REJECTED, state);
+						Assert.assertEquals("oops", rejected.getMessage());
+						alwaysCount.incrementAndGet();
+					}
+				});
+
 		waitForCompletion();
 		Assert.assertEquals(0, doneCount.get());
 		Assert.assertEquals(1, failCount.get());
 		Assert.assertEquals(1, alwaysCount.get());
 	}
-	
+
 	@Test
 	public void testPorgressWait() {
 		final AtomicInteger failCount = new AtomicInteger();
 		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
-		
+
 		DeferredCallable<Integer, Integer> task = new DeferredCallable<Integer, Integer>() {
 			public Integer call() {
 				int sum = 0;
@@ -189,14 +193,14 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 					notify(i);
 					sum += i;
 				}
-				
+
 				return sum;
 			}
 		};
-		
+
 		// single threaded only
 		final AtomicInteger count = new AtomicInteger(0);
-		
+
 		deferredManager.when(task).done(new DoneCallback() {
 			public void onDone(Object result) {
 				Assert.assertEquals(55, result);
@@ -211,13 +215,13 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 				count.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		holder.assertEquals(55);
 		Assert.assertEquals(10, count.get());
 		Assert.assertEquals(0, failCount.get());
 	}
-	
+
 	@Test
 	public void testFuture() {
 		ExecutorService es = deferredManager.getExecutorService();
@@ -230,8 +234,9 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 				doneCount.incrementAndGet();
 			}
 		});
-		
-		Future<Void> failedFuture = es.submit(failedCallable(new RuntimeException("oops"), 300));
+
+		Future<Void> failedFuture = es.submit(failedCallable(
+				new RuntimeException("oops"), 300));
 		final AtomicInteger failCount = new AtomicInteger();
 		deferredManager.when(failedFuture).fail(new FailCallback<Throwable>() {
 			@Override
@@ -240,8 +245,38 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 				failCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(1, doneCount.get());
+	}
+
+	@Test
+	public void testWait() {
+		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
+		final AtomicInteger failCount = new AtomicInteger();
+		Promise<Integer, Throwable, Void> p = deferredManager
+				.when(successCallable(100, 1000)).done(new DoneCallback() {
+					public void onDone(Object result) {
+						Assert.assertEquals(result, 100);
+						holder.set((Integer) result);
+					}
+				}).fail(new FailCallback() {
+					public void onFail(Object result) {
+						failCount.incrementAndGet();
+					}
+				});
+		
+		try {
+			synchronized (p) {
+				while (p.isPending()) {
+					p.wait();
+				}
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		holder.assertEquals(100);
+		Assert.assertEquals(0, failCount.get());
 	}
 }

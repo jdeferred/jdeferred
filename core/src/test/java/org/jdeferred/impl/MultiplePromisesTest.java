@@ -330,4 +330,47 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		waitForCompletion();
 		Assert.assertEquals(1, doneCount.get());
 	}
+	
+	@Test
+	public void testMultipleWait() {
+		final AtomicInteger doneCount = new AtomicInteger();
+		
+		Promise<MultipleResults, OneReject, MasterProgress> p = deferredManager.when(new Callable<Integer>() {
+			public Integer call() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+				
+				return 100;
+			}
+		}, new Callable<String>() {
+			public String call() {
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+				}
+				
+				return "Hello";
+			}
+		}).then(new DoneCallback<MultipleResults>() {
+			public void onDone(MultipleResults results) {
+				Assert.assertEquals(2, results.size());
+				Assert.assertEquals(100, results.get(0).getResult());
+				Assert.assertEquals("Hello", results.get(1).getResult());
+				doneCount.incrementAndGet();
+			}
+		});
+		
+		synchronized (p) {
+			try {
+				while (p.isPending()) {
+					p.wait();
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		Assert.assertEquals(1, doneCount.get());
+	}
 }

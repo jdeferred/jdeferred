@@ -99,8 +99,9 @@ public class MasterDeferredObject extends
 							failCount.get(),
 							numberOfPromises));
 					
-					if (done == numberOfPromises)
+					if (done == numberOfPromises) {
 						MasterDeferredObject.this.resolve(results);
+					}
 				}
 			});
 		}
