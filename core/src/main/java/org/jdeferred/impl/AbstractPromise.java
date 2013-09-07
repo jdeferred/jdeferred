@@ -109,10 +109,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				log.error("an uncaught exception occured in a DoneCallback", e);
 			}
 		}
-		
-		synchronized (this) {
-			this.notifyAll();
-		}
 	}
 	
 	protected void triggerFail(F rejected) {
@@ -122,10 +118,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a FailCallback", e);
 			}
-		}
-		
-		synchronized (this) {
-			this.notifyAll();
 		}
 	}
 	
@@ -146,6 +138,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a AlwaysCallback", e);
 			}
+		}
+		
+		synchronized (this) {
+			this.notifyAll();
 		}
 	}
 
