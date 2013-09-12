@@ -271,4 +271,21 @@ public interface Promise<D, F, P> {
 	 * @return
 	 */
 	public Promise<D, F, P> progress(ProgressCallback<P> callback);
+	
+	/**
+	 * This method will wait as long as the State is Pending.  This method will fail fast
+	 * when State is not Pending.
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void waitSafely() throws InterruptedException;
+	
+	/**
+	 * This method will wait when the State is Pending, and return when timeout has reached.
+	 * This method will fail fast when State is not Pending.
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void waitSafely(long timeout) throws InterruptedException;
+	
 }

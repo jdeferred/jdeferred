@@ -26,7 +26,6 @@ import org.jdeferred.FailFilter;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.ProgressFilter;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.MasterDeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,5 +203,34 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public boolean isRejected() {
 		return state == State.REJECTED;
+	}
+	
+	public void waitSafely() throws InterruptedException {
+		waitSafely(-1);
+	}
+	public void waitSafely(long timeout) throws InterruptedException {
+		final long startTime = System.currentTimeMillis();
+		synchronized (this) {
+			while (this.isPending()) {
+				try {
+					if (timeout <= 0) {
+						wait();
+					} else {
+						final long elapsed = (System.currentTimeMillis() - startTime);
+					    final long waitTime = timeout - elapsed;
+						wait(waitTime);
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw e;
+				}
+				
+				if (timeout > 0 && ((System.currentTimeMillis() - startTime) >= timeout)) {
+					return;
+				} else {
+					continue; // keep looping
+				}
+			}
+		}
 	}
 }

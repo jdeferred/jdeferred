@@ -279,4 +279,30 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
 	}
+	
+	@Test
+	public void testWaitSafely() {
+		final ValueHolder<Integer> holder = new ValueHolder<Integer>();
+		final AtomicInteger failCount = new AtomicInteger();
+		Promise<Integer, Throwable, Void> p = deferredManager
+				.when(successCallable(100, 1000)).done(new DoneCallback() {
+					public void onDone(Object result) {
+						Assert.assertEquals(result, 100);
+						holder.set((Integer) result);
+					}
+				}).fail(new FailCallback() {
+					public void onFail(Object result) {
+						failCount.incrementAndGet();
+					}
+				});
+		
+		try {
+			p.waitSafely();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		holder.assertEquals(100);
+		Assert.assertEquals(0, failCount.get());
+	}
 }

@@ -77,12 +77,9 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 
 	@Override
 	public Deferred<D, F, P> notify(final P progress) {
-		synchronized (this) {
-			if (!isPending())
-				throw new IllegalStateException("Deferred object already finished, cannot notify progress");
-			
-			state = State.PENDING;
-		}
+		if (!isPending())
+			throw new IllegalStateException("Deferred object already finished, cannot notify progress");
+		
 		triggerProgress(progress);
 		return this;
 	}

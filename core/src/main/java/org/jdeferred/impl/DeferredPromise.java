@@ -80,7 +80,15 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	public Promise<D, F, P> progress(ProgressCallback<P> callback) {
 		return promise.progress(callback);
 	}
-	
-	
 
+	@Override
+	public void waitSafely() throws InterruptedException {
+		promise.waitSafely();
+		
+	}
+
+	@Override
+	public void waitSafely(long timeout) throws InterruptedException {
+		promise.waitSafely(timeout);
+	}
 }
