@@ -170,3 +170,75 @@ dm.when(new DeferredRunnable<Double>(){
   }
 }).then(…);
 ```
+Wait and WaitSafely
+-------------------
+Normally, when using this framework, you would want to do things asynchronously.  However, if there is a need to wait for all deferred tasks to finish, you can use Object.wait or Promise.waitSafely methods.
+
+```java
+Promise p = dm.when(...)
+  .done(...)
+  .fail(...)
+
+synchronized (p)
+  while (p.isPending()) {
+    try {
+      p.wait();
+    } catch (InterruptedException e) { ... }
+  }
+}
+```
+
+Alternatively, you can use a more simplified shortcut
+```java
+Promise p = dm.when(...)
+  .done(...)
+  .fail(...)
+
+try {
+  p.waitSafely();
+} catch (InterruptedException e) { ... }
+```
+
+Asynchronous Servlet
+--------------------
+Here is a sample code on how to use JDeferred with Asynchronous Servlet!
+
+```java
+@WebServlet(value="/AsyncServlet", asyncSupported=true)
+public class AsyncServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request,
+		HttpServletResponse response) throws ServletException, IOException {
+		final AsyncContext actx = request.startAsync(request, response);
+		ExecutorService executorService = Executors.newFixedThreadPool(20);
+		DeferredManager dm = new DefaultDeferredManager(executorService);
+		
+		dm.when(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				if (actx.getRequest().getParameter("fail") != null) {
+					throw new Exception("oops!");
+				}
+				System.out.println("async task started... waiting!");
+				Thread.sleep(2000);
+				System.out.println("returning!");
+				return "Hello World!";
+			}
+		}).then(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				System.out.println("dispatching!");
+				actx.getRequest().setAttribute("message", result);
+				actx.dispatch("/hello.jsp");
+			}
+		}).fail(new FailCallback<Throwable>() {
+			@Override
+			public void onFail(Throwable exception) {
+				actx.getRequest().setAttribute("exception", exception);
+				actx.dispatch("/error.jsp");
+			}
+		});
+	}
+}
+```
