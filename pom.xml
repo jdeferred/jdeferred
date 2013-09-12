@@ -30,5 +30,6 @@
   <modules>
     <module>parent</module>
     <module>core</module>
+    <module>examples</module>
   </modules>
 </project>
