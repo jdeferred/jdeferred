@@ -241,3 +241,19 @@ public class AsyncServlet extends HttpServlet {
   }
 }
 ```
+Java 8 Lambda
+-------------
+Now this is pretty cool when used with Java 8 Lambda!
+
+```Java
+dm.when(() -> {
+  return "Hey!";
+}).done(r -> System.out.println(r));
+
+dm.when(
+  () -> { return "Hello"; },
+  () -> { return "World"; }
+).done(rs ->
+  rs.forEach(r -> System.out.println(r.getResult()))
+);
+```
