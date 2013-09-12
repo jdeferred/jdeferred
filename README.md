@@ -196,7 +196,9 @@ Promise p = dm.when(...)
 
 try {
   p.waitSafely();
-} catch (InterruptedException e) { ... }
+} catch (InterruptedException e) {
+  ... 
+}
 ```
 
 Asynchronous Servlet
@@ -204,41 +206,38 @@ Asynchronous Servlet
 Here is a sample code on how to use JDeferred with Asynchronous Servlet!
 
 ```java
-@WebServlet(value="/AsyncServlet", asyncSupported=true)
+@WebServlet(value = "/AsyncServlet", asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
+  private ExecutorService executorService = Executors.newCachedThreadPool();
+  private DeferredManager dm = new DefaultDeferredManager(executorService);
 
-	protected void doGet(HttpServletRequest request,
-		HttpServletResponse response) throws ServletException, IOException {
-		final AsyncContext actx = request.startAsync(request, response);
-		ExecutorService executorService = Executors.newFixedThreadPool(20);
-		DeferredManager dm = new DefaultDeferredManager(executorService);
-		
-		dm.when(new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				if (actx.getRequest().getParameter("fail") != null) {
-					throw new Exception("oops!");
-				}
-				System.out.println("async task started... waiting!");
-				Thread.sleep(2000);
-				System.out.println("returning!");
-				return "Hello World!";
-			}
-		}).then(new DoneCallback<String>() {
-			@Override
-			public void onDone(String result) {
-				System.out.println("dispatching!");
-				actx.getRequest().setAttribute("message", result);
-				actx.dispatch("/hello.jsp");
-			}
-		}).fail(new FailCallback<Throwable>() {
-			@Override
-			public void onFail(Throwable exception) {
-				actx.getRequest().setAttribute("exception", exception);
-				actx.dispatch("/error.jsp");
-			}
-		});
-	}
+  protected void doGet(HttpServletRequest request,
+                       HttpServletResponse response) throws ServletException, IOException {
+    final AsyncContext actx = request.startAsync(request, response);
+    
+    dm.when(new Callable<String>() {
+      @Override
+      public String call() throws Exception {
+        if (actx.getRequest().getParameter("fail") != null) {
+          throw new Exception("oops!");
+        }
+        Thread.sleep(2000);
+        return "Hello World!";
+      }
+    }).then(new DoneCallback<String>() {
+      @Override
+      public void onDone(String result) {
+        actx.getRequest().setAttribute("message", result);
+        actx.dispatch("/hello.jsp");
+      }
+    }).fail(new FailCallback<Throwable>() {
+      @Override
+      public void onFail(Throwable exception) {
+        actx.getRequest().setAttribute("exception", exception);
+        actx.dispatch("/error.jsp");
+      }
+    });
+  }
 }
 ```
