@@ -25,15 +25,18 @@ import org.jdeferred.Promise;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D_OUT, F_OUT, P_OUT> implements Promise<D_OUT, F_OUT, P_OUT>{
+	protected static final NoOpDoneFilter NO_OP_DONE_FILTER = new NoOpDoneFilter();
+	protected static final NoOpFailFilter NO_OP_FAIL_FILTER = new NoOpFailFilter();
+	protected static final NoOpProgressFilter NO_OP_PROGRESS_FILTER = new NoOpProgressFilter();
+	
 	private final DoneFilter<D, D_OUT> doneFilter;
 	private final FailFilter<F, F_OUT> failFilter;
 	private final ProgressFilter<P, P_OUT> progressFilter;
 	
 	public FilteredPromise(final Promise<D, F, P> promise, final DoneFilter<D, D_OUT> doneFilter, final FailFilter<F, F_OUT> failFilter, final ProgressFilter<P, P_OUT> progressFilter) {
-		//super(new DeferredObject<D_OUT, F_OUT, P_OUT>());
-		this.doneFilter = doneFilter == null ? new NoOpDoneFilter() : doneFilter;
-		this.failFilter = failFilter == null ? new NoOpFailFilter() : failFilter;
-		this.progressFilter = progressFilter == null ? new NoOpProgressFilter() : progressFilter;
+		this.doneFilter = doneFilter == null ? NO_OP_DONE_FILTER : doneFilter;
+		this.failFilter = failFilter == null ? NO_OP_FAIL_FILTER : failFilter;
+		this.progressFilter = progressFilter == null ? NO_OP_PROGRESS_FILTER : progressFilter;
 		
 		promise.done(new DoneCallback<D>() {
 			@Override
