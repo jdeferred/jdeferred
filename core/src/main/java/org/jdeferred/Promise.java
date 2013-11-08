@@ -122,9 +122,9 @@ public interface Promise<D, F, P> {
 	 */
 	public Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback, ProgressCallback<P> progressCallback);
-
+	
 	/**
-	 * Equivalent to then(doneFilter, null, null)}
+	 * Equivalent to then(doneFilter, null, null)
 	 * @see {@link #then(DoneFilter, FailFilter, ProgressFilter)}
 	 * @param doneFilter
 	 * @return
@@ -133,7 +133,7 @@ public interface Promise<D, F, P> {
 			DoneFilter<D, D_OUT> doneFilter);
 
 	/**
-	 * Equivalent to then(doneFilter, failFilter, null)}
+	 * Equivalent to then(doneFilter, failFilter, null)
 	 * @see {@link #then(DoneFilter, FailFilter, ProgressFilter)}
 	 * @param doneFilter
 	 * @param failFilter
@@ -174,7 +174,57 @@ public interface Promise<D, F, P> {
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter);
-
+	
+	/**
+	 * Equivalent to then(DonePipe, null, null) 
+	 * 
+	 * @param donePipe
+	 * @return
+	 */
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
+	
+	/**
+	 * Equivalent to then(DonePipe, FailPipe, null)
+	 * 
+	 * @param donePipe
+	 * @param failPipe
+	 * @return
+	 */
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
+	
+	/**
+	 * This method is similar to JQuery's pipe() method, where a new {@link Promise} is returned
+	 * by the the pipe filter instead of the original.  This is useful to handle return values
+	 * and then rewiring it to different callbacks.
+	 * 
+	 * <pre>
+	 * <code>
+	 * promise.then(new DonePipe<Integer, Integer, String, Void>() {
+	 *   @Override
+	 *   public Deferred<Integer, Void, Void> pipeDone(Integer result) {
+	 *     // Reject values greater than 100
+	 *     if (result > 100) {
+	 *       return new DeferredObject<Integer, Void, Void>().reject("Failed");
+	 *     } else {
+	 *     	return new DeferredObject<Integer, Void, Void>().resolve(result);
+	 *     }
+	 *   }
+	 * }).done(...)
+	 * .fail(...);
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param donePipe
+	 * @param failPipe
+	 * @param progressPipe
+	 * @return
+	 */
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
+			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe);
+	
 	/**
 	 * This method will register {@link DoneCallback} so that when a Deferred object 
 	 * is resolved ({@link Deferred#resolve(Object)}), {@link DoneCallback} will be triggered.

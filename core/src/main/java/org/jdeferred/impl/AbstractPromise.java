@@ -21,10 +21,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
+import org.jdeferred.DonePipe;
 import org.jdeferred.FailCallback;
 import org.jdeferred.FailFilter;
+import org.jdeferred.FailPipe;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.ProgressFilter;
+import org.jdeferred.ProgressPipe;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,6 +191,27 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+	}
+	
+	@Override
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
+			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
 	}
 	
 	@Override
