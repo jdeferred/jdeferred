@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-JDeferred
+<a name="top"></a>JDeferred
 =========
 
 JDeferred is a Java Deferred/Promise library similar to JQuery's Deferred Object.
@@ -23,7 +23,7 @@ Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Obj
 
 Please see [jdeferred.org](http://jdeferred.org) for more documentation.
 
-Features
+<a name="features"></a>Features
 --------
 * Deferred object and Promise
 * Promise callbacks
@@ -42,13 +42,14 @@ Features
   * ```deferred.resolve(10);```
   * ```deferred.reject(new Exception());```
   * ```deferred.progress(0.80);```
-
+* Android Support
+* Java 8 Lambda friendly
   
 
-Quick Examples
+<a name="examples"></a>Quick Examples
 ==============
 
-Deferred object and Promise
+<a name="examples-deferred-promise"></a>Deferred object and Promise
 ---------------------------
 
 ```java
@@ -80,12 +81,12 @@ deferred.reject("oops");
 deferred.progress("100%");
 ```
 
-Filter/Pipe
+<a name="example-filter"></a>Filter
 -----------
 ```java
 Deferred d = …;
 Promise p = d.promise();
-Promise filtered = p.then(new DoneFilter<Integer, Integer>(){
+Promise filtered = p.then(new DoneFilter<Integer, Integer>() {
   public Integer filterDone(Integer result) P
     return result * 10;
   }
@@ -99,10 +100,30 @@ filtered.done(new DoneCallback<Integer>{
 });
 
 d.resolve(3) -> 30.
+```
+
+<a name="example-pipe"></a>Pipe
+----
+```java
+Deferred d = ...;
+Promise p = d.promise();
+
+p.then(new DonePipe<Integer, Integer, Exception, Void>() {
+  public Deferred<Integer, Exception, Void> pipeDone(Integer result) {
+    if (result < 100) {
+      return new DeferredObject<Integer, Void, Void>().resolve(result);
+    } else {
+      return new DeferredObject<Integer, Void, Void>().reject(new Exception(...));
+    }
+  }
+}).done(...).fail(...);
+
+d.resolve(80) -> done!
+d.resolve(100) -> fail!
 
 ```
 
-Deferred Manager
+<a name="example-dm"></a>Deferred Manager
 ----------------
 ```java
 DeferredManager dm = new DefaultDeferredManager();
@@ -118,7 +139,7 @@ You can also specify a Executor Service for your need.
 DeferredManager dm = new DefaultDeferredManager(myExecutorService);
 ```
 
-Runnable and Callable
+<a name="example-runnable-callable"></a>Runnable and Callable
 ---------------------
 You can use Callable and Runnable almost like a Promise without any additional work.
 
@@ -170,7 +191,8 @@ dm.when(new DeferredRunnable<Double>(){
   }
 }).then(…);
 ```
-Wait and WaitSafely
+
+<a name="example-wait"></a>Wait and WaitSafely
 -------------------
 Normally, when using this framework, you would want to do things asynchronously.  However, if there is a need to wait for all deferred tasks to finish, you can use Object.wait or Promise.waitSafely methods.
 
@@ -201,7 +223,35 @@ try {
 }
 ```
 
-Asynchronous Servlet
+<a name="example-android"></a>Android Support
+---------------
+```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
+It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
+dependency:
+
+```xml
+<dependency>
+  <groupId>org.jdeferred</groupId>
+  <artifactId>jdeferred-android</artifactId>
+  <version>...</version>
+  <type>apklib</type>
+</dependency>
+```
+
+```jdeferred-android``` introduces a new ```DeferredManager``` implementation called ```AndroidDeferredManager```.
+```AndroidDeferredManager``` makes sure that callbacks are executed in UI Thread rather than background Thread
+in order for callbacks to make UI updates.  Alternatively, callbacks can also implement ```AndroidExecutionScopeable```
+interface to fine-grain control whether the callback should execute in UI Thread or background Thread.
+
+```AndroidDeferredManager``` also supports new ```DeferredAsyncTask``` object.  This object is based on 
+Android's ```AsyncTask```.
+
+If you need to always execute callbacks in background thread, then you can continue to use ```DefaultDeferredManager```.
+
+Lastly, because JDeferred use SLF4J - you can further route log messages using ```slf4j-android```.
+
+
+<a name="example-async-servlet"></a>Asynchronous Servlet
 --------------------
 Here is a sample code on how to use JDeferred with Asynchronous Servlet!
 
@@ -241,7 +291,7 @@ public class AsyncServlet extends HttpServlet {
   }
 }
 ```
-Java 8 Lambda
+<a name="example-lambda"></a>Java 8 Lambda
 -------------
 Now this is pretty cool when used with Java 8 Lambda!
 
