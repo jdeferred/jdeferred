@@ -66,7 +66,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			resolved = isResolved();
 			result = resolveResult;
 		}
-		if (resolved) callback.onDone(result);
+		if (resolved) triggerDone(callback, result);
 		
 		return this;
 	}
@@ -81,7 +81,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			rejected = isRejected();
 			result = rejectResult;
 		}
-		if (rejected) callback.onFail(result);
+		if (rejected) triggerFail(callback, result);
 		
 		return this;
 	}
@@ -99,44 +99,56 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			rejectResult = this.rejectResult;
 		}
 		
-		if (state != State.PENDING) callback.onAlways(state, resolveResult, rejectResult);
+		if (state != State.PENDING) triggerAlways(callback, state, resolveResult, rejectResult);
 		return this;
 	}
 	
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
 			try {
-				callback.onDone(resolved);
+				triggerDone(callback, resolved);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a DoneCallback", e);
 			}
 		}
 	}
 	
+	protected void triggerDone(DoneCallback<D> callback, D resolved) {
+		callback.onDone(resolved);
+	}
+	
 	protected void triggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
 			try {
-				callback.onFail(rejected);
+				triggerFail(callback, rejected);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a FailCallback", e);
 			}
 		}
 	}
 	
+	protected void triggerFail(FailCallback<F> callback, F rejected) {
+		callback.onFail(rejected);
+	}
+	
 	protected void triggerProgress(P progress) {
 		for (ProgressCallback<P> callback : progressCallbacks) {
 			try {
-				callback.onProgress(progress);
+				triggerProgress(callback, progress);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a ProgressCallback", e);
 			}
 		}
 	}
 	
+	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
+		callback.onProgress(progress);
+	}
+	
 	protected void triggerAlways(State state, D resolve, F reject) {
 		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
 			try {
-				callback.onAlways(state, resolve, reject);
+				triggerAlways(callback, state, resolve, reject);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a AlwaysCallback", e);
 			}
@@ -145,6 +157,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		synchronized (this) {
 			this.notifyAll();
 		}
+	}
+	
+	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
+		callback.onAlways(state, resolve, reject);
 	}
 
 	@Override

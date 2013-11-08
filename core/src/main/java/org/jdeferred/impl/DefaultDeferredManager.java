@@ -21,6 +21,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A default implementation that runs deferred tasks using an {@link ExecutorService}.
+ * Also, by default, deferred tasks are executed (submitted to the ExecutorService) automatically
+ * when it's passed into {@link DeferredManager}'s when(...) methods.  This behavior can be changed
+ * by setting {@link #setAutoSubmit(boolean)}.
+ * 
+ * @author Ray Tsang
+ *
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DefaultDeferredManager extends AbstractDeferredManager {
 	/**
