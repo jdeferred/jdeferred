@@ -40,6 +40,9 @@
 						<!-- platform as api level (api level 16 = platform 4.1) -->
 						<platform>19</platform>
 					</sdk>
+          <test>
+            <skip>true</skip>
+          </test>
 				</configuration>
 			</plugin>
 		</plugins>
