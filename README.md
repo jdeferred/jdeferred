@@ -44,7 +44,19 @@ Please see [jdeferred.org](http://jdeferred.org) for more documentation.
   * ```deferred.progress(0.80);```
 * Android Support
 * Java 8 Lambda friendly
-  
+* Yes it's on Maven Central Repository!
+
+Maven
+-----
+```xml
+<dependency>
+    <groupId>org.jdeferred</groupId>
+    <artifactId>jdeferred-core</artifactId>
+    <version>${version}</version>
+</dependency>
+```
+
+Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
 
 <a name="examples"></a>Quick Examples
 ==============
