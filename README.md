@@ -14,14 +14,35 @@
   limitations under the License.
 -->
 
-<a name="top"></a>JDeferred
+JDeferred
 =========
 
 JDeferred is a Java Deferred/Promise library similar to JQuery's Deferred Object.
 
 Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Object](https://github.com/CodeAndMagic/android-deferred-object).
 
-Please see [jdeferred.org](http://jdeferred.org) for more documentation.
+Features
+--------
+* Deferred object and Promise
+* Promise callbacks
+  * ```.then(…)```
+  * ```.done(…)```
+  * ```.fail(…)```
+  * ```.progress(…)```
+  * ```.always(…)```
+* Multiple promises
+  * ```.when(p1, p2, p3, …).then(…)```
+* Callable and Runnable wrappers
+  * ```.when(new Runnable() {…})```
+* Uses Executor Service
+* Java Generics support
+  * ```Deferred<Integer, Exception, Double> deferred;```
+  * ```deferred.resolve(10);```
+  * ```deferred.reject(new Exception());```
+  * ```deferred.progress(0.80);``` 
+* Android Support
+* Java 8 Lambda friendly 
+* Yes, it's on Maven central repo!
 
 <a name="features"></a>Features
 --------
@@ -44,7 +65,19 @@ Please see [jdeferred.org](http://jdeferred.org) for more documentation.
   * ```deferred.progress(0.80);```
 * Android Support
 * Java 8 Lambda friendly
-  
+* Yes it's on Maven Central Repository!
+
+Maven
+-----
+```xml
+<dependency>
+    <groupId>org.jdeferred</groupId>
+    <artifactId>jdeferred-core</artifactId>
+    <version>${version}</version>
+</dependency>
+```
+
+Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
 
 <a name="examples"></a>Quick Examples
 ==============
@@ -104,6 +137,8 @@ d.resolve(3) -> 30.
 
 <a name="example-pipe"></a>Pipe
 ----
+> Since 1.1.0-Beta1
+
 ```java
 Deferred d = ...;
 Promise p = d.promise();
@@ -194,6 +229,8 @@ dm.when(new DeferredRunnable<Double>(){
 
 <a name="example-wait"></a>Wait and WaitSafely
 -------------------
+> Since 1.0.1
+
 Normally, when using this framework, you would want to do things asynchronously.  However, if there is a need to wait for all deferred tasks to finish, you can use Object.wait or Promise.waitSafely methods.
 
 ```java
@@ -225,6 +262,8 @@ try {
 
 <a name="example-android"></a>Android Support
 ---------------
+> Since 1.1.0-Beta1
+
 ```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
 It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
 dependency:
