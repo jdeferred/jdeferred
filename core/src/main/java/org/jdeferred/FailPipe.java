@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <P_OUT> Type of the output from this filter
  */
 public interface FailPipe<F, D_OUT, F_OUT, P_OUT> {
-	public Deferred<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
+	public Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
 }
