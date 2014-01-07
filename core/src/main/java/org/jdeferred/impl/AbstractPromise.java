@@ -58,48 +58,28 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	
 	@Override
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
-		doneCallbacks.add(callback);
-		
-		final D result;
-		final boolean resolved;
 		synchronized (this) {
-			resolved = isResolved();
-			result = resolveResult;
+			doneCallbacks.add(callback);
+			if (isResolved()) triggerDone(callback, resolveResult);
 		}
-		if (resolved) triggerDone(callback, result);
-		
 		return this;
 	}
 
 	@Override
 	public Promise<D, F, P> fail(FailCallback<F> callback) {
-		failCallbacks.add(callback);
-		
-		final F result;
-		final boolean rejected;
 		synchronized (this) {
-			rejected = isRejected();
-			result = rejectResult;
+			failCallbacks.add(callback);
+			if (isRejected()) triggerFail(callback, rejectResult);
 		}
-		if (rejected) triggerFail(callback, result);
-		
 		return this;
 	}
 	
 	@Override
 	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
-		alwaysCallbacks.add(callback);
-		
-		final State state;
-		final D resolveResult;
-		final F rejectResult;
 		synchronized (this) {
-			state = this.state;
-			resolveResult = this.resolveResult;
-			rejectResult = this.rejectResult;
+			alwaysCallbacks.add(callback);
+			if (!isPending()) triggerAlways(callback, state, resolveResult, rejectResult);
 		}
-		
-		if (state != State.PENDING) triggerAlways(callback, state, resolveResult, rejectResult);
 		return this;
 	}
 	
