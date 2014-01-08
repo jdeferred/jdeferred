@@ -24,10 +24,12 @@ import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DeferredManager;
 import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MasterDeferredObject;
+import org.jdeferred.multiple.MasterAnyDeferredObject;
+import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.OneResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +142,94 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 		assertNotEmpty(promises);
 		return new MasterDeferredObject(promises).promise();
 	}
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(Runnable... runnables) {
+        assertNotEmpty(runnables);
+
+        Promise[] promises = new Promise[runnables.length];
+
+        for (int i = 0; i < runnables.length; i++) {
+            if (runnables[i] instanceof DeferredRunnable)
+                promises[i] = when((DeferredRunnable) runnables[i]);
+            else
+                promises[i] = when(runnables[i]);
+        }
+
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(Callable<?>... callables) {
+        assertNotEmpty(callables);
+
+        Promise[] promises = new Promise[callables.length];
+
+        for (int i = 0; i < callables.length; i++) {
+            if (callables[i] instanceof DeferredCallable)
+                promises[i] = when((DeferredCallable) callables[i]);
+            else
+                promises[i] = when(callables[i]);
+        }
+
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(DeferredRunnable<?>... runnables) {
+        assertNotEmpty(runnables);
+
+        Promise[] promises = new Promise[runnables.length];
+
+        for (int i = 0; i < runnables.length; i++) {
+            promises[i] = when(runnables[i]);
+        }
+
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(DeferredCallable<?, ?>... callables) {
+        assertNotEmpty(callables);
+
+        Promise[] promises = new Promise[callables.length];
+
+        for (int i = 0; i < callables.length; i++) {
+            promises[i] = when(callables[i]);
+        }
+
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(DeferredFutureTask<?, ?>... tasks) {
+        assertNotEmpty(tasks);
+
+        Promise[] promises = new Promise[tasks.length];
+
+        for (int i = 0; i < tasks.length; i++) {
+            promises[i] = when(tasks[i]);
+        }
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(Future<?> ... futures) {
+        assertNotEmpty(futures);
+
+        Promise[] promises = new Promise[futures.length];
+
+        for (int i = 0; i < futures.length; i++) {
+            promises[i] = when(futures[i]);
+        }
+        return whenAny(promises);
+    }
+
+    @Override
+    public Promise<OneResult, OneReject, MasterProgress> whenAny(Promise... promises) {
+        assertNotEmpty(promises);
+        return new MasterAnyDeferredObject(promises).promise();
+    }
 
 	@Override
 	public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise) {
