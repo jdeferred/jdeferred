@@ -21,8 +21,10 @@ import java.util.concurrent.Future;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
+import org.jdeferred.multiple.MultipleRejects;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.OneResult;
 
 /**
  * {@link DeferredManager} is especially useful when dealing with asynchronous
@@ -214,5 +216,76 @@ public interface DeferredManager {
 	
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Future<?> ... futures);
+
+    /**
+     * This will return a special Promise called {@link MasterAnyDeferredObject}.
+     * In short,
+     * <ul>
+     * <li>{@link Promise#done(DoneCallback)} will be triggered if any promises
+     * resolves (i.e., finished successfully).</li>
+     * <li>{@link Promise#fail(FailCallback)} will be triggered if any promises
+     * rejects (i.e., if any one failed).</li>
+     * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever
+     * one promise resolves or rejects, or whenever a promise was notified
+     * progress.</li>
+     * <li>{@link Promise#always(AlwaysCallback)} will be triggered whenever
+     * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
+     * would be triggered</li>
+     * </ul>
+     *
+     * @param promises
+     * @return {@link MasterAnyDeferredObject}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            Promise... promises);
+
+    /**
+     * Wraps {@link Runnable} with {@link DeferredFutureTask}
+     *
+     * @param runnables
+     * @return {@link #when(DeferredFutureTask...)}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            Runnable... runnables);
+
+    /**
+     * Wraps {@link Callable} with {@link DeferredFutureTask}
+     *
+     * @param callables
+     * @return {@link #when(DeferredFutureTask...)}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            Callable<?>... callables);
+
+    /**
+     * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
+     *
+     * @param runnables
+     * @return {@link #when(DeferredFutureTask...)}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            DeferredRunnable<?>... runnables);
+
+    /**
+     * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
+     *
+     * @param callables
+     * @return {@link #when(DeferredFutureTask...)}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            DeferredCallable<?, ?>... callables);
+
+    /**
+     * May or may not submit {@link DeferredFutureTask} for execution. See
+     * implementation documentation.
+     *
+     * @param tasks
+     * @return {@link #when(Promise...)}
+     */
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            DeferredFutureTask<?, ?>... tasks);
+
+    public abstract Promise<OneResult, OneReject, MasterProgress> whenAny(
+            Future<?> ... futures);
 
 }
