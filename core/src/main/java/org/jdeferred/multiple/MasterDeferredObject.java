@@ -63,44 +63,50 @@ public class MasterDeferredObject extends
 			final int index = count++;
 			promise.fail(new FailCallback<Object>() {
 				public void onFail(Object result) {
-					if (!MasterDeferredObject.this.isPending())
-						return;
-
-					
-					final int fail = failCount.incrementAndGet();
-					MasterDeferredObject.this.notify(new MasterProgress(
-							doneCount.get(),
-							fail,
-							numberOfPromises));
-					
-					MasterDeferredObject.this.reject(new OneReject(index, promise, result));
+					synchronized (MasterDeferredObject.this) {
+						if (!MasterDeferredObject.this.isPending())
+							return;
+						
+						final int fail = failCount.incrementAndGet();
+						MasterDeferredObject.this.notify(new MasterProgress(
+								doneCount.get(),
+								fail,
+								numberOfPromises));
+						
+						MasterDeferredObject.this.reject(new OneReject(index, promise, result));
+					}
 				}
 			}).progress(new ProgressCallback() {
 				public void onProgress(Object progress) {
-					if (!MasterDeferredObject.this.isPending())
-						return;
-
-					MasterDeferredObject.this.notify(new OneProgress(
-							doneCount.get(),
-							failCount.get(),
-							numberOfPromises, index, promise, progress));
+					synchronized (MasterDeferredObject.this) {
+						if (!MasterDeferredObject.this.isPending())
+							return;
+	
+						MasterDeferredObject.this.notify(new OneProgress(
+								doneCount.get(),
+								failCount.get(),
+								numberOfPromises, index, promise, progress));
+					}
 				}
 			}).done(new DoneCallback() {
 				public void onDone(Object result) {
-					if (!MasterDeferredObject.this.isPending())
-						return;
-
-					results.set(index, new OneResult(index, promise,
-							result));
-					int done = doneCount.incrementAndGet();
-
-					MasterDeferredObject.this.notify(new MasterProgress(
-							done,
-							failCount.get(),
-							numberOfPromises));
-					
-					if (done == numberOfPromises) {
-						MasterDeferredObject.this.resolve(results);
+					synchronized (MasterDeferredObject.this) {
+						if (!MasterDeferredObject.this.isPending())
+							return;
+	
+						results.set(index, new OneResult(index, promise,
+								result));
+						int done = doneCount.incrementAndGet();
+	
+						MasterDeferredObject.this.notify(new MasterProgress(
+								done,
+								failCount.get(),
+								numberOfPromises));
+						
+						if (done == numberOfPromises) {
+							System.out.println(done + " == " + numberOfPromises);
+							MasterDeferredObject.this.resolve(results);
+						}
 					}
 				}
 			});
