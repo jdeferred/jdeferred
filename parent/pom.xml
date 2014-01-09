@@ -60,7 +60,7 @@
 		<version.maven.bundle>2.3.7</version.maven.bundle>
 		<version.maven.compiler>3.0</version.maven.compiler>
 		<version.maven.release>2.3.2</version.maven.release>
-		<version.maven.android>3.7.0</version.maven.android>
+		<version.maven.android>3.8.2</version.maven.android>
 	</properties>
 
 	<dependencyManagement>
