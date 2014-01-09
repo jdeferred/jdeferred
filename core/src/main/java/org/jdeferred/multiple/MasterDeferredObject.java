@@ -104,7 +104,6 @@ public class MasterDeferredObject extends
 								numberOfPromises));
 						
 						if (done == numberOfPromises) {
-							System.out.println(done + " == " + numberOfPromises);
 							MasterDeferredObject.this.resolve(results);
 						}
 					}

@@ -17,7 +17,7 @@
 
 	<groupId>org.jdeferred</groupId>
 	<artifactId>jdeferred-parent</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1.2-SNAPSHOT</version>
 	<url>http://jdeferred.org</url>
 	<name>JDeferred Common Parent</name>
 	<packaging>pom</packaging>
@@ -60,7 +60,7 @@
 		<version.maven.bundle>2.3.7</version.maven.bundle>
 		<version.maven.compiler>3.0</version.maven.compiler>
 		<version.maven.release>2.3.2</version.maven.release>
-		<version.maven.android>3.7.0</version.maven.android>
+		<version.maven.android>3.8.2</version.maven.android>
 	</properties>
 
 	<dependencyManagement>
