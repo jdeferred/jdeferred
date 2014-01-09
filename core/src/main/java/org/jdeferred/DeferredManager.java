@@ -223,8 +223,6 @@ public interface DeferredManager {
      * <ul>
      * <li>{@link Promise#done(DoneCallback)} will be triggered if any promises
      * resolves (i.e., finished successfully).</li>
-     * <li>{@link Promise#fail(FailCallback)} will be triggered if any promises
-     * rejects (i.e., if any one failed).</li>
      * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever
      * one promise resolves or rejects, or whenever a promise was notified
      * progress.</li>
