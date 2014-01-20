@@ -21,29 +21,6 @@ JDeferred is a Java Deferred/Promise library similar to JQuery's Deferred Object
 
 Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Object](https://github.com/CodeAndMagic/android-deferred-object).
 
-Features
---------
-* Deferred object and Promise
-* Promise callbacks
-  * ```.then(…)```
-  * ```.done(…)```
-  * ```.fail(…)```
-  * ```.progress(…)```
-  * ```.always(…)```
-* Multiple promises
-  * ```.when(p1, p2, p3, …).then(…)```
-* Callable and Runnable wrappers
-  * ```.when(new Runnable() {…})```
-* Uses Executor Service
-* Java Generics support
-  * ```Deferred<Integer, Exception, Double> deferred;```
-  * ```deferred.resolve(10);```
-  * ```deferred.reject(new Exception());```
-  * ```deferred.progress(0.80);``` 
-* Android Support
-* Java 8 Lambda friendly 
-* Yes, it's on Maven central repo!
-
 <a name="features"></a>Features
 --------
 * Deferred object and Promise
