@@ -257,6 +257,7 @@ APKLIB:
 
 AAR:
 > Since 1.2.0-Beta1
+
 ```xml
 <dependency>
   <groupId>org.jdeferred</groupId>
