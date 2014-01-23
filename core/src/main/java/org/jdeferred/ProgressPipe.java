@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <P_OUT> Type of the output from this filter
  */
 public interface ProgressPipe<P, D_OUT, F_OUT, P_OUT> {
-	public Deferred<D_OUT, F_OUT, P_OUT> pipeProgress(final P result);
+	public Promise<D_OUT, F_OUT, P_OUT> pipeProgress(final P result);
 }

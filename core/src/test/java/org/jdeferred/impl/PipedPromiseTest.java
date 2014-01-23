@@ -17,11 +17,11 @@ package org.jdeferred.impl;
 
 import java.util.concurrent.Callable;
 
-import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DonePipe;
 import org.jdeferred.FailCallback;
 import org.jdeferred.FailPipe;
+import org.jdeferred.Promise;
 import org.junit.Test;
 
 public class PipedPromiseTest extends AbstractDeferredTest {
@@ -38,7 +38,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 		
 		deferredManager.when(task).then(new DonePipe<Integer, Integer, Void, Void>() {
 			@Override
-			public Deferred<Integer, Void, Void> pipeDone(Integer result) {
+			public Promise<Integer, Void, Void> pipeDone(Integer result) {
 				preRewireValue.set(result);
 				return new DeferredObject<Integer, Void, Void>().resolve(1000);
 			}
@@ -67,7 +67,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 		
 		deferredManager.when(task).then(null, new FailPipe<Throwable, Integer, String, Void>() {
 			@Override
-			public Deferred<Integer, String, Void> pipeFail(Throwable result) {
+			public Promise<Integer, String, Void> pipeFail(Throwable result) {
 				preRewireValue.set(result.getMessage());
 				return new DeferredObject<Integer, String, Void>().reject("ouch");
 			}
@@ -96,7 +96,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 		
 		deferredManager.when(task).then(null, new FailPipe<Throwable, Integer, String, Void>() {
 			@Override
-			public Deferred<Integer, String, Void> pipeFail(Throwable result) {
+			public Promise<Integer, String, Void> pipeFail(Throwable result) {
 				return new DeferredObject<Integer, String, Void>().reject("ouch");
 			}
 		}).done(new DoneCallback<Integer>() {
@@ -128,7 +128,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 			}
 		}).then(new DonePipe<Integer, Integer, String, Void>() {
 			@Override
-			public Deferred<Integer, String, Void> pipeDone(Integer result) {
+			public Promise<Integer, String, Void> pipeDone(Integer result) {
 				preRewireValue.set(result);
 				if (result < 100) {
 					return new DeferredObject<Integer, String, Void>().reject("less than 100");

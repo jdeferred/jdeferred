@@ -51,8 +51,8 @@ public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D
 		});
 	}
 	
-	protected Deferred<D_OUT, F_OUT, P_OUT> pipe(Deferred<D_OUT, F_OUT, P_OUT> deferred) {
-		deferred.done(new DoneCallback<D_OUT>() {
+	protected Promise<D_OUT, F_OUT, P_OUT> pipe(Promise<D_OUT, F_OUT, P_OUT> promise) {
+		promise.done(new DoneCallback<D_OUT>() {
 			@Override
 			public void onDone(D_OUT result) {
 				PipedPromise.this.resolve(result);
@@ -69,6 +69,6 @@ public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D
 			}
 		});
 		
-		return deferred;
+		return promise;
 	}
 }
