@@ -245,12 +245,24 @@ try {
 It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
 dependency:
 
+APKLIB:
 ```xml
 <dependency>
   <groupId>org.jdeferred</groupId>
   <artifactId>jdeferred-android</artifactId>
   <version>...</version>
   <type>apklib</type>
+</dependency>
+```
+
+AAR:
+> Since 1.2.0-Beta1
+```xml
+<dependency>
+  <groupId>org.jdeferred</groupId>
+  <artifactId>jdeferred-android-aar</artifactId>
+  <version>...</version>
+  <type>aar</type>
 </dependency>
 ```
 
