@@ -10,7 +10,7 @@
 	<parent>
 		<artifactId>jdeferred-android-parent</artifactId>
 		<groupId>org.jdeferred</groupId>
-		<version>1.1.2-SNAPSHOT</version>
+		<version>1.2.0-Beta-1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>jdeferred-android-test</artifactId>
