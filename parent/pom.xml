@@ -1,11 +1,20 @@
-<!-- Copyright 2013 Ray Tsang Licensed under the Apache License, Version 
-	2.0 (the "License"); you may not use this file except in compliance with 
-	the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
-	the specific language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+  Copyright 2014 Ray Tsang
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -61,6 +70,9 @@
 		<version.maven.compiler>3.0</version.maven.compiler>
 		<version.maven.release>2.3.2</version.maven.release>
 		<version.maven.android>3.8.2</version.maven.android>
+		<version.maven.source>2.1.2</version.maven.source>
+		<version.maven.javadoc>2.8.1</version.maven.javadoc>
+		<version.maven.resources>2.6</version.maven.resources>
 	</properties>
 
 	<dependencyManagement>
@@ -109,10 +121,9 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jdeferred</groupId>
-				<artifactId>jdeferred-android</artifactId>
+				<artifactId>jdeferred-android-aar</artifactId>
 				<version>${project.version}</version>
-				<type>jar</type>
-				<scope>provided</scope>
+				<type>aar</type>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -140,6 +151,21 @@
 					<artifactId>android-maven-plugin</artifactId>
 					<version>${version.maven.android}</version>
 					<extensions>true</extensions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${version.maven.source}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${version.maven.javadoc}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${version.maven.resources}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -183,6 +209,30 @@
 						<configuration>
 							<pomFileName>parent/pom.xml</pomFileName>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
