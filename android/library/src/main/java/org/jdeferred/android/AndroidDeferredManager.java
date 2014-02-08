@@ -110,6 +110,17 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 		return when(promises);
 	}
 	
+	@SuppressWarnings("rawtypes")
+    public Promise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope,
+            DeferredAsyncTask<Void, ?, ?> ... tasks) {
+        assertNotEmpty(tasks);
+        Promise[] promises = new Promise[tasks.length];
+        for (int i = 0; i < tasks.length; i++) {
+            promises[i] = when(tasks[i]);
+        }
+        return when(scope, promises);
+    }
+
 	/**
 	 * Wrap with {@link AndroidDeferredObject} so that callbacks can be executed in UI thread.
 	 * This method is called by a number of other when(...) methods.  Effectively, at least these
@@ -144,7 +155,14 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 		}
 		return new AndroidDeferredObject<D, F, P>(promise).promise();
 	}
-	
+
+    public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise, AndroidExecutionScope scope) {
+        if (promise instanceof AndroidDeferredObject) {
+            return promise;
+        }
+        return new AndroidDeferredObject<D, F, P>(promise, scope).promise();
+    }
+
 	/**
 	 * Wraps {@link MasterDeferredObject} with {@link AndroidDeferredObject} so that callbacks can
 	 * be executed in UI thread.
@@ -155,4 +173,10 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 		return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
 			(super.when(promises)).promise();
 	}
+
+	@SuppressWarnings({ "rawtypes" })
+    public Promise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope, Promise... promises) {
+        return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
+            (super.when(promises), scope).promise();
+    }
 }
