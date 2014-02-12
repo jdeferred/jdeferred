@@ -97,7 +97,7 @@ deferred.progress("100%");
 Deferred d = …;
 Promise p = d.promise();
 Promise filtered = p.then(new DoneFilter<Integer, Integer>() {
-  public Integer filterDone(Integer result) P
+  public Integer filterDone(Integer result)
     return result * 10;
   }
 });
