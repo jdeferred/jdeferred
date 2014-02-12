@@ -134,8 +134,8 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	}
 	
 	/**
-	 * If this a non-Android friendly promise is passed in, wrap it with {@link AndroidDeferredObject}
-	 * so that callbacks can be executed in UI thread.
+	 * If a non-Android friendly promise is passed in, wrap it with {@link AndroidDeferredObject}
+	 * so that callbacks can be executed in the UI thread.
 	 */
 	@Override
 	public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise) {
