@@ -262,7 +262,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * 	<li>{@link #when(Callable)}</li>
 	 *  <li>{@link #when(Callable...)}</li>
 	 *  <li>{@link #when(Runnable)}</li>
-	 *  <li>{@link #when(Runnable..)}</li>
+	 *  <li>{@link #when(Runnable...)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future...)}</li>
 	 *  <li>{@link #when(org.jdeferred.DeferredRunnable...)}</li>
