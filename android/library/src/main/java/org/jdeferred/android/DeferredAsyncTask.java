@@ -76,9 +76,8 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 			deferred.notify(null);
 		} else if (values.length > 1) {
 			log.warn("There were multiple progress values.  Only the first one was used!");
+			deferred.notify(values[0]);
 		}
-		
-		deferred.notify(values[0]);
 	};
 	
 	protected final Result doInBackground(Params ... params) {
