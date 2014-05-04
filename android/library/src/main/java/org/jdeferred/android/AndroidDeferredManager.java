@@ -156,6 +156,13 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 		return new AndroidDeferredObject<D, F, P>(promise).promise();
 	}
 
+	/**
+	 * If a non-Android friendly promise is passed in, wrap it with {@link AndroidDeferredObject}
+	 * so that callbacks can be executed in the corresponding execution scope.
+	 * @param scope Whether to execute in UI thread or Background thread
+	 * @param promise A promise
+	 * @return A promise wrapped in @{link AndroidDeferredObject}
+	 */
     public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise, AndroidExecutionScope scope) {
         if (promise instanceof AndroidDeferredObject) {
             return promise;
@@ -174,6 +181,11 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 			(super.when(promises)).promise();
 	}
 
+	/**
+	 * Wraps {@link MasterDeferredObject} with  with {@link AndroidDeferredObject}
+	 * so that callbacks can be executed in the corresponding execution scope. 
+	 * @return A promise wrapped in @{link AndroidDeferredObject}
+	 */
 	@SuppressWarnings({ "rawtypes" })
     public Promise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope, Promise... promises) {
         return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
