@@ -67,7 +67,8 @@
 		<version.slf4j>1.7.2</version.slf4j>
 		<version.maven.bundle>2.3.7</version.maven.bundle>
 		<version.maven.compiler>3.0</version.maven.compiler>
-		<version.maven.release>2.3.2</version.maven.release>
+		<version.maven.release>2.4.2</version.maven.release>
+		<version.maven.scm.provider.git>1.8.1</version.maven.scm.provider.git>
 		<version.maven.android>3.8.2</version.maven.android>
 		<version.maven.source>2.1.2</version.maven.source>
 		<version.maven.javadoc>2.8.1</version.maven.javadoc>
@@ -210,6 +211,13 @@
 						</configuration>
 					</execution>
 				</executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>${version.maven.scm.provider.git}</version>
+          </dependency>
+        </dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
