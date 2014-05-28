@@ -68,6 +68,10 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	}
 
 	private static class InternalHandler extends Handler {
+		public InternalHandler() {
+			super(Looper.getMainLooper());
+		}
+
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		public void handleMessage(Message msg) {
