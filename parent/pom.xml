@@ -73,6 +73,8 @@
 		<version.maven.source>2.1.2</version.maven.source>
 		<version.maven.javadoc>2.8.1</version.maven.javadoc>
 		<version.maven.resources>2.6</version.maven.resources>
+		<version.maven.deploy>2.8.1</version.maven.deploy>
+    <version.nexus.staging>1.6.2</version.nexus.staging>
 	</properties>
 
 	<dependencyManagement>
@@ -167,7 +169,17 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>${version.maven.resources}</version>
 				</plugin>
-			</plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>${version.maven.deploy}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>${version.nexus.staging}</version>
+				</plugin>
+      </plugins>
 		</pluginManagement>
 
 		<plugins>
@@ -243,6 +255,15 @@
 					</execution>
 				</executions>
 			</plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>sonatype-nexus-staging</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+        </configuration>
+      </plugin>
 		</plugins>
 	</build>
 </project>
