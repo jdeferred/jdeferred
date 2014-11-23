@@ -23,7 +23,7 @@ import org.jdeferred.Promise;
  *
  */
 @SuppressWarnings("rawtypes")
-public class OneReject {
+public class OneReject extends Throwable {
 	private final int index;
 	private final Promise promise;
 	private final Object reject;
