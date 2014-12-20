@@ -59,8 +59,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
 		synchronized (this) {
-			doneCallbacks.add(callback);
-			if (isResolved()) triggerDone(callback, resolveResult);
+			if (isResolved()){
+				triggerDone(callback, resolveResult);
+			}else{
+				doneCallbacks.add(callback);
+			}
 		}
 		return this;
 	}
@@ -68,8 +71,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> fail(FailCallback<F> callback) {
 		synchronized (this) {
-			failCallbacks.add(callback);
-			if (isRejected()) triggerFail(callback, rejectResult);
+			if(isRejected()){
+				triggerFail(callback, rejectResult);
+			}else{
+				failCallbacks.add(callback);
+			}
 		}
 		return this;
 	}
@@ -77,8 +83,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
 		synchronized (this) {
-			alwaysCallbacks.add(callback);
-			if (!isPending()) triggerAlways(callback, state, resolveResult, rejectResult);
+			if(isPending()){
+				alwaysCallbacks.add(callback);
+			}else{
+				triggerAlways(callback, state, resolveResult, rejectResult);
+			}
 		}
 		return this;
 	}
@@ -91,6 +100,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				log.error("an uncaught exception occured in a DoneCallback", e);
 			}
 		}
+		doneCallbacks.clear();
 	}
 	
 	protected void triggerDone(DoneCallback<D> callback, D resolved) {
@@ -105,6 +115,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				log.error("an uncaught exception occured in a FailCallback", e);
 			}
 		}
+		failCallbacks.clear();
 	}
 	
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
@@ -133,6 +144,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				log.error("an uncaught exception occured in a AlwaysCallback", e);
 			}
 		}
+		alwaysCallbacks.clear();
 		
 		synchronized (this) {
 			this.notifyAll();
