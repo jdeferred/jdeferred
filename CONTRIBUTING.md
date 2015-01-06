@@ -47,3 +47,10 @@ And for each minor version branches (e.g., 1.2.x):
     $ git checkout 1.2.x
     $ git pull upstream 1.2.x
     $ git push origin 1.2.x
+
+Set ANDROID_HOME Enviroment Variable
+====================================
+The Android components require Android SDK. Be sure to set ANDROID_HOME:
+
+    $ export ANDROID_HOME=/path/to/android/sdk
+
