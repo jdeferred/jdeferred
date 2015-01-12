@@ -143,12 +143,12 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		message.sendToTarget();
 	}
 	
-	protected AndroidExecutionScope determineAndroidExecutionScope(Class<?> clazz, String methodName) {
+	protected AndroidExecutionScope determineAndroidExecutionScope(Class<?> clazz, String methodName, Class<?> ... arguments) {
 		ExecutionScope scope = null;
 		
 		if (methodName != null) {
 			try {
-				Method method = clazz.getMethod(methodName, Object.class);
+				Method method = clazz.getMethod(methodName, arguments);
 				scope = method.getAnnotation(ExecutionScope.class);
 			} catch (NoSuchMethodException e) {
 				throw new RuntimeException(e);
@@ -166,7 +166,13 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		if (callback instanceof AndroidExecutionScopeable) {
 			scope = ((AndroidExecutionScopeable) callback).getExecutionScope();
 		} else if (callback instanceof DoneCallback) {
-			return determineAndroidExecutionScope(callback.getClass(), "onDone");
+			return determineAndroidExecutionScope(callback.getClass(), "onDone", Object.class);
+		} else if (callback instanceof FailCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onFail", Object.class);
+		} else if (callback instanceof ProgressCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onProgress", Object.class);
+		} else if (callback instanceof AlwaysCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onAlways", State.class, Object.class, Object.class);
 		}
 		return scope == null ? defaultAndroidExecutionScope : scope;
 	}
