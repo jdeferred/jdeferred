@@ -44,14 +44,11 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}</outputDirectory>
+              <outputDirectory>${basedir}</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${project.parent.basedir}/library</directory>
+                  <directory>${project.parent.basedir}/library</directory>
 									<includes>
-										<include>AndroidManifest.xml</include>
-										<include>assests/**</include>
-										<include>res/**</include>
 										<include>src/**</include>
 									</includes>
 								</resource>
@@ -67,9 +64,6 @@
             <fileset>
               <directory>${basedir}</directory>
               <includes>
-                <include>AndroidManifest.xml</include>
-                <include>assets/**</include>
-                <include>res/**</include>
                 <include>src/**</include>
               </includes>
             </fileset>
