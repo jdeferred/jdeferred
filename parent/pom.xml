@@ -25,7 +25,7 @@
 
 	<groupId>org.jdeferred</groupId>
 	<artifactId>jdeferred-parent</artifactId>
-	<version>1.2.4-SNAPSHOT</version>
+	<version>1.2.5-SNAPSHOT</version>
 	<url>http://jdeferred.org</url>
 	<name>JDeferred Common Parent</name>
 	<packaging>pom</packaging>
