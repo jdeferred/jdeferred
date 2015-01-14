@@ -21,8 +21,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jdeferred</groupId>
-			<artifactId>jdeferred-android</artifactId>
-			<type>apklib</type>
+			<artifactId>jdeferred-android-aar</artifactId>
+			<type>aar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>

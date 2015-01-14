@@ -17,7 +17,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.jdeferred.android"
     android:versionCode="1"
-    android:versionName="1.1.0" >
+    android:versionName="1.2.0" >
     
     <uses-sdk
         android:minSdkVersion="8"

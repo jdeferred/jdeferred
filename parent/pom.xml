@@ -69,7 +69,7 @@
 		<version.maven.compiler>3.0</version.maven.compiler>
 		<version.maven.release>2.4.2</version.maven.release>
 		<version.maven.scm.provider.git>1.8.1</version.maven.scm.provider.git>
-		<version.maven.android>3.8.2</version.maven.android>
+		<version.maven.android>4.1.0</version.maven.android>
 		<version.maven.source>2.1.2</version.maven.source>
 		<version.maven.javadoc>2.8.1</version.maven.javadoc>
 		<version.maven.resources>2.6</version.maven.resources>
@@ -149,7 +149,7 @@
 					<version>${version.maven.compiler}</version>
 				</plugin>
 				<plugin>
-					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<groupId>com.simpligility.maven.plugins</groupId>
 					<artifactId>android-maven-plugin</artifactId>
 					<version>${version.maven.android}</version>
 					<extensions>true</extensions>
