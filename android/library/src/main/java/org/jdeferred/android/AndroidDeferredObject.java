@@ -15,12 +15,15 @@
  ******************************************************************************/
 package org.jdeferred.android;
 
+import java.lang.reflect.Method;
+
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
+import org.jdeferred.android.annotation.ExecutionScope;
 import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +61,6 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 			@Override
 			public void onProgress(P progress) {
 				AndroidDeferredObject.this.notify(progress);
-				;
 			}
 		}).fail(new FailCallback<F>() {
 			@Override
@@ -140,11 +142,37 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 						resolve, reject, progress));
 		message.sendToTarget();
 	}
+	
+	protected AndroidExecutionScope determineAndroidExecutionScope(Class<?> clazz, String methodName, Class<?> ... arguments) {
+		ExecutionScope scope = null;
+		
+		if (methodName != null) {
+			try {
+				Method method = clazz.getMethod(methodName, arguments);
+				scope = method.getAnnotation(ExecutionScope.class);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		if (scope == null) {
+			scope = clazz.getAnnotation(ExecutionScope.class);
+		}
+		
+		return scope == null ? defaultAndroidExecutionScope : scope.value();
+	}
 
 	protected AndroidExecutionScope determineAndroidExecutionScope(Object callback) {
 		AndroidExecutionScope scope = null;
 		if (callback instanceof AndroidExecutionScopeable) {
 			scope = ((AndroidExecutionScopeable) callback).getExecutionScope();
+		} else if (callback instanceof DoneCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onDone", Object.class);
+		} else if (callback instanceof FailCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onFail", Object.class);
+		} else if (callback instanceof ProgressCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onProgress", Object.class);
+		} else if (callback instanceof AlwaysCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onAlways", State.class, Object.class, Object.class);
 		}
 		return scope == null ? defaultAndroidExecutionScope : scope;
 	}
