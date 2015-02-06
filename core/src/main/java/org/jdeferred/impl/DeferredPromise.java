@@ -111,6 +111,11 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
+	public void cancel() {
+		promise.cancel();
+	}
+
+	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
 		return promise.then(doneFilter);

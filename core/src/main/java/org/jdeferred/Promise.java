@@ -337,5 +337,10 @@ public interface Promise<D, F, P> {
 	 * @throws InterruptedException
 	 */
 	public void waitSafely(long timeout) throws InterruptedException;
-	
+
+	/**
+	 * Clear all callbacks of this promise if the state is Pending.
+	 */
+	public void cancel();
+
 }
