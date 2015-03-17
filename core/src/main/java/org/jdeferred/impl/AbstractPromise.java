@@ -18,17 +18,7 @@ package org.jdeferred.impl;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.DoneFilter;
-import org.jdeferred.DonePipe;
-import org.jdeferred.FailCallback;
-import org.jdeferred.FailFilter;
-import org.jdeferred.FailPipe;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.ProgressFilter;
-import org.jdeferred.ProgressPipe;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +37,21 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
 	protected final List<ProgressCallback<P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<P>>();
 	protected final List<AlwaysCallback<D, F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<D, F>>();
-	
+    protected final List<ExceptCallback> exceptCallbacks = new CopyOnWriteArrayList<ExceptCallback>();
+
 	protected D resolveResult;
 	protected F rejectResult;
+    private RuntimeException thrownRuntimeException = null;
 
-	@Override
+    @Override
 	public State state() {
 		return state;
 	}
+
+    public Promise<D, F, P> except(ExceptCallback exceptCallback) {
+        exceptCallbacks.add(exceptCallback);
+        return this;
+    }
 	
 	@Override
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
@@ -98,6 +95,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				triggerDone(callback, resolved);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a DoneCallback", e);
+                saveExceptionIfRuntimeException(e);
+                for (ExceptCallback exceptCallback : exceptCallbacks) {
+                    triggerExcept(exceptCallback, e);
+                }
 			}
 		}
 		doneCallbacks.clear();
@@ -113,12 +114,16 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				triggerFail(callback, rejected);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a FailCallback", e);
+                saveExceptionIfRuntimeException(e);
+                for (ExceptCallback exceptCallback : exceptCallbacks) {
+                    triggerExcept(exceptCallback, e);
+                }
 			}
 		}
 		failCallbacks.clear();
 	}
-	
-	protected void triggerFail(FailCallback<F> callback, F rejected) {
+
+    protected void triggerFail(FailCallback<F> callback, F rejected) {
 		callback.onFail(rejected);
 	}
 	
@@ -128,32 +133,55 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				triggerProgress(callback, progress);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a ProgressCallback", e);
+                saveExceptionIfRuntimeException(e);
+                for (ExceptCallback exceptCallback : exceptCallbacks) {
+                    triggerExcept(exceptCallback, e);
+                }
 			}
 		}
 	}
-	
+
+
 	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
 		callback.onProgress(progress);
 	}
-	
+
 	protected void triggerAlways(State state, D resolve, F reject) {
 		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
 			try {
 				triggerAlways(callback, state, resolve, reject);
 			} catch (Exception e) {
 				log.error("an uncaught exception occured in a AlwaysCallback", e);
+                saveExceptionIfRuntimeException(e);
+                for (ExceptCallback exceptCallback : exceptCallbacks) {
+                    triggerExcept(exceptCallback, e);
+                }
 			}
 		}
 		alwaysCallbacks.clear();
-		
+
 		synchronized (this) {
 			this.notifyAll();
 		}
 	}
-	
+
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
 		callback.onAlways(state, resolve, reject);
 	}
+
+    private void saveExceptionIfRuntimeException(Exception e) {
+        if (e instanceof RuntimeException) {
+            thrownRuntimeException = (RuntimeException) e;
+        }
+    }
+
+    private void triggerExcept(ExceptCallback exceptCallback, Exception e) {
+        try {
+            exceptCallback.onException(e);
+        } catch (Exception ex) {
+            log.error("an uncaught exception occured in an ExceptCallback", e);
+        }
+    }
 
 	@Override
 	public Promise<D, F, P> progress(ProgressCallback<P> callback) {
@@ -264,5 +292,8 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				}
 			}
 		}
+        if (thrownRuntimeException != null) {
+            throw thrownRuntimeException;
+        }
 	}
 }

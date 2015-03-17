@@ -15,18 +15,7 @@
  ******************************************************************************/
 package org.jdeferred.impl;
 
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.DoneFilter;
-import org.jdeferred.DonePipe;
-import org.jdeferred.FailCallback;
-import org.jdeferred.FailFilter;
-import org.jdeferred.FailPipe;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.ProgressFilter;
-import org.jdeferred.ProgressPipe;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 
 public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	private final Promise<D, F, P> promise;
@@ -53,7 +42,12 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 		return promise.isRejected();
 	}
 
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback) {
+    @Override
+    public Promise<D, F, P> except(ExceptCallback exceptCallback) {
+        return promise.except(exceptCallback);
+    }
+
+    public Promise<D, F, P> then(DoneCallback<D> doneCallback) {
 		return promise.then(doneCallback);
 	}
 

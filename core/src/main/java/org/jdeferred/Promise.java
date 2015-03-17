@@ -95,6 +95,15 @@ public interface Promise<D, F, P> {
 	 */
 	public boolean isRejected();
 
+
+    /**
+     * Will be called to handle any exception that may normally be caught.
+     *
+     * @param exceptCallback
+     * @return
+     */
+    public Promise<D, F, P> except(ExceptCallback exceptCallback);
+
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}
 	 * 
