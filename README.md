@@ -96,7 +96,7 @@ With the reference to deferred object, you can then trigger actions/updates:
 ```java
 deferred.resolve("done");
 deferred.reject("oops");
-deferred.progress("100%");
+deferred.notify("100%");
 ```
 
 <a name="example-filter"></a>Filter
