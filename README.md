@@ -39,7 +39,7 @@ Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Obj
   * ```Deferred<Integer, Exception, Double> deferred;```
   * ```deferred.resolve(10);```
   * ```deferred.reject(new Exception());```
-  * ```deferred.progress(0.80);```
+  * ```deferred.notify(0.80);```
 * Android Support
 * Java 8 Lambda friendly
 * Yes it's on Maven Central Repository!
@@ -96,7 +96,7 @@ With the reference to deferred object, you can then trigger actions/updates:
 ```java
 deferred.resolve("done");
 deferred.reject("oops");
-deferred.progress("100%");
+deferred.notify("100%");
 ```
 
 <a name="example-filter"></a>Filter
