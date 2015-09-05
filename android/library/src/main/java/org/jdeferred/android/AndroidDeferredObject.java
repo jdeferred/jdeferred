@@ -17,22 +17,15 @@ package org.jdeferred.android;
 
 import java.lang.reflect.Method;
 
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 import org.jdeferred.android.annotation.ExecutionScope;
 import org.jdeferred.impl.DeferredObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.os.Looper;
 import android.os.Handler;
 import android.os.Message;
 
-public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
+public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> implements AndroidPromise<D, F, P>, AndroidDeferred<D, F, P> {
 	private static final InternalHandler sHandler = new InternalHandler();
 
 	private static final int MESSAGE_POST_DONE = 0x1;
@@ -40,9 +33,6 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	private static final int MESSAGE_POST_FAIL = 0x3;
 	private static final int MESSAGE_POST_ALWAYS = 0x4;
 
-	final protected Logger log = LoggerFactory
-			.getLogger(AndroidDeferredObject.class);
-	
 	private final AndroidExecutionScope defaultAndroidExecutionScope;
 
 	public AndroidDeferredObject() {
@@ -74,6 +64,173 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		});
 	}
 
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			AndroidDonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
+		return new AndroidPipedPromise<>(this, doneFilter, null, null);
+	}
+
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			AndroidDonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+			AndroidFailPipe<F, D_OUT, F_OUT, P_OUT> failFilter) {
+		return new AndroidPipedPromise<>(this, doneFilter, failFilter, null);
+	}
+
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			AndroidDonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+			AndroidFailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
+			AndroidProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
+		return new AndroidPipedPromise<>(this, doneFilter, failFilter, progressFilter);
+	}
+
+
+	public AndroidPromise<D, F, P> then(AndroidDoneCallback<D> doneCallback) {
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback));
+	}
+
+	public AndroidPromise<D, F, P> then(AndroidDoneCallback<D> doneCallback,
+										AndroidFailCallback<F> failCallback) {
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback, failCallback));
+	}
+
+	public AndroidPromise<D, F, P> then(AndroidDoneCallback<D> doneCallback,
+										AndroidFailCallback<F> failCallback, AndroidProgressCallback<P> progressCallback) {
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback, failCallback, progressCallback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> then(DoneCallback<D> doneCallback) {
+		assertAndroidContext(doneCallback, AndroidDoneCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> then(DoneCallback<D> doneCallback,
+								 FailCallback<F> failCallback) {
+		assertAndroidContext(doneCallback, AndroidDoneCallback.class);
+		assertAndroidContext(failCallback, AndroidFailCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback, failCallback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> then(DoneCallback<D> doneCallback,
+								 FailCallback<F> failCallback, ProgressCallback<P> progressCallback) {
+		assertAndroidContext(doneCallback, AndroidDoneCallback.class);
+		assertAndroidContext(failCallback, AndroidFailCallback.class);
+		assertAndroidContext(progressCallback, AndroidProgressCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneCallback, failCallback, progressCallback));
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
+			ProgressFilter<P, P_OUT> progressFilter) {
+		assertAndroidContext(doneFilter, AndroidDoneFilter.class);
+		assertAndroidContext(failFilter, AndroidFailFilter.class);
+		assertAndroidContext(failFilter, AndroidProgressFilter.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(doneFilter, failFilter, progressFilter));
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe) {
+		assertAndroidContext(donePipe, AndroidDonePipe.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(donePipe));
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe) {
+		assertAndroidContext(donePipe, AndroidDonePipe.class);
+		assertAndroidContext(failPipe, AndroidFailPipe.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(donePipe, failPipe));
+	}
+
+	@Override
+	public <D_OUT, F_OUT, P_OUT> AndroidPromise<D_OUT, F_OUT, P_OUT> then(
+			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
+			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe) {
+
+		assertAndroidContext(donePipe, AndroidDonePipe.class);
+		assertAndroidContext(failPipe, AndroidFailPipe.class);
+		assertAndroidContext(progressPipe, AndroidProgressPipe.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.then(donePipe, failPipe, progressPipe));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> done(DoneCallback<D> callback) {
+		assertAndroidContext(callback, AndroidDoneCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.done(callback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> fail(FailCallback<F> callback) {
+		assertAndroidContext(callback, AndroidFailCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.fail(callback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> always(AlwaysCallback<D, F> callback) {
+		assertAndroidContext(callback, AndroidAlwaysCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.always(callback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> progress(ProgressCallback<P> callback) {
+		assertAndroidContext(callback, AndroidProgressCallback.class);
+
+		return AndroidDeferredManager.asAndroidPromise(super.progress(callback));
+	}
+
+	// These are never called, because the parameters are subclasses of methods that are already defined in Promise-interface
+
+	@Override
+	public AndroidPromise<D, F, P> done(AndroidDoneCallback<D> callback) {
+		return AndroidDeferredManager.asAndroidPromise(super.done(callback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> fail(AndroidFailCallback<F> callback) {
+		return AndroidDeferredManager.asAndroidPromise(super.fail(callback));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> always(AndroidAlwaysCallback<D, F> callback) {
+		return AndroidDeferredManager.asAndroidPromise(super.always(callback));
+	}
+
+	//
+
+
+	@Override
+	public AndroidDeferred<D, F, P> resolve(final D resolve) {
+		return AndroidDeferredManager.asAndroidDeferred(super.resolve(resolve));
+	}
+
+	@Override
+	public AndroidDeferred<D, F, P> notify(final P progress) {
+		return AndroidDeferredManager.asAndroidDeferred(super.notify(progress));
+	}
+
+	@Override
+	public AndroidDeferred<D, F, P> reject(final F reject) {
+		return AndroidDeferredManager.asAndroidDeferred(super.reject(reject));
+	}
+
+	@Override
+	public AndroidPromise<D, F, P> promise() {
+		return AndroidDeferredManager.asAndroidPromise(super.promise());
+	}
+
 	private static class InternalHandler extends Handler {
 		public InternalHandler() {
 			super(Looper.getMainLooper());
@@ -99,6 +256,12 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 						result.resolved, result.rejected);
 				break;
 			}
+		}
+	}
+
+	private void assertAndroidContext(Object o, Class type) {
+		if (!type.isInstance(o)) {
+			throw new Error("Trying to access non-Android method in Android context");
 		}
 	}
 
@@ -142,14 +305,14 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	protected <Callback> void executeInUiThread(int what, Callback callback,
 			State state, D resolve, F reject, P progress) {
 		Message message = sHandler.obtainMessage(what,
-				new CallbackMessage<Callback, D, F, P>(this, callback, state,
+				new CallbackMessage<>(this, callback, state,
 						resolve, reject, progress));
 		message.sendToTarget();
 	}
-	
+
 	protected AndroidExecutionScope determineAndroidExecutionScope(Class<?> clazz, String methodName, Class<?> ... arguments) {
 		ExecutionScope scope = null;
-		
+
 		if (methodName != null) {
 			try {
 				Method method = clazz.getMethod(methodName, arguments);
@@ -161,7 +324,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		if (scope == null) {
 			scope = clazz.getAnnotation(ExecutionScope.class);
 		}
-		
+
 		return scope == null ? defaultAndroidExecutionScope : scope.value();
 	}
 
@@ -175,6 +338,8 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 			return determineAndroidExecutionScope(callback.getClass(), "onFail", Object.class);
 		} else if (callback instanceof ProgressCallback) {
 			return determineAndroidExecutionScope(callback.getClass(), "onProgress", Object.class);
+		} else if (callback instanceof DonePipe) {
+			return determineAndroidExecutionScope(callback.getClass(), "pipeDone", Object.class);
 		} else if (callback instanceof AlwaysCallback) {
 			return determineAndroidExecutionScope(callback.getClass(), "onAlways", State.class, Object.class, Object.class);
 		}

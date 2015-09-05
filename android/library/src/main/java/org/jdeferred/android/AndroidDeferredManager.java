@@ -15,13 +15,9 @@
  ******************************************************************************/
 package org.jdeferred.android;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
-import org.jdeferred.DeferredFutureTask;
-import org.jdeferred.DeferredManager;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
@@ -80,7 +76,7 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	 * @see {@link AsyncTask#executeOnExecutor(java.util.concurrent.Executor, Object...)}
 	 */
 	@SuppressLint("NewApi")
-	public <Progress, Result> Promise<Result, Throwable, Progress> when(
+	public <Progress, Result> AndroidPromise<Result, Throwable, Progress> when(
 			DeferredAsyncTask<Void, Progress, Result> task) {
 		
 		if (task.getStartPolicy() == StartPolicy.AUTO 
@@ -93,11 +89,11 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 			}
 		}
 		
-		return task.promise();
+		return ((AndroidPromise<Result, Throwable, Progress>)task.promise());
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Promise<MultipleResults, OneReject, MasterProgress> when(
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredAsyncTask<Void, ?, ?> ... tasks) {
 		assertNotEmpty(tasks);
 		
@@ -111,7 +107,7 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	}
 	
 	@SuppressWarnings("rawtypes")
-    public Promise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope,
+    public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope,
             DeferredAsyncTask<Void, ?, ?> ... tasks) {
         assertNotEmpty(tasks);
         Promise[] promises = new Promise[tasks.length];
@@ -140,8 +136,8 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	 * </ul>
 	 */
 	@Override
-	public <D, P> Promise<D, Throwable, P> when(DeferredFutureTask<D, P> task) {
-		return new AndroidDeferredObject<D, Throwable, P>(super.when(task)).promise();
+	public <D, P> AndroidPromise<D, Throwable, P> when(DeferredFutureTask<D, P> task) {
+		return asAndroidPromise(new AndroidDeferredObject<D, Throwable, P>(super.when(task)).promise());
 	}
 	
 	/**
@@ -149,11 +145,17 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	 * so that callbacks can be executed in the UI thread.
 	 */
 	@Override
-	public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise) {
+	public <D, F, P> AndroidPromise<D, F, P> when(Promise<D, F, P> promise) {
 		if (promise instanceof AndroidDeferredObject) {
-			return promise;
+			return asAndroidPromise(promise);
 		}
-		return new AndroidDeferredObject<D, F, P>(promise).promise();
+		return asAndroidPromise(new AndroidDeferredObject<>(promise).promise());
+	}
+
+
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(AndroidPromise... promises) {
+		assertNotEmpty(promises);
+		return new AndroidMasterDeferredObject(promises).promise();
 	}
 
 	/**
@@ -163,22 +165,72 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	 * @param promise A promise
 	 * @return A promise wrapped in @{link AndroidDeferredObject}
 	 */
-    public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise, AndroidExecutionScope scope) {
+    public <D, F, P> AndroidPromise<D, F, P> when(Promise<D, F, P> promise, AndroidExecutionScope scope) {
         if (promise instanceof AndroidDeferredObject) {
-            return promise;
+            return asAndroidPromise(promise);
         }
-        return new AndroidDeferredObject<D, F, P>(promise, scope).promise();
+        return asAndroidPromise(new AndroidDeferredObject<D, F, P>(promise, scope).promise());
     }
 
-	/**
-	 * Wraps {@link MasterDeferredObject} with {@link AndroidDeferredObject} so that callbacks can
-	 * be executed in UI thread.
-	 */
-	@SuppressWarnings({ "rawtypes" })
+
 	@Override
-	public Promise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
-		return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
-			(super.when(promises)).promise();
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(Runnable... runnables) {
+		return asAndroidPromise(super.when(runnables));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(Callable<?>... callables) {
+		return asAndroidPromise(super.when(callables));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(DeferredRunnable<?>... runnables) {
+		return asAndroidPromise(super.when(runnables));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(DeferredCallable<?, ?>... callables) {
+		return asAndroidPromise(super.when(callables));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(DeferredFutureTask<?, ?>... tasks) {
+		return asAndroidPromise(super.when(tasks));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(Future<?>... futures) {
+		return asAndroidPromise(super.when(futures));
+	}
+
+	@Override
+	public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
+		return asAndroidPromise(super.when(promises));
+	}
+
+	@Override
+	public <P> AndroidPromise<Void, Throwable, P> when(DeferredRunnable<P> runnable) {
+		return asAndroidPromise(super.when(runnable));
+	}
+
+	@Override
+	public <D, P> AndroidPromise<D, Throwable, P> when(DeferredCallable<D, P> runnable) {
+		return asAndroidPromise(super.when(runnable));
+	}
+
+	@Override
+	public AndroidPromise<Void, Throwable, Void> when(Runnable runnable) {
+		return asAndroidPromise(super.when(runnable));
+	}
+
+	@Override
+	public <D> AndroidPromise<D, Throwable, Void> when(Callable<D> callable) {
+		return asAndroidPromise(super.when(callable));
+	}
+
+	@Override
+	public <D> AndroidPromise<D, Throwable, Void> when(final Future<D> future) {
+		return asAndroidPromise(super.when(future));
 	}
 
 	/**
@@ -187,8 +239,16 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	 * @return A promise wrapped in @{link AndroidDeferredObject}
 	 */
 	@SuppressWarnings({ "rawtypes" })
-    public Promise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope, Promise... promises) {
-        return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
-            (super.when(promises), scope).promise();
+    public AndroidPromise<MultipleResults, OneReject, MasterProgress> when(AndroidExecutionScope scope, Promise... promises) {
+        return asAndroidPromise(new AndroidDeferredObject<>
+		(super.when(promises), scope).promise());
     }
+
+	public static <D, F, P> AndroidPromise<D, F, P> asAndroidPromise(Promise <D, F, P> promise) {
+		return ((AndroidPromise<D, F, P>)promise);
+	}
+
+	public static <D, F, P> AndroidDeferred<D, F, P> asAndroidDeferred(Deferred <D, F, P> deferred) {
+		return ((AndroidDeferred<D, F, P>)deferred);
+	}
 }
