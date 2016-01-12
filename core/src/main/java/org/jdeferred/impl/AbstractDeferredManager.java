@@ -15,9 +15,11 @@
  */
 package org.jdeferred.impl;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import org.jdeferred.DeferredCallable;
 import org.jdeferred.DeferredFutureTask;
@@ -112,6 +114,45 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Collection<?> callableCollection) {
+		assertNotNull(callableCollection);
+		Object[] callables = callableCollection.toArray();
+		assertNotEmpty(callables);
+
+		Promise[] promises = new Promise[callables.length];
+
+		for (int i = 0; i < callables.length; i++) {
+			if (callables[i] instanceof Promise) {
+                promises[i] = when((Promise<?, ?, ?>) callables[i]);
+            } else if (callables[i] instanceof Runnable) {
+				promises[i] = when((Runnable)callables[i]);
+			} else if (callables[i] instanceof Callable) {
+				promises[i] = when((Callable<?>) callables[i]);
+			} else if (callables[i] instanceof DeferredRunnable) {
+				promises[i] = when((DeferredRunnable<?>) callables[i]);
+			} else if (callables[i] instanceof DeferredCallable) {
+				promises[i] = when((DeferredCallable<?,?>) callables[i]);
+			} else if (callables[i] instanceof DeferredFutureTask) {
+				promises[i] = when((DeferredFutureTask<?,?>) callables[i]);
+			} else if (callables[i] instanceof FutureTask) {
+				promises[i] = when((Runnable) callables[i]);
+			} else if (callables[i] instanceof Future) {
+				promises[i] = when((Future)callables[i]);
+			} else {
+				throw new IllegalArgumentException("Invalid type in collection");
+			}
+		}
+		return when(promises);
+	}
+
+	private void assertNotNull(Collection<?> callables) {
+		if (callables == null) {
+			throw new IllegalArgumentException("Must not be null");
+		}
+
+	}
+
+	@Override
 	public Promise<MultipleResults, OneReject, MasterProgress> when(DeferredFutureTask<?, ?>... tasks) {
 		assertNotEmpty(tasks);
 
@@ -172,7 +213,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * 	<li>{@link #when(Callable)}</li>
 	 *  <li>{@link #when(Callable...)}</li>
 	 *  <li>{@link #when(Runnable)}</li>
-	 *  <li>{@link #when(Runnable..)}</li>
+	 *  <li>{@link #when(Runnable...)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future...)}</li>
 	 *  <li>{@link #when(org.jdeferred.DeferredRunnable...)}</li>
