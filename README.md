@@ -345,6 +345,29 @@ dm.when(
 );
 ```
 
+<a name="example-groovy"></a>Groovy
+-----
+You can also easily use with Groovy!
+
+```Groovy
+@Grab('org.jdeferred:jdeferred-core:1.2.4')
+import org.jdeferred.*
+import org.jdeferred.impl.*
+
+def deferred = new DeferredObject()
+def promise = deferred.promise()
+
+promise.done { result ->
+  println "done: $result" 
+}.fail { rejection ->
+  println "fail: $rejection"
+}.always { state, result, rejection ->
+  println "always"
+}
+
+deferred.resolve("done")
+```
+
 <!-- Google Code for GitHub Visit Conversion Page -->
 <script type="text/javascript">
 /* <![CDATA[ */
