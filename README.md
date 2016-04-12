@@ -110,7 +110,7 @@ Promise filtered = p.then(new DoneFilter<Integer, Integer>() {
   }
 });
 
-filtered.done(new DoneCallback<Integer>{
+filtered.done(new DoneCallback<Integer>() {
   public void onDone(Integer result) {
     // result would be original * 10
     System.out.println(result);
