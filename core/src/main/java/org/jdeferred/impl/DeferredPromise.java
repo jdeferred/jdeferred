@@ -111,8 +111,8 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public void cancel() {
-		promise.cancel();
+	public void clearCallbacks() {
+		promise.clearCallbacks();
 	}
 
 	@Override

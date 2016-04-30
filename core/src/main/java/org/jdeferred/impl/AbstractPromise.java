@@ -267,7 +267,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public void cancel() {
+	public void clearCallbacks() {
 		synchronized (this) {
 			if(state == State.PENDING) {
 				doneCallbacks.clear();

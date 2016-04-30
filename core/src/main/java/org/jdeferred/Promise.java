@@ -341,6 +341,6 @@ public interface Promise<D, F, P> {
 	/**
 	 * Clear all callbacks of this promise if the state is Pending.
 	 */
-	public void cancel();
+	public void clearCallbacks();
 
 }
