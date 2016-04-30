@@ -45,6 +45,10 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	
 	private final AndroidExecutionScope defaultAndroidExecutionScope;
 
+	public AndroidDeferredObject() {
+		this(new DeferredObject<D, F, P>());
+	}
+
 	public AndroidDeferredObject(Promise<D, F, P> promise) {
 		this(promise, AndroidExecutionScope.UI);
 	}

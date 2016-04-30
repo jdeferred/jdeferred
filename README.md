@@ -39,7 +39,7 @@ Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Obj
   * ```Deferred<Integer, Exception, Double> deferred;```
   * ```deferred.resolve(10);```
   * ```deferred.reject(new Exception());```
-  * ```deferred.progress(0.80);```
+  * ```deferred.notify(0.80);```
 * Android Support
 * Java 8 Lambda friendly
 * Yes it's on Maven Central Repository!
@@ -52,6 +52,14 @@ Maven
     <artifactId>jdeferred-core</artifactId>
     <version>${version}</version>
 </dependency>
+```
+
+Gradle
+-----
+```
+compile 'org.jdeferred:jdeferred-android-aar:${version}'
+// or
+compile 'org.jdeferred:jdeferred-android-aar:${version}@aar'
 ```
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
@@ -88,7 +96,7 @@ With the reference to deferred object, you can then trigger actions/updates:
 ```java
 deferred.resolve("done");
 deferred.reject("oops");
-deferred.progress("100%");
+deferred.notify("100%");
 ```
 
 <a name="example-filter"></a>Filter
@@ -102,7 +110,7 @@ Promise filtered = p.then(new DoneFilter<Integer, Integer>() {
   }
 });
 
-filtered.done(new DoneCallback<Integer>{
+filtered.done(new DoneCallback<Integer>() {
   public void onDone(Integer result) {
     // result would be original * 10
     System.out.println(result);
@@ -335,6 +343,29 @@ dm.when(
 ).done(rs ->
   rs.forEach(r -> System.out.println(r.getResult()))
 );
+```
+
+<a name="example-groovy"></a>Groovy
+-----
+You can also easily use with Groovy!
+
+```Groovy
+@Grab('org.jdeferred:jdeferred-core:1.2.4')
+import org.jdeferred.*
+import org.jdeferred.impl.*
+
+def deferred = new DeferredObject()
+def promise = deferred.promise()
+
+promise.done { result ->
+  println "done: $result" 
+}.fail { rejection ->
+  println "fail: $rejection"
+}.always { state, result, rejection ->
+  println "always"
+}
+
+deferred.resolve("done")
 ```
 
 <!-- Google Code for GitHub Visit Conversion Page -->
