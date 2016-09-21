@@ -334,6 +334,7 @@ public interface Promise<D, F, P> {
 	 * This method will wait when the State is Pending, and return when timeout has reached.
 	 * This method will fail fast when State is not Pending.
 	 * 
+	 * @param timeout the maximum time to wait in milliseconds
 	 * @throws InterruptedException
 	 */
 	public void waitSafely(long timeout) throws InterruptedException;
