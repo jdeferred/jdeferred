@@ -63,6 +63,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<version.android>4.1.1.4</version.android>
+		<version.awaitility>2.0.0</version.awaitility>
 		<version.junit>4.11</version.junit>
 		<version.slf4j>1.7.2</version.slf4j>
 		<version.maven.bundle>2.3.7</version.maven.bundle>
@@ -95,6 +96,12 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-jdk14</artifactId>
 				<version>${version.slf4j}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>${version.awaitility}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
