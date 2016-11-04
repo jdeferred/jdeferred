@@ -76,7 +76,7 @@ public interface DeferredManager {
 		/**
 		 * Tells Deferred Manager that this task will be manually started
 		 */
-		MANAUL
+		MANUAL
 	}
 	
 	/**
