@@ -1,7 +1,10 @@
-/target
+target/
 .classpath
 .project
-.settings
+.settings/
 .DS_Store
 *.iml
-.idea
+.idea/
+build/
+target/
+local.properties
