@@ -26,6 +26,71 @@ buildscript {
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'maven-publish'
+
+def aarPomConfig = {
+    name project.name
+    description project.project_description
+    url project.project_url
+    inceptionYear '2013'
+    licenses {
+        license([:]) {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+        }
+    }
+    scm {
+        url project.project_scm
+    }
+    developers {
+        developer {
+            id('saturnism')
+            name('Ray Tsang')
+            roles {
+                role('Developer')
+            }
+        }
+        developer {
+            id('aalmiray')
+            name('Andres Almiray')
+            roles {
+                role('Developer')
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenApklib(MavenPublication) {
+            artifactId(project.name + '-apklib')
+            artifact(apklib)
+            pom.withXml {
+                asNode().children().last() + aarPomConfig
+                asNode().appendNode('description', project.project_description)
+                def depNode = asNode().appendNode('dependencies')
+                        .appendNode('dependency')
+                depNode.appendNode('groupId', project.group)
+                depNode.appendNode('artifactId', 'jdeferred-core')
+                depNode.appendNode('version', project.version)
+            }
+        }
+        mavenAar(MavenPublication) {
+            artifactId(project.name + '-aar')
+            artifact(bundleRelease)
+            pom.withXml {
+                asNode().children().last() + aarPomConfig
+                asNode().appendNode('description', project.project_description)
+                def depNode = asNode().appendNode('dependencies')
+                        .appendNode('dependency')
+                depNode.appendNode('groupId', project.group)
+                depNode.appendNode('artifactId', 'jdeferred-core')
+                depNode.appendNode('version', project.version)
+            }
+        }
+    }
+}
 
 dependencies {
     compile project(':jdeferred-core')
@@ -38,8 +103,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "18.1.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
     lintOptions {
         abortOnError false
     }
