@@ -12,7 +12,7 @@ android:
     - android-23
     - extra
     - extra-google-m2repository
-- extra-android-m2repository
+    - extra-android-m2repository
 before_script:
   - ./gradlew --version
 script: ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
