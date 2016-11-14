@@ -2,7 +2,7 @@ sudo: false
 cache:
   directories:
   - $HOME/.m2
-jdk: oraclejdk7
+jdk: oraclejdk8
 language: java
 before_script:
   - ./gradlew --version
