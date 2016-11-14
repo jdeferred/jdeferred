@@ -24,6 +24,6 @@ license {
         java = 'SLASHSTAR_STYLE'
         xml  = 'XML_STYLE'
     }
-    ext.year = '2013-2016'
-    ext.year = 'Ray Tsang'
+    ext.year   = '2013-2016'
+    ext.author = 'Ray Tsang'
 }
