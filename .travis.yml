@@ -2,6 +2,7 @@ sudo: false
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/.android
 jdk: oraclejdk8
 language: android
 android:
