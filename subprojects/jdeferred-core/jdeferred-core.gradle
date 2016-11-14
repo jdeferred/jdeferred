@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
@@ -23,7 +25,7 @@ dependencies {
     testCompile "org.awaitility:awaitility:$awaitilityVersion"
 }
 
-task sourceJar(type: Jar) {
+task sourcesJar(type: Jar) {
     group 'Build'
     description 'An archive of the source code'
     classifier 'sources'
@@ -37,6 +39,67 @@ task javadocJar(type: Jar) {
     from javadoc.destinationDir
 }
 
-apply from: rootProject.file('gradle/publishing.gradle')
+apply from: rootProject.file('gradle/pom.gradle')
 apply from: rootProject.file('gradle/code-quality.gradle')
 apply from: rootProject.file('gradle/code-coverage.gradle')
+
+jar {
+    manifest {
+        attributes(
+            'Built-By':               buildBy,
+            'Created-By':             buildCreatedBy,
+            'Build-Date':             buildDate,
+            'Build-Time':             buildTime,
+            'Build-Revision':         buildRevision,
+            'Specification-Title':    project.name,
+            'Specification-Version':  project.version,
+            'Implementation-Title':   project.name,
+            'Implementation-Version': project.version,
+        )
+    }
+    metaInf {
+        from(rootProject.files('.')) {
+            include 'LICENSE*'
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                // all dependencies should use the default scope (compile) but
+                // Gradle insists in using runtime as default
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.scope.text() == 'runtime') {
+                        dep.remove(dep.scope)
+                    }
+                }
+                asNode().children().last() + pomConfig
+                asNode().appendNode('description', project.project_description)
+            }
+        }
+    }
+}
+
+bintray {
+    user         = project.bintrayUsername
+    key          = project.bintrayApiKey
+    publications = ['mavenCustom']
+    pkg {
+        repo                  = project.project_bintray_repo
+        userOrg               = project.project_bintray_org
+        name                  = rootProject.name
+        desc                  = rootProject.project_description
+        licenses              = ['Apache-2.0']
+        labels                = ['jdeferred', 'promise', 'android']
+        websiteUrl            = project.project_url
+        issueTrackerUrl       = project.project_issues
+        vcsUrl                = project.project_scm
+        publicDownloadNumbers = true
+    }
+}

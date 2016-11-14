@@ -25,77 +25,11 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'maven-publish'
-
-def aarPomConfig = {
-    name project.name
-    description project.project_description
-    url project.project_url
-    inceptionYear '2013'
-    licenses {
-        license([:]) {
-            name 'The Apache Software License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-            distribution 'repo'
-        }
-    }
-    scm {
-        url project.project_scm
-    }
-    developers {
-        developer {
-            id('saturnism')
-            name('Ray Tsang')
-            roles {
-                role('Developer')
-            }
-        }
-        developer {
-            id('aalmiray')
-            name('Andres Almiray')
-            roles {
-                role('Developer')
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenApklib(MavenPublication) {
-            artifactId(project.name + '-apklib')
-            artifact(apklib)
-            pom.withXml {
-                asNode().children().last() + aarPomConfig
-                asNode().appendNode('description', project.project_description)
-                def depNode = asNode().appendNode('dependencies')
-                        .appendNode('dependency')
-                depNode.appendNode('groupId', project.group)
-                depNode.appendNode('artifactId', 'jdeferred-core')
-                depNode.appendNode('version', project.version)
-            }
-        }
-        mavenAar(MavenPublication) {
-            artifactId(project.name + '-aar')
-            artifact(bundleRelease)
-            pom.withXml {
-                asNode().children().last() + aarPomConfig
-                asNode().appendNode('description', project.project_description)
-                def depNode = asNode().appendNode('dependencies')
-                        .appendNode('dependency')
-                depNode.appendNode('groupId', project.group)
-                depNode.appendNode('artifactId', 'jdeferred-core')
-                depNode.appendNode('version', project.version)
-            }
-        }
-    }
-}
+apply plugin: 'com.jfrog.bintray'
 
 dependencies {
     compile project(':jdeferred-core')
-    //compileOnly "com.google.android:android:$androidVersion"
-    //testCompileOnly "com.google.android:android-test:$androidVersion"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
@@ -111,6 +45,8 @@ android {
 }
 
 task apklib(type: Zip) {
+    group 'Build'
+    description 'Creates an APKLIB artifact'
     extension = 'apklib'
 
     from file('src/main/AndroidManifest.xml')
@@ -122,4 +58,58 @@ task apklib(type: Zip) {
     }
 }
 
+apply from: rootProject.file('gradle/pom.gradle')
 apply from: rootProject.file('gradle/code-quality.gradle')
+
+publishing {
+    publications {
+        mavenApklib(MavenPublication) {
+            artifactId(project.name + '-apklib')
+            artifact(apklib)
+            pom.withXml {
+                asNode().children().last() + pomConfig
+                asNode().appendNode('description', project.project_description)
+                /*
+                def depNode = asNode().appendNode('dependencies')
+                        .appendNode('dependency')
+                depNode.appendNode('groupId', project.group)
+                depNode.appendNode('artifactId', 'jdeferred-core')
+                depNode.appendNode('version', project.version)
+                */
+            }
+        }
+        mavenAar(MavenPublication) {
+            artifactId(project.name + '-aar')
+            artifact(bundleRelease)
+            pom.withXml {
+                asNode().children().last() + pomConfig
+                asNode().appendNode('description', project.project_description)
+                /*
+                def depNode = asNode().appendNode('dependencies')
+                        .appendNode('dependency')
+                depNode.appendNode('groupId', project.group)
+                depNode.appendNode('artifactId', 'jdeferred-core')
+                depNode.appendNode('version', project.version)
+                */
+            }
+        }
+    }
+}
+
+bintray {
+    user         = project.bintrayUsername
+    key          = project.bintrayApiKey
+    publications = ['mavenApklib', 'mavenAar']
+    pkg {
+        repo                  = project.project_bintray_repo
+        userOrg               = project.project_bintray_org
+        name                  = rootProject.name
+        desc                  = rootProject.project_description
+        licenses              = ['Apache-2.0']
+        labels                = ['jdeferred', 'promise', 'android']
+        websiteUrl            = project.project_url
+        issueTrackerUrl       = project.project_issues
+        vcsUrl                = project.project_scm
+        publicDownloadNumbers = true
+    }
+}

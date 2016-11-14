@@ -3,14 +3,9 @@ cache:
   directories:
   - $HOME/.m2
 jdk: oraclejdk7
-language: android
-android:
-  components:
-    - tools
-    - platform-tools
-    - build-tools-18.1.1
-    - android-18
-    - extra
-    - extra-google-m2repository
-    - extra-android-m2repository
-script: mvn install
+language: java
+before_script:
+  - ./gradlew --version
+script: ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
+after_success:
+  - ./gradlew coveralls
