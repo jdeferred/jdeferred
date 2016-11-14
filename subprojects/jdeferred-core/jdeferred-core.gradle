@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'osgi'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
@@ -55,6 +56,8 @@ jar {
             'Specification-Version':  project.version,
             'Implementation-Title':   project.name,
             'Implementation-Version': project.version,
+            'Bundle-DocURL':          'http://jdeferred.org/',
+            'Export-Package':         "${project.group}.*;version=${project.version};-split-package:=error".toString()
         )
     }
     metaInf {
