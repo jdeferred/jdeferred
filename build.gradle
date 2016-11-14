@@ -64,9 +64,7 @@ allprojects {
     apply plugin: 'base'
     apply plugin: 'idea'
     apply plugin: 'com.github.ben-manes.versions'
-}
 
-subprojects {
     repositories {
         jcenter()
     }
