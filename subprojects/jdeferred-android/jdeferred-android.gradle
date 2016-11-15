@@ -34,6 +34,7 @@ dependencies {
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
     testCompile "org.awaitility:awaitility:$awaitilityVersion"
+    testCompile "com.google.android:android:$androidVersion"
 }
 
 android {
@@ -41,6 +42,13 @@ android {
     buildToolsVersion "19.1"
     lintOptions {
         abortOnError false
+    }
+    defaultConfig {
+         minSdkVersion 15
+         targetSdkVersion 19
+    }
+    testOptions { 
+        unitTests.returnDefaultValues = true
     }
 }
 

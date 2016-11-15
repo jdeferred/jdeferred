@@ -24,7 +24,7 @@
         android:targetPackage="org.jdeferred.android.test" />
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="15"
         android:targetSdkVersion="19" />
 
     <application
