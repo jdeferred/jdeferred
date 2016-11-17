@@ -78,6 +78,7 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 		try {
 			if (isCancelled()) {
 				deferred.reject(new CancellationException());
+				return;
 			}
 			D result = get();
 			deferred.resolve(result);
