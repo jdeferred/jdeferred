@@ -66,11 +66,45 @@ task apklib(type: Zip) {
     }
 }
 
+task jar(type: Jar) {
+    dependsOn 'compileReleaseSources'
+    from 'build/intermediates/classes/release/'
+    archiveName "${project.name}-${project.version}.jar"
+}
+
+task sourcesJar(type: Jar) {
+    dependsOn 'compileReleaseSources'
+    classifier 'sources'
+    from 'src/main/java/'
+    archiveName "${project.name}-${project.version}-sources.jar"
+}
+
 apply from: rootProject.file('gradle/pom.gradle')
 apply from: rootProject.file('gradle/code-quality.gradle')
 
 publishing {
     publications {
+        mavenJava(MavenPublication) {
+            artifact(jar)
+            artifact(sourcesJar)
+
+            pom.withXml {
+                // all dependencies should use the default scope (compile) but
+                // Gradle insists in using runtime as default
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.scope.text() == 'runtime') {
+                        dep.remove(dep.scope)
+                    }
+                }
+                asNode().children().last() + pomConfig
+                asNode().appendNode('description', project.project_description)
+                def depNode = asNode().appendNode('dependencies')
+                        .appendNode('dependency')
+                depNode.appendNode('groupId', project.group)
+                depNode.appendNode('artifactId', 'jdeferred-core')
+                depNode.appendNode('version', project.version)
+            }
+        }
         mavenApklib(MavenPublication) {
             artifactId(project.name + '-apklib')
             artifact(apklib)
@@ -107,7 +141,7 @@ publishing {
 bintray {
     user         = project.bintrayUsername
     key          = project.bintrayApiKey
-    publications = ['mavenApklib', 'mavenAar']
+    publications = ['mavenJava', 'mavenApklib', 'mavenAar']
     pkg {
         repo                  = project.project_bintray_repo
         userOrg               = project.project_bintray_org
