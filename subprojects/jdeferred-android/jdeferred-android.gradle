@@ -66,17 +66,44 @@ task apklib(type: Zip) {
     }
 }
 
-task jar(type: Jar) {
-    dependsOn 'compileReleaseSources'
-    from 'build/intermediates/classes/release/'
-    archiveName "${project.name}-${project.version}.jar"
-}
+android.libraryVariants.all { variant ->
+    def capitalizedVariantName = variant.name.capitalize()
 
-task sourcesJar(type: Jar) {
-    dependsOn 'compileReleaseSources'
-    classifier 'sources'
-    from 'src/main/java/'
-    archiveName "${project.name}-${project.version}-sources.jar"
+    task("generate${capitalizedVariantName}Javadoc", type: Javadoc) {
+        group 'Build'
+        description "Generates Javadoc for $variant.name."
+        source = variant.javaCompile.source
+        classpath = files(variant.javaCompile.classpath.files) + files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar")
+        options.links('http://docs.oracle.com/javase/7/docs/api/')
+        options.links('http://d.android.com/reference/')
+        options.addStringOption('Xdoclint:none', '-quiet')
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+    }
+
+    task("package${capitalizedVariantName}Jar", type: Jar) {
+        group 'Build'
+        description "An archive of the ${variant.name} compiled code"
+        from variant.javaCompile.destinationDir
+    }
+
+    task("package${capitalizedVariantName}SourcesJar", type: Jar) {
+        group 'Build'
+        description "An archive of the ${variant.name} source code"
+        classifier 'sources'
+        from variant.javaCompile.source
+    }
+
+    task("package${capitalizedVariantName}JavadocJar", dependsOn: "generate${capitalizedVariantName}Javadoc", type: Jar) {
+        group 'Build'
+        description "An archive of the ${variant.name} Javadocs"
+        classifier 'javadoc'
+        from tasks.findByName("generate${capitalizedVariantName}Javadoc").destinationDir
+    }
+
+    tasks.findByName("package${capitalizedVariantName}Jar").finalizedBy(tasks.findByName("package${capitalizedVariantName}SourcesJar"))
+    tasks.findByName("package${capitalizedVariantName}Jar").finalizedBy(tasks.findByName("package${capitalizedVariantName}JavadocJar"))
+    tasks.findByName("bundle${capitalizedVariantName}").finalizedBy(tasks.findByName("package${capitalizedVariantName}Jar"))
 }
 
 apply from: rootProject.file('gradle/pom.gradle')
@@ -85,8 +112,9 @@ apply from: rootProject.file('gradle/code-quality.gradle')
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(jar)
-            artifact(sourcesJar)
+            artifact(file("${buildDir}/libs/${project.name}-${project.version}.jar"))
+            artifact(file("${buildDir}/libs/${project.name}-${project.version}-sources.jar")) { classifier 'sources' }
+            artifact(file("${buildDir}/libs/${project.name}-${project.version}-javadoc.jar")) { classifier 'javadoc' }
 
             pom.withXml {
                 // all dependencies should use the default scope (compile) but
