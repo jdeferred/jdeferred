@@ -81,7 +81,7 @@ public interface DeferredManager {
 		 *      It will be removed in version 2.x
 		 */
 		@Deprecated
-		MANAUL
+		MANAUL,
 
 		/**
 		 * Tells Deferred Manager that this task will be manually started
