@@ -1,12 +1,15 @@
 package org.jdeferred.impl;
 
+import org.jdeferred.AlwaysCallback;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
+import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 
 public class CancelTaskTest extends AbstractDeferredTest {
 
@@ -38,6 +41,12 @@ public class CancelTaskTest extends AbstractDeferredTest {
 			@Override
 			public void onDone(String result) {
 				Assert.fail("Shouldn't be called, because task was cancelled");
+			}
+		}).always(new AlwaysCallback<String, Throwable>() {
+			@Override
+			public void onAlways(State state, String resolved, Throwable rejected) {
+				Assert.assertEquals(State.REJECTED, state);
+				Assert.assertTrue(rejected instanceof CancellationException);
 			}
 		});
 
