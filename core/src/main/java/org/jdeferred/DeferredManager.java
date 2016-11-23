@@ -74,9 +74,19 @@ public interface DeferredManager {
 		AUTO,
 		
 		/**
-		 * Tells Deferred Manager that this task will be manually started
-		 */
-		MANUAL
+         * Tells Deferred Manager that this task will be manually started
+         *
+         * @deprecated  As of Version 1.2.4, this element is deprecated.
+         *      Use MANUAL instead. 
+         *      It will be removed in version 2.x
+         */
+        @Deprecated
+        MANAUL
+
+        /**
+         * Tells Deferred Manager that this task will be manually started
+         */
+        MANUAL
 	}
 	
 	/**
