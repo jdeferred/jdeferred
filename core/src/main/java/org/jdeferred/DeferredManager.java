@@ -78,7 +78,7 @@ public interface DeferredManager {
 		 *
 		 * @deprecated  As of Version 1.2.5, this element is deprecated.
 		 *      Use MANUAL instead. 
-		 *      It will be removed in version 2.x
+		 *      It will be removed in version 1.3
 		 */
 		@Deprecated
 		MANAUL,

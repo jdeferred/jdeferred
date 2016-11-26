@@ -393,4 +393,4 @@ var google_remarketing_only = false;
 
 <a name="deprecations-v1.2.5"></a>v1.2.5
 --------
-* ~~```DeferredManager.StartPolicy.MANAUL```~~ is deprecated and will be removed in the next major version. Use ```DeferredManager.StartPolicy.MANUAL``` instead.
+* ~~```DeferredManager.StartPolicy.MANAUL```~~ is deprecated and will be removed in the next minor version. Use ```DeferredManager.StartPolicy.MANUAL``` instead.
