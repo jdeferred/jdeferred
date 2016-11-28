@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
@@ -51,6 +52,10 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 
 	public boolean isRejected() {
 		return promise.isRejected();
+	}
+
+	public boolean isCancelled() {
+		return promise.isCancelled();
 	}
 
 	public Promise<D, F, P> then(DoneCallback<D> doneCallback) {
@@ -100,9 +105,13 @@ public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
+	public Promise<D, F, P> cancel(CancelCallback callback) {
+		return promise.cancel(callback);
+	}
+
+	@Override
 	public void waitSafely() throws InterruptedException {
 		promise.waitSafely();
-		
 	}
 
 	@Override

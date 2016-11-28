@@ -46,13 +46,13 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	
 	public DeferredFutureTask(Callable<D> callable) {
 		super(callable);
-		this.deferred = new DeferredObject<D, Throwable, P>();
+		this.deferred = new DeferredObject<D, Throwable, P>(this);
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
 	public DeferredFutureTask(Runnable runnable) {
 		super(runnable, null);
-		this.deferred = new DeferredObject<D, Throwable, P>();
+		this.deferred = new DeferredObject<D, Throwable, P>(this);
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
@@ -77,7 +77,7 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	protected void done() {
 		try {
 			if (isCancelled()) {
-				deferred.reject(new CancellationException());
+				deferred.cancel();
 				return;
 			}
 			D result = get();

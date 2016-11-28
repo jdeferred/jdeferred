@@ -16,9 +16,13 @@
 package org.jdeferred.impl;
 
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.FutureTask;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
+import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -47,9 +51,15 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
 	protected final List<ProgressCallback<P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<P>>();
 	protected final List<AlwaysCallback<D, F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<D, F>>();
-	
+	protected final List<CancelCallback> cancelCallbacks = new CopyOnWriteArrayList<CancelCallback>();
+
 	protected D resolveResult;
 	protected F rejectResult;
+	protected DeferredFutureTask<D, P> futureTask;
+
+	protected AbstractPromise(DeferredFutureTask<D, P> futureTask) {
+		this.futureTask = futureTask;
+	}
 
 	@Override
 	public State state() {
@@ -91,6 +101,18 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 		return this;
 	}
+
+	@Override
+	public Promise<D, F, P> cancel(CancelCallback callback) {
+		synchronized (this) {
+			if(isCancelled()){
+				triggerCancel(callback);
+			}else{
+				cancelCallbacks.add(callback);
+			}
+		}
+		return this;
+	}
 	
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
@@ -108,6 +130,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 	
 	protected void triggerFail(F rejected) {
+		if (rejected instanceof CancellationException) {
+			triggerCancel();
+			return;
+		}
+
 		for (FailCallback<F> callback : failCallbacks) {
 			try {
 				triggerFail(callback, rejected);
@@ -150,7 +177,28 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			this.notifyAll();
 		}
 	}
-	
+
+	protected void triggerCancel() {
+		try {
+			futureTask.cancel(true);
+		} catch(CancellationException expected) {
+			// ignore ?
+		}
+		for (CancelCallback callback : cancelCallbacks) {
+			try {
+				triggerCancel(callback);
+			} catch (Exception e) {
+				log.error("an uncaught exception occured in a CancelCallback", e);
+			}
+		}
+		doneCallbacks.clear();
+		futureTask = null;
+	}
+
+	protected void triggerCancel(CancelCallback callback) {
+		callback.onCancel();
+	}
+
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
 		callback.onAlways(state, resolve, reject);
 	}
@@ -235,6 +283,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public boolean isRejected() {
 		return state == State.REJECTED;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return state == State.CANCELLED;
 	}
 	
 	public void waitSafely() throws InterruptedException {

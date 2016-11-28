@@ -17,6 +17,8 @@ package org.jdeferred;
 
 import org.jdeferred.impl.DeferredObject;
 
+import java.util.concurrent.FutureTask;
+
 /**
  * Deferred interface to trigger an event (resolve, reject, notify).
  * Subsequently, this will allow Promise observers to listen in on the event
@@ -77,7 +79,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * @param resolve
+	 * @param reject
 	 * @return
 	 */
 	Deferred<D, F, P> reject(final F reject);
@@ -102,7 +104,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * @param resolve
+	 * @param progress
 	 * @return
 	 */
 	Deferred<D, F, P> notify(final P progress);
@@ -113,4 +115,29 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @return
 	 */
 	Promise<D, F, P> promise();
+
+	/**
+	 * This should be called when a task has been cancelled.
+	 *
+	 * <pre>
+	 * <code>
+	 * {@link Deferred} deferredObject = new {@link DeferredObject}();
+	 * {@link Promise} promise = deferredObject.promise();
+	 * promise.cancel(new {@link CancelCallback}() {
+	 *   public void onCancel() {
+	 *   	// Cancelled :(
+	 *   }
+	 * });
+	 *
+	 * // another thread using the same deferredObject
+	 * deferredObject.cancel();
+	 *
+	 * </code>
+	 * </pre>
+	 *
+	 * @return
+	 */
+	Deferred<D, F, P> cancel();
+
+	void setTask(DeferredFutureTask<D, P> task);
 }

@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.Deferred;
+import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
@@ -56,7 +57,15 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements Deferred<D, F, P> {
-	
+
+	public DeferredObject() {
+		this(null);
+	}
+
+	public DeferredObject(DeferredFutureTask<D, P> task) {
+		super(task);
+	}
+
 	@Override
 	public Deferred<D, F, P> resolve(final D resolve) {
 		synchronized (this) {
@@ -105,5 +114,30 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 
 	public Promise<D, F, P> promise() {
 		return this;
+	}
+
+	@Override
+	public Deferred<D, F, P> cancel() {
+		synchronized (this) {
+			if (!isPending())
+				throw new IllegalStateException("Deferred object already finished, cannot cancel");
+
+			this.state = State.CANCELLED;
+
+			try {
+				triggerCancel();
+			} finally {
+				triggerAlways(state, null, null);
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public void setTask(DeferredFutureTask<D, P> task) {
+		if (futureTask != null)
+			throw new IllegalStateException("Deferred object already has an assigned task");
+
+		futureTask = task;
 	}
 }
