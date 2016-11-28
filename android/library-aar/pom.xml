@@ -21,7 +21,7 @@
 		<version>1.2.5-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>jdeferred-android-aar</artifactId>
+	<artifactId>jdeferred-jdeferred-android-aar</artifactId>
 	<name>JDeferred Android Library AAR</name>
 	<description>Use JDeferred in Android while dispatching callbacks in UI thread and/or Background thread.</description>
 	<packaging>aar</packaging>
