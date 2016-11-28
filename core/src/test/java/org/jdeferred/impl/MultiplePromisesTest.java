@@ -18,6 +18,7 @@ package org.jdeferred.impl;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
@@ -29,10 +30,12 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
+import org.jdeferred.multiple.MasterAnyDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.OneProgress;
 import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.OneResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -412,4 +415,65 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		}
 		Assert.assertEquals(1, doneCount.get());
 	}
+
+    @Test
+    public void testWhenAny() {
+        final AtomicInteger doneCount = new AtomicInteger();
+        final AtomicBoolean callable1Complete = new AtomicBoolean(false);
+        final AtomicBoolean callable2Complete = new AtomicBoolean(false);
+        final AtomicBoolean callable3Complete = new AtomicBoolean(false);
+
+        Promise<OneResult, OneReject, MasterProgress> p = deferredManager.whenAny(
+                new Callable<Integer>() {
+                    public Integer call() {
+                        try {
+                            Thread.sleep(2000);
+                            callable1Complete.set(true);
+                        } catch (InterruptedException e) {
+                        }
+
+                        return 100;
+                    }
+                }, new Callable<Integer>() {
+                    public Integer call() {
+                        try {
+                            Thread.sleep(500);
+                            callable2Complete.set(true);
+                        } catch (InterruptedException e) {
+                        }
+
+                        throw new RuntimeException("Oops");
+                    }
+                }, new Callable<String>() {
+                    public String call() {
+                        try {
+                            Thread.sleep(5000);
+                            callable3Complete.set(true);
+                        } catch (InterruptedException e) {
+                        }
+
+                        return "Hello";
+                    }
+                }
+        ).then(new DoneCallback<OneResult>() {
+            public void onDone(OneResult result) {
+                Assert.assertEquals(100, result.getResult());
+                doneCount.incrementAndGet();
+            }
+        });
+
+        try {
+            p.waitSafely();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        Assert.assertTrue(callable1Complete.get());
+        Assert.assertTrue(callable2Complete.get());
+        Assert.assertFalse(callable3Complete.get());
+        Assert.assertEquals(1, doneCount.get());
+
+        MasterAnyDeferredObject any = (MasterAnyDeferredObject) p;
+        Assert.assertEquals(RuntimeException.class, any.getRejects().get(1).getReject().getClass());
+    }
 }
