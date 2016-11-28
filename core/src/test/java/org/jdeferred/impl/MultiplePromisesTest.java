@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -158,7 +159,46 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		Assert.assertEquals(0, doneCount.get());
 		Assert.assertEquals(1, failCount.get());
 	}
-	
+
+	@Test
+	public void testMultipleFailWaitCollection() {
+		final AtomicInteger failCount = new AtomicInteger();
+		final AtomicInteger doneCount = new AtomicInteger();
+
+		deferredManager.when(Arrays.asList(new Callable<Integer>() {
+			public Integer call() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				throw new RuntimeException("oops");
+			}
+		}, new Callable<String>() {
+			public String call() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				return "Hello";
+			}
+		})).then(new DoneCallback<MultipleResults>() {
+			public void onDone(MultipleResults results) {
+				doneCount.incrementAndGet();
+			}
+		}).fail(new FailCallback<OneReject>() {
+			public void onFail(OneReject result) {
+				Assert.assertEquals(0, result.getIndex());
+				failCount.incrementAndGet();
+			}
+		});
+
+		waitForCompletion();
+		Assert.assertEquals(0, doneCount.get());
+		Assert.assertEquals(1, failCount.get());
+	}
+
 	@Test
 	public void testComplex() {
 		final AtomicInteger failCount = new AtomicInteger();

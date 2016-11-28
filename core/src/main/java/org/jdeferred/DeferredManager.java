@@ -15,6 +15,7 @@
  */
 package org.jdeferred;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -175,6 +176,8 @@ public interface DeferredManager {
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Promise... promises);
+
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(Collection<?> promises);
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}

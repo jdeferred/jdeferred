@@ -40,22 +40,23 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	final protected Logger log = LoggerFactory.getLogger(AbstractPromise.class);
-	
+
 	protected volatile State state = State.PENDING;
 
 	protected final List<DoneCallback<D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<D>>();
 	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
 	protected final List<ProgressCallback<P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<P>>();
 	protected final List<AlwaysCallback<D, F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<D, F>>();
-	
+
 	protected D resolveResult;
 	protected F rejectResult;
+	private Throwable throwable;
 
 	@Override
 	public State state() {
 		return state;
 	}
-	
+
 	@Override
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
 		synchronized (this) {
@@ -79,7 +80,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
 		synchronized (this) {
@@ -91,69 +92,77 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 		return this;
 	}
-	
+
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
 			try {
 				triggerDone(callback, resolved);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error("an uncaught exception occured in a DoneCallback", e);
+                saveThrowable(e);
 			}
 		}
 		doneCallbacks.clear();
 	}
-	
+
 	protected void triggerDone(DoneCallback<D> callback, D resolved) {
 		callback.onDone(resolved);
 	}
-	
+
 	protected void triggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
 			try {
 				triggerFail(callback, rejected);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error("an uncaught exception occured in a FailCallback", e);
+                saveThrowable(e);
 			}
 		}
 		failCallbacks.clear();
 	}
-	
+
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
 		callback.onFail(rejected);
 	}
-	
+
 	protected void triggerProgress(P progress) {
 		for (ProgressCallback<P> callback : progressCallbacks) {
 			try {
 				triggerProgress(callback, progress);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error("an uncaught exception occured in a ProgressCallback", e);
+                saveThrowable(e);
 			}
 		}
 	}
-	
+
 	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
 		callback.onProgress(progress);
 	}
-	
+
 	protected void triggerAlways(State state, D resolve, F reject) {
 		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
 			try {
 				triggerAlways(callback, state, resolve, reject);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error("an uncaught exception occured in a AlwaysCallback", e);
+                saveThrowable(e);
 			}
 		}
 		alwaysCallbacks.clear();
-		
+
 		synchronized (this) {
 			this.notifyAll();
 		}
 	}
-	
+
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
 		callback.onAlways(state, resolve, reject);
 	}
+
+    private void saveThrowable(Throwable e) {
+        throwable =  e;
+    }
 
 	@Override
 	public Promise<D, F, P> progress(ProgressCallback<P> callback) {
@@ -181,26 +190,26 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		progress(progressCallback);
 		return this;
 	}
-	
+
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
 	}
-	
+
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
 	}
-	
+
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
 	}
-	
+
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
@@ -221,7 +230,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
 	}
-	
+
 	@Override
 	public boolean isPending() {
 		return state == State.PENDING;
@@ -236,33 +245,44 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	public boolean isRejected() {
 		return state == State.REJECTED;
 	}
-	
+
 	public void waitSafely() throws InterruptedException {
 		waitSafely(-1);
 	}
 	public void waitSafely(long timeout) throws InterruptedException {
 		final long startTime = System.currentTimeMillis();
-		synchronized (this) {
-			while (this.isPending()) {
-				try {
-					if (timeout <= 0) {
-						wait();
-					} else {
-						final long elapsed = (System.currentTimeMillis() - startTime);
-					    final long waitTime = timeout - elapsed;
-						wait(waitTime);
-					}
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					throw e;
-				}
-				
-				if (timeout > 0 && ((System.currentTimeMillis() - startTime) >= timeout)) {
-					return;
-				} else {
-					continue; // keep looping
-				}
+		waitForPendingTimeout(timeout, startTime);
+        if (throwable != null) {
+			if (throwable instanceof Error) {
+				throw (Error) throwable;
 			}
-		}
+			if (throwable instanceof RuntimeException) {
+				throw (RuntimeException) throwable;
+			}
+        }
+	}
+
+	private synchronized void waitForPendingTimeout(long timeout, long startTime) throws
+			InterruptedException {
+		while (this.isPending()) {
+            try {
+                if (timeout <= 0) {
+                    wait();
+                } else {
+                    final long elapsed = (System.currentTimeMillis() - startTime);
+                    final long waitTime = timeout - elapsed;
+                    wait(waitTime);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            }
+
+            if (timeout > 0 && ((System.currentTimeMillis() - startTime) >= timeout)) {
+				return;
+            } else {
+                continue; // keep looping
+            }
+        }
 	}
 }

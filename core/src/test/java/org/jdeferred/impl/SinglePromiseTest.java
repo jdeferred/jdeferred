@@ -19,12 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.DeferredCallable;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
@@ -241,7 +236,7 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 		deferredManager.when(failedFuture).fail(new FailCallback<Throwable>() {
 			@Override
 			public void onFail(Throwable result) {
-				Assert.assertEquals("oops", result.getCause());
+				Assert.assertEquals("oops", result.getMessage());
 				failCount.incrementAndGet();
 			}
 		});
@@ -304,5 +299,47 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testExceptionCatching() throws Exception {
+		final Deferred<String, String, String> deferred = new DeferredObject<String, String, String>();
+
+		deferred.promise().then(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				throw new RuntimeException("oops");
+			}
+		});
+		Thread resolved = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				deferred.resolve("resolved");
+			}
+		});
+		resolved.start();
+		resolved.join();
+		deferred.waitSafely();
+	}
+
+	@Test(expected = Error.class)
+	public void testErrorCatching() throws Exception {
+		final Deferred<String, String, String> deferred = new DeferredObject<String, String, String>();
+
+		deferred.promise().then(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				throw new Error("oops");
+			}
+		});
+		Thread resolved = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				deferred.resolve("resolved");
+			}
+		});
+		resolved.start();
+		resolved.join();
+		deferred.waitSafely();
 	}
 }
