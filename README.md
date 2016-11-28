@@ -387,3 +387,10 @@ var google_remarketing_only = false;
 <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/974052972/?value=0&amp;label=wsVZCOycvgkQ7Ly70AM&amp;guid=ON&amp;script=0"/>
 </div>
 </noscript>
+
+<a name="deprecations"></a>Depracations
+==============
+
+<a name="deprecations-v1.2.5"></a>v1.2.5
+--------
+* ~~```DeferredManager.StartPolicy.MANAUL```~~ is deprecated and will be removed in the next minor version. Use ```DeferredManager.StartPolicy.MANUAL``` instead.
