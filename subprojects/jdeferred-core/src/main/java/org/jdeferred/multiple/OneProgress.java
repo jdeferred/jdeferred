@@ -30,8 +30,8 @@ public class OneProgress extends MasterProgress {
 	private final Promise promise;
 	private final Object progress;
 	
-	public OneProgress(int done, int fail, int total, int index, Promise promise, Object progress) {
-		super(done, fail, total);
+	public OneProgress(int done, int fail, int total, int cancel, int index, Promise promise, Object progress) {
+		super(done, fail, cancel, total);
 		this.index = index;
 		this.promise = promise;
 		this.progress = progress;
@@ -53,7 +53,8 @@ public class OneProgress extends MasterProgress {
 	public String toString() {
 		return "OneProgress [index=" + index + ", promise=" + promise
 				+ ", progress=" + progress + ", getDone()=" + getDone()
-				+ ", getFail()=" + getFail() + ", getTotal()=" + getTotal()
+			    + ", getFail()=" + getFail() + ", getCancel()=" + getCancel()
+				+ ", getTotal()=" + getTotal()
 				+ "]";
 	}
 }

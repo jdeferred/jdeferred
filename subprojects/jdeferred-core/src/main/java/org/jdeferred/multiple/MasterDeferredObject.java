@@ -18,6 +18,7 @@ package org.jdeferred.multiple;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
@@ -31,6 +32,8 @@ import org.jdeferred.impl.DeferredObject;
  * (i.e., all finished successfully) with {@link MultipleResults}.</li>
  * <li>{@link Promise#fail(FailCallback)} will be
  * triggered if any promises rejects (i.e., if any one failed) with {@link OneReject}.</li>
+ * <li>{@link Promise#cancel(CancelCallback)} will be
+ * triggered if any promises cancels.</li>
  * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever one
  * promise resolves or rejects ({#link {@link MasterProgress}), 
  * or whenever a promise was notified progress ({@link OneProgress}).</li>
@@ -49,6 +52,7 @@ public class MasterDeferredObject extends
 	private final int numberOfPromises;
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
+	private final AtomicInteger cancelCount = new AtomicInteger();
 	private final MultipleResults results;
 
 	@SuppressWarnings("unchecked")
@@ -71,6 +75,7 @@ public class MasterDeferredObject extends
 						MasterDeferredObject.this.notify(new MasterProgress(
 								doneCount.get(),
 								fail,
+							    cancelCount.get(),
 								numberOfPromises));
 						
 						MasterDeferredObject.this.reject(new OneReject(index, promise, result));
@@ -85,6 +90,7 @@ public class MasterDeferredObject extends
 						MasterDeferredObject.this.notify(new OneProgress(
 								doneCount.get(),
 								failCount.get(),
+							    cancelCount.get(),
 								numberOfPromises, index, promise, progress));
 					}
 				}
@@ -101,11 +107,28 @@ public class MasterDeferredObject extends
 						MasterDeferredObject.this.notify(new MasterProgress(
 								done,
 								failCount.get(),
+							    cancelCount.get(),
 								numberOfPromises));
 						
 						if (done == numberOfPromises) {
 							MasterDeferredObject.this.resolve(results);
 						}
+					}
+				}
+			}).cancel(new CancelCallback() {
+				@Override
+				public void onCancel() {
+					synchronized (MasterDeferredObject.this) {
+						if (!MasterDeferredObject.this.isPending())
+							return;
+
+						MasterDeferredObject.this.notify(new MasterProgress(
+							doneCount.get(),
+							failCount.get(),
+							cancelCount.incrementAndGet(),
+							numberOfPromises));
+
+						MasterDeferredObject.this.cancel();
 					}
 				}
 			});

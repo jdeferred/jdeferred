@@ -223,6 +223,6 @@ public interface DeferredManager {
 			DeferredFutureTask<?, ?>... tasks);
 	
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Future<?> ... futures);
+			Future<?>... futures);
 
 }
