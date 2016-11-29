@@ -15,10 +15,10 @@
  */
 package org.jdeferred;
 
-import java.util.concurrent.Callable;
-
 import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
+
+import java.util.concurrent.Callable;
 
 /**
  * Use this as superclass in case you need to be able to return a result and notify progress.
@@ -31,7 +31,7 @@ import org.jdeferred.impl.DeferredObject;
  * @param <P> Type used for {@link Deferred#notify(Object)}
  */
 public abstract class DeferredCallable<D, P> implements Callable<D> {
-	private final Deferred<D, Throwable, P> deferred = new DeferredObject<D, Throwable, P>(new DeferredFutureTask<D, P>(this));
+	private final Deferred<D, Throwable, P> deferred = new DeferredObject<D, Throwable, P>();
 	private final StartPolicy startPolicy;
 	
 	public DeferredCallable() {

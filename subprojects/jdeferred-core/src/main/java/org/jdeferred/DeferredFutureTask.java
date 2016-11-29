@@ -15,13 +15,13 @@
  */
 package org.jdeferred;
 
+import org.jdeferred.DeferredManager.StartPolicy;
+import org.jdeferred.impl.DeferredObject;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-
-import org.jdeferred.DeferredManager.StartPolicy;
-import org.jdeferred.impl.DeferredObject;
 
 /**
  * FutureTask can wrap around {@link Callable} and {@link Runnable}.
@@ -46,13 +46,13 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	
 	public DeferredFutureTask(Callable<D> callable) {
 		super(callable);
-		this.deferred = new DeferredObject<D, Throwable, P>(this);
+		this.deferred = new DeferredObject<D, Throwable, P>();
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
 	public DeferredFutureTask(Runnable runnable) {
 		super(runnable, null);
-		this.deferred = new DeferredObject<D, Throwable, P>(this);
+		this.deferred = new DeferredObject<D, Throwable, P>();
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
 	
