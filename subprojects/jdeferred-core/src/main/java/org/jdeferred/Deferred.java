@@ -17,8 +17,6 @@ package org.jdeferred;
 
 import org.jdeferred.impl.DeferredObject;
 
-import java.util.concurrent.FutureTask;
-
 /**
  * Deferred interface to trigger an event (resolve, reject, notify).
  * Subsequently, this will allow Promise observers to listen in on the event
@@ -138,6 +136,4 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @return
 	 */
 	Deferred<D, F, P> cancel();
-
-	void setTask(DeferredFutureTask<D, P> task);
 }

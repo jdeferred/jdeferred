@@ -15,14 +15,8 @@
  */
 package org.jdeferred.impl;
 
-import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.FutureTask;
-
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.CancelCallback;
-import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -35,6 +29,10 @@ import org.jdeferred.ProgressPipe;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -55,11 +53,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	protected D resolveResult;
 	protected F rejectResult;
-	protected DeferredFutureTask<D, P> futureTask;
-
-	protected AbstractPromise(DeferredFutureTask<D, P> futureTask) {
-		this.futureTask = futureTask;
-	}
 
 	@Override
 	public State state() {
@@ -179,11 +172,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerCancel() {
-		try {
-			futureTask.cancel(true);
-		} catch(CancellationException expected) {
-			// ignore ?
-		}
 		for (CancelCallback callback : cancelCallbacks) {
 			try {
 				triggerCancel(callback);
@@ -192,7 +180,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			}
 		}
 		doneCallbacks.clear();
-		futureTask = null;
 	}
 
 	protected void triggerCancel(CancelCallback callback) {
