@@ -1,22 +1,29 @@
 sudo: false
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
   - $HOME/.m2
-  - $HOME/.gradle
-  - $HOME/.android
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+  - $HOME/.android/build-cache
 jdk: oraclejdk8
 language: android
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-19.1
-    - android-16
-    - extra
-    - extra-google-m2repository
-    - extra-android-m2repository
+  - tools
+  - platform-tools
+  - build-tools-19.1.0
+  - android-16
+  - extra
+  - extra-google-m2repository
+  - extra-android-m2repository
 before_script:
-  - ./gradlew --version
-script: ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
+- echo "sdk.dir=$ANDROID_HOME" > $TRAVIS_BUILD_DIR/local.properties
+- echo "android.builder.sdkDownload=false" >> $TRAVIS_BUILD_DIR/local.properties
+- ./gradlew --version
+script:
+- ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
 after_success:
-  - ./gradlew coveralls
+- ./gradlew coveralls
