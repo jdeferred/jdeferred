@@ -22,11 +22,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.2'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'net.nemerosa:versioning:2.5.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
+        classpath 'net.nemerosa:versioning:2.6.0'
     }
 }
 
