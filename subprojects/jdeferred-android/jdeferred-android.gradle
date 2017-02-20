@@ -154,13 +154,11 @@ publishing {
             pom.withXml {
                 asNode().children().last() + pomConfig
                 asNode().appendNode('description', project.project_description)
-                /*
                 def depNode = asNode().appendNode('dependencies')
                         .appendNode('dependency')
                 depNode.appendNode('groupId', project.group)
                 depNode.appendNode('artifactId', 'jdeferred-core')
                 depNode.appendNode('version', project.version)
-                */
             }
         }
     }
