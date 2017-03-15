@@ -47,6 +47,10 @@ android {
          minSdkVersion 15
          targetSdkVersion 19
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
     testOptions { 
         unitTests.returnDefaultValues = true
     }
