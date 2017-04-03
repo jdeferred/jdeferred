@@ -15,6 +15,8 @@
  */
 package org.jdeferred.multiple;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
@@ -51,11 +53,15 @@ public class MasterDeferredObject extends
 	private final AtomicInteger failCount = new AtomicInteger();
 	private final MultipleResults results;
 
-	@SuppressWarnings("unchecked")
 	public MasterDeferredObject(Promise... promises) {
-		if (promises == null || promises.length == 0)
+		this(Arrays.asList(promises));
+	}
+
+	@SuppressWarnings("unchecked")
+	public MasterDeferredObject(Collection<Promise> promises) {
+		if (promises == null || promises.isEmpty())
 			throw new IllegalArgumentException("Promises is null or empty");
-		this.numberOfPromises = promises.length;
+		this.numberOfPromises = promises.size();
 		results = new MultipleResults(numberOfPromises);
 
 		int count = 0;

@@ -221,8 +221,24 @@ public interface DeferredManager {
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredFutureTask<?, ?>... tasks);
-	
+
+	/**
+	 * May or may not submit {@link Future} for execution. See
+	 * implementation documentation.
+	 *
+	 * @param futures
+	 * @return {@link #when(Promise...)}
+	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
 			Future<?> ... futures);
+
+	/**
+	 * May or may not submit tasks for execution. See implementation documentation.
+	 *
+	 * @param iterable
+	 * @return {@link #when(Promise...)}
+	 */
+	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+			Iterable iterable);
 
 }
