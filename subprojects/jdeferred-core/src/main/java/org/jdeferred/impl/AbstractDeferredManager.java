@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -145,11 +146,19 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 
 	@Override
 	public Promise<MultipleResults, OneReject, MasterProgress> when(Iterable iterable) {
-		List<Promise> promises = new ArrayList<Promise>();
-		for (Object elem : iterable) {
-			promises.add(toPromise(elem));
-		}
-		return new MasterDeferredObject(promises).promise();
+		if (iterable == null)
+			throw new IllegalArgumentException("Iterable is null");
+
+		Iterator iterator = iterable.iterator();
+		if (iterator.hasNext()) {
+			List<Promise> promises = new ArrayList<Promise>();
+			promises.add(toPromise(iterator.next()));
+			while (iterator.hasNext()) {
+				promises.add(toPromise(iterator.next()));
+			}
+			return new MasterDeferredObject(promises).promise();
+		} else
+			throw new IllegalArgumentException("Iterable is empty");
 	}
 
 	protected Promise toPromise(Object o) {
@@ -248,6 +257,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	protected void assertNotEmpty(Object[] objects) {
 		if (objects == null || objects.length == 0)
 			throw new IllegalArgumentException(
-					"Arguments is null or its length is empty");
+					"Arguments array is null or its length is empty");
 	}	
 }
