@@ -388,7 +388,7 @@ var google_remarketing_only = false;
 </div>
 </noscript>
 
-<a name="deprecations"></a>Depracations
+<a name="deprecations"></a>Deprecations
 ==============
 
 <a name="deprecations-v1.2.5"></a>v1.2.5
