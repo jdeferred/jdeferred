@@ -244,6 +244,45 @@ try {
   ... 
 }
 ```
+<a name="example-lambda"></a>Java 8 Lambda
+-------------
+Now this is pretty cool when used with Java 8 Lambda!
+
+```Java
+dm.when(() -> {
+  return "Hey!";
+}).done(r -> System.out.println(r));
+
+dm.when(
+  () -> { return "Hello"; },
+  () -> { return "World"; }
+).done(rs ->
+  rs.forEach(r -> System.out.println(r.getResult()))
+);
+```
+
+<a name="example-groovy"></a>Groovy
+-----
+You can also easily use with Groovy!
+
+```Groovy
+@Grab('org.jdeferred:jdeferred-core:1.2.6')
+import org.jdeferred.*
+import org.jdeferred.impl.*
+
+def deferred = new DeferredObject()
+def promise = deferred.promise()
+
+promise.done { result ->
+  println "done: $result" 
+}.fail { rejection ->
+  println "fail: $rejection"
+}.always { state, result, rejection ->
+  println "always"
+}
+
+deferred.resolve("done")
+```
 
 <a name="example-android"></a>Android Support
 ---------------
@@ -328,46 +367,6 @@ public class AsyncServlet extends HttpServlet {
   }
 }
 ```
-<a name="example-lambda"></a>Java 8 Lambda
--------------
-Now this is pretty cool when used with Java 8 Lambda!
-
-```Java
-dm.when(() -> {
-  return "Hey!";
-}).done(r -> System.out.println(r));
-
-dm.when(
-  () -> { return "Hello"; },
-  () -> { return "World"; }
-).done(rs ->
-  rs.forEach(r -> System.out.println(r.getResult()))
-);
-```
-
-<a name="example-groovy"></a>Groovy
------
-You can also easily use with Groovy!
-
-```Groovy
-@Grab('org.jdeferred:jdeferred-core:1.2.4')
-import org.jdeferred.*
-import org.jdeferred.impl.*
-
-def deferred = new DeferredObject()
-def promise = deferred.promise()
-
-promise.done { result ->
-  println "done: $result" 
-}.fail { rejection ->
-  println "fail: $rejection"
-}.always { state, result, rejection ->
-  println "always"
-}
-
-deferred.resolve("done")
-```
-
 <!-- Google Code for GitHub Visit Conversion Page -->
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -388,7 +387,7 @@ var google_remarketing_only = false;
 </div>
 </noscript>
 
-<a name="deprecations"></a>Depracations
+<a name="deprecations"></a>Deprecations
 ==============
 
 <a name="deprecations-v1.2.5"></a>v1.2.5
