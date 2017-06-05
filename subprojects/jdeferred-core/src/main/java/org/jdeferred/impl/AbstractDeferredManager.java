@@ -15,6 +15,9 @@
  */
 package org.jdeferred.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -142,6 +145,45 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
+	public Promise<MultipleResults, OneReject, MasterProgress> when(Iterable iterable) {
+		if (iterable == null)
+			throw new IllegalArgumentException("Iterable is null");
+
+		Iterator iterator = iterable.iterator();
+		if (iterator.hasNext()) {
+			List<Promise> promises = new ArrayList<Promise>();
+			promises.add(toPromise(iterator.next()));
+			while (iterator.hasNext()) {
+				promises.add(toPromise(iterator.next()));
+			}
+			return new MasterDeferredObject(promises).promise();
+		} else
+			throw new IllegalArgumentException("Iterable is empty");
+	}
+
+	protected Promise toPromise(Object o) {
+		if (o instanceof DeferredFutureTask) {
+			return when((DeferredFutureTask) o);
+		} else if (o instanceof DeferredRunnable) {
+			return when((DeferredRunnable) o);
+		} else if (o instanceof DeferredCallable) {
+			return when((DeferredCallable) o);
+		} else if (o instanceof Runnable) {
+			return when((Runnable) o);
+		} else if (o instanceof Callable) {
+			return when((Callable) o);
+		} else if (o instanceof Future) {
+			return when((Future) o);
+		} else if (o instanceof Promise) {
+			return (Promise) o;
+		} else {
+			DeferredObject deferred = new DeferredObject();
+			deferred.resolve(o);
+			return deferred.promise();
+		}
+	}
+
+	@Override
 	public <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise) {
 		return promise;
 	}
@@ -172,7 +214,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * 	<li>{@link #when(Callable)}</li>
 	 *  <li>{@link #when(Callable...)}</li>
 	 *  <li>{@link #when(Runnable)}</li>
-	 *  <li>{@link #when(Runnable..)}</li>
+	 *  <li>{@link #when(Runnable...)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future...)}</li>
 	 *  <li>{@link #when(org.jdeferred.DeferredRunnable...)}</li>
@@ -215,6 +257,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	protected void assertNotEmpty(Object[] objects) {
 		if (objects == null || objects.length == 0)
 			throw new IllegalArgumentException(
-					"Arguments is null or its length is empty");
+					"Arguments array is null or its length is empty");
 	}	
 }
