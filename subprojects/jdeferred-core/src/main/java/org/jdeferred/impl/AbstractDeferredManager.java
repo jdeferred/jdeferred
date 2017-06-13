@@ -103,7 +103,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
             case 3: return when(promises[0], promises[1], promises[2]);
             case 4: return when(promises[0], promises[1], promises[2], promises[3]);
             case 5: return when(promises[0], promises[1], promises[2], promises[3], promises[4]);
-            case 6: return when(promises[0], promises[1], promises[2], promises[3], promises[4], promises[5]);
             default:
                 Promise[] promiseN = new Promise[promises.length - 6];
                 System.arraycopy(promises, 6, promiseN, 0, promiseN.length);
