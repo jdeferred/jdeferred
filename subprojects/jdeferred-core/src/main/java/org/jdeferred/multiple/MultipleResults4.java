@@ -15,37 +15,28 @@
  */
 package org.jdeferred.multiple;
 
-import org.jdeferred.Promise;
-
 /**
- * 
- * @author Ray Tsang
+ * Contains a list of {@link OneResult}.
  *
+ * @author Ray Tsang
  */
-@SuppressWarnings("rawtypes")
-public class OneResult<T> {
-	private final int index;
-	private final Promise promise;
-	private final T result;
-	
-	public OneResult(int index, Promise promise, T result) {
-		super();
-		this.index = index;
-		this.promise = promise;
-		this.result = result;
-	}
-	public int getIndex() {
-		return index;
-	}
-	public Promise getPromise() {
-		return promise;
-	}
-	public T getResult() {
-		return result;
-	}
-	@Override
-	public String toString() {
-		return "OneResult [index=" + index + ", promise=" + promise
-				+ ", result=" + result + "]";
-	}
+public class MultipleResults4<A, B, C, D> extends MultipleResults3<A, B,C> {
+    protected OneResult<D> d;
+
+    protected void setFourth(OneResult<D> d) {
+        this.d = d;
+    }
+
+    public OneResult<D> getFourth() {
+        return d;
+    }
+
+    public int size() {
+        return 4;
+    }
+
+    @Override
+    public String toString() {
+        return "MultipleResults4 [a=" + a + ", b=" + b + ", c=" + c + ", d=" + d + "]";
+    }
 }

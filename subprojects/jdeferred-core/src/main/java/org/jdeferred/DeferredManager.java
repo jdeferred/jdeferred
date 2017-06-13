@@ -22,6 +22,11 @@ import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.MultipleResults2;
+import org.jdeferred.multiple.MultipleResults3;
+import org.jdeferred.multiple.MultipleResults4;
+import org.jdeferred.multiple.MultipleResults5;
+import org.jdeferred.multiple.MultipleResultsN;
 import org.jdeferred.multiple.OneReject;
 
 /**
@@ -173,8 +178,41 @@ public interface DeferredManager {
 	 * @param promises
 	 * @return {@link MasterDeferredObject}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			Promise... promises);
+	*/
+
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		Promise<? extends A,?,?> promiseA,
+		Promise<? extends B,?,?> promiseB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		Promise<? extends A,?,?> promiseA,
+		Promise<? extends B,?,?> promiseB,
+		Promise<? extends C,?,?> promiseC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		Promise<? extends A,?,?> promiseA,
+		Promise<? extends B,?,?> promiseB,
+		Promise<? extends C,?,?> promiseC,
+		Promise<? extends D,?,?> promiseD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Promise<? extends A,?,?> promiseA,
+		Promise<? extends B,?,?> promiseB,
+		Promise<? extends C,?,?> promiseC,
+		Promise<? extends D,?,?> promiseD,
+		Promise<? extends E,?,?> promiseE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Promise<? extends A,?,?> promiseA,
+		Promise<? extends B,?,?> promiseB,
+		Promise<? extends C,?,?> promiseC,
+		Promise<? extends D,?,?> promiseD,
+		Promise<? extends E,?,?> promiseE,
+		Promise<?,?,?> promise,
+		Promise<?,?,?>... promises);
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}
@@ -182,7 +220,7 @@ public interface DeferredManager {
 	 * @param runnables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	public abstract <R> Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			Runnable... runnables);
 
 	/**
@@ -191,8 +229,41 @@ public interface DeferredManager {
 	 * @param callables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			Callable<?>... callables);
+	*/
+
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		Callable<? extends A> callableA,
+		Callable<? extends B> callableB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		Callable<? extends A> callableA,
+		Callable<? extends B> callableB,
+		Callable<? extends C> callableC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		Callable<? extends A> callableA,
+		Callable<? extends B> callableB,
+		Callable<? extends C> callableC,
+		Callable<? extends D> callableD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Callable<? extends A> callableA,
+		Callable<? extends B> callableB,
+		Callable<? extends C> callableC,
+		Callable<? extends D> callableD,
+		Callable<? extends E> callableE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Callable<? extends A> callableA,
+		Callable<? extends B> callableB,
+		Callable<? extends C> callableC,
+		Callable<? extends D> callableD,
+		Callable<? extends E> callableE,
+		Callable<?> callable,
+		Callable<?>... callables);
 
 	/**
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
@@ -200,18 +271,82 @@ public interface DeferredManager {
 	 * @param runnables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			DeferredRunnable<?>... runnables);
+	*/
 
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		DeferredRunnable<? extends A> runnableA,
+		DeferredRunnable<? extends B> runnableB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		DeferredRunnable<? extends A> runnableA,
+		DeferredRunnable<? extends B> runnableB,
+		DeferredRunnable<? extends C> runnableC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		DeferredRunnable<? extends A> runnableA,
+		DeferredRunnable<? extends B> runnableB,
+		DeferredRunnable<? extends C> runnableC,
+		DeferredRunnable<? extends D> runnableD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredRunnable<? extends A> runnableA,
+		DeferredRunnable<? extends B> runnableB,
+		DeferredRunnable<? extends C> runnableC,
+		DeferredRunnable<? extends D> runnableD,
+		DeferredRunnable<? extends E> runnableE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredRunnable<? extends A> runnableA,
+		DeferredRunnable<? extends B> runnableB,
+		DeferredRunnable<? extends C> runnableC,
+		DeferredRunnable<? extends D> runnableD,
+		DeferredRunnable<? extends E> runnableE,
+		DeferredRunnable<?> runnable,
+		DeferredRunnable<?>... runnables);
 	/**
 	 * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
 	 * 
 	 * @param callables
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			DeferredCallable<?, ?>... callables);
+	*/
 
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		DeferredCallable<? extends A, ?> callableA,
+		DeferredCallable<? extends B, ?> callableB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		DeferredCallable<? extends A, ?> callableA,
+		DeferredCallable<? extends B, ?> callableB,
+		DeferredCallable<? extends C, ?> callableC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		DeferredCallable<? extends A, ?> callableA,
+		DeferredCallable<? extends B, ?> callableB,
+		DeferredCallable<? extends C, ?> callableC,
+		DeferredCallable<? extends D, ?> callableD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredCallable<? extends A, ?> callableA,
+		DeferredCallable<? extends B, ?> callableB,
+		DeferredCallable<? extends C, ?> callableC,
+		DeferredCallable<? extends D, ?> callableD,
+		DeferredCallable<? extends E, ?> callableE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredCallable<? extends A, ?> callableA,
+		DeferredCallable<? extends B, ?> callableB,
+		DeferredCallable<? extends C, ?> callableC,
+		DeferredCallable<? extends D, ?> callableD,
+		DeferredCallable<? extends E, ?> callableE,
+		DeferredCallable<?, ?> callable,
+		DeferredCallable<?, ?>... callables);
 	/**
 	 * May or may not submit {@link DeferredFutureTask} for execution. See
 	 * implementation documentation.
@@ -219,10 +354,75 @@ public interface DeferredManager {
 	 * @param tasks
 	 * @return {@link #when(Promise...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
 			DeferredFutureTask<?, ?>... tasks);
-	
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Future<?> ... futures);
+	*/
 
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		DeferredFutureTask<? extends A, ?> taskA,
+		DeferredFutureTask<? extends B, ?> taskB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		DeferredFutureTask<? extends A, ?> taskA,
+		DeferredFutureTask<? extends B, ?> taskB,
+		DeferredFutureTask<? extends C, ?> taskC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		DeferredFutureTask<? extends A, ?> taskA,
+		DeferredFutureTask<? extends B, ?> taskB,
+		DeferredFutureTask<? extends C, ?> taskC,
+		DeferredFutureTask<? extends D, ?> taskD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredFutureTask<? extends A, ?> taskA,
+		DeferredFutureTask<? extends B, ?> taskB,
+		DeferredFutureTask<? extends C, ?> taskC,
+		DeferredFutureTask<? extends D, ?> taskD,
+		DeferredFutureTask<? extends E, ?> taskE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		DeferredFutureTask<? extends A, ?> taskA,
+		DeferredFutureTask<? extends B, ?> taskB,
+		DeferredFutureTask<? extends C, ?> taskC,
+		DeferredFutureTask<? extends D, ?> taskD,
+		DeferredFutureTask<? extends E, ?> taskE,
+		DeferredFutureTask<?, ?> task,
+		DeferredFutureTask<?, ?>... tasks);
+
+	/*
+	public abstract Promise<MultipleResults, OneReject<R>, MasterProgress> when(
+			Future<?> ... futures);
+	*/		
+
+	<R,A,B> Promise<MultipleResults2<A,B>, OneReject<R>, MasterProgress> when(
+		Future<? extends A> futureA,
+		Future<? extends B> futureB);
+
+	<R,A,B,C> Promise<MultipleResults3<A,B,C>, OneReject<R>, MasterProgress> when(
+		Future<? extends A> futureA,
+		Future<? extends B> futureB,
+		Future<? extends C> futureC);
+
+	<R,A,B,C,D> Promise<MultipleResults4<A,B,C,D>, OneReject<R>, MasterProgress> when(
+		Future<? extends A> futureA,
+		Future<? extends B> futureB,
+		Future<? extends C> futureC,
+		Future<? extends D> futureD);
+
+	<R,A,B,C,D,E> Promise<MultipleResults5<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Future<? extends A> futureA,
+		Future<? extends B> futureB,
+		Future<? extends C> futureC,
+		Future<? extends D> futureD,
+		Future<? extends E> futureE);
+
+	<R,A,B,C,D,E> Promise<MultipleResultsN<A,B,C,D,E>, OneReject<R>, MasterProgress> when(
+		Future<? extends A> futureA,
+		Future<? extends B> futureB,
+		Future<? extends C> futureC,
+		Future<? extends D> futureD,
+		Future<? extends E> futureE,
+		Future<?> future,
+		Future<?>... futures);
 }

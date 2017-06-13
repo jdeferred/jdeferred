@@ -23,12 +23,12 @@ import org.jdeferred.Promise;
  *
  */
 @SuppressWarnings("rawtypes")
-public class OneReject {
+public class OneReject<T> {
 	private final int index;
 	private final Promise promise;
-	private final Object reject;
+	private final T reject;
 	
-	public OneReject(int index, Promise promise, Object reject) {
+	public OneReject(int index, Promise promise, T reject) {
 		super();
 		this.index = index;
 		this.promise = promise;
@@ -43,7 +43,7 @@ public class OneReject {
 		return promise;
 	}
 
-	public Object getReject() {
+	public T getReject() {
 		return reject;
 	}
 
