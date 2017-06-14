@@ -13,10 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android;
+package org.jdeferred.impl;
 
-import org.jdeferred.FailCallback;
+import org.jdeferred.multiple.OneResult;
 
-public interface AndroidFailCallback<F> extends FailCallback<F>, AndroidExecutionScopeable {
+/**
+ * Base implementation of {@link MutableMultipleResults}.
+ *
+ * @author Ray Tsang
+ * @author Andres Almiray
+ * @author Domen
+ */
+abstract class AbstractMutableMultipleResults extends AbstractMultipleResults implements MutableMultipleResults {
+	AbstractMutableMultipleResults(int size) {
+		super(size);
+	}
 
+	public void set(int index, OneResult<?> result) {
+		results.set(index, result);
+	}
 }

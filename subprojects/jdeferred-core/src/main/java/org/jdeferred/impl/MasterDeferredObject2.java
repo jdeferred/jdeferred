@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android;
+package org.jdeferred.impl;
 
-import org.jdeferred.FailCallback;
+import org.jdeferred.Promise;
 
-public interface AndroidFailCallback<F> extends FailCallback<F>, AndroidExecutionScopeable {
-
+/***
+ * @author Ray Tsang
+ * @author Andres Almiray
+ */
+class MasterDeferredObject2<V1, V2> extends AbstractMasterDeferredObject {
+	MasterDeferredObject2(Promise<V1, ?, ?> promiseV1,
+	                      Promise<V2, ?, ?> promiseV2) {
+		super(new MutableMultipleResults2<V1, V2>());
+		configurePromise(0, promiseV1);
+		configurePromise(1, promiseV2);
+	}
 }

@@ -15,11 +15,6 @@
  */
 package org.jdeferred.impl;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.DeferredCallable;
 import org.jdeferred.DeferredFutureTask;
@@ -30,25 +25,30 @@ import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
 import org.jdeferred.multiple.MasterProgress;
-import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.MultipleResults2;
 import org.jdeferred.multiple.OneProgress;
 import org.jdeferred.multiple.OneReject;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"rawtypes"})
 public class MultiplePromisesTest extends AbstractDeferredTest {
 	@Test
 	public void testMultipleDoneWait() {
 		final AtomicInteger doneCount = new AtomicInteger();
-		
+
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return 100;
 			}
 		}, new Callable<String>() {
@@ -57,34 +57,32 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
-		}).then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
+		}).then(new DoneCallback<MultipleResults2<Integer, String>>() {
+			public void onDone(MultipleResults2<Integer, String> results) {
+				assertMultipleResults(results);
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(1, doneCount.get());
 	}
-	
+
 	@Test
 	public void testMultipleAlwaysWait() {
 		final AtomicInteger doneCount = new AtomicInteger();
 		final AtomicInteger alwaysCount = new AtomicInteger();
-		
+
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return 100;
 			}
 		}, new Callable<String>() {
@@ -93,45 +91,40 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
-		}).then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
+		}).then(new DoneCallback<MultipleResults2<Integer, String>>() {
+			public void onDone(MultipleResults2<Integer, String> results) {
+				assertMultipleResults(results);
 				doneCount.incrementAndGet();
 			}
-		}).always(new AlwaysCallback<MultipleResults, OneReject>() {
-
+		}).always(new AlwaysCallback<MultipleResults2<Integer, String>, OneReject<Object>>() {
 			@Override
-			public void onAlways(State state, MultipleResults results,
-					OneReject rejected) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
+			public void onAlways(State state, MultipleResults2<Integer, String> results,
+			                     OneReject<Object> rejected) {
+				assertMultipleResults(results);
 				alwaysCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(1, doneCount.get());
 		Assert.assertEquals(1, alwaysCount.get());
 	}
-	
+
 	@Test
 	public void testMultipleFailWait() {
 		final AtomicInteger failCount = new AtomicInteger();
 		final AtomicInteger doneCount = new AtomicInteger();
-		
+
 		deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				throw new RuntimeException("oops");
 			}
 		}, new Callable<String>() {
@@ -140,37 +133,37 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
-		}).then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
+		}).then(new DoneCallback<MultipleResults2<Integer, String>>() {
+			public void onDone(MultipleResults2<Integer, String> results) {
 				doneCount.incrementAndGet();
 			}
-		}).fail(new FailCallback<OneReject>() {
-			public void onFail(OneReject result) {
+		}).fail(new FailCallback<OneReject<Object>>() {
+			public void onFail(OneReject<Object> result) {
 				Assert.assertEquals(0, result.getIndex());
 				failCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(0, doneCount.get());
 		Assert.assertEquals(1, failCount.get());
 	}
-	
+
 	@Test
 	public void testComplex() {
 		final AtomicInteger failCount = new AtomicInteger();
 		final AtomicInteger doneCount = new AtomicInteger();
-		
-		Promise p1 = deferredManager.when(new Callable<Integer>() {
+
+		Promise<Integer, Throwable, Void> p1 = deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return 100;
 			}
 		}).then(new DoneCallback<Integer>() {
@@ -179,42 +172,39 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 				doneCount.incrementAndGet();
 			}
 		});
-		Promise p2 = deferredManager.when(new Callable<String>() {
+		Promise<String, Throwable, Void> p2 = deferredManager.when(new Callable<String>() {
 			public String call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
 		}).then(new DoneCallback<String>() {
-
 			public void onDone(String result) {
 				Assert.assertEquals("Hello", result);
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		deferredManager.when(p1, p2)
-		.then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
-				doneCount.incrementAndGet();
-			}
-		}).fail(new FailCallback<OneReject>() {
-			public void onFail(OneReject result) {
+			.then(new DoneCallback<MultipleResults2<Integer, String>>() {
+				public void onDone(MultipleResults2<Integer, String> results) {
+					assertMultipleResults(results);
+					doneCount.incrementAndGet();
+				}
+			}).fail(new FailCallback<OneReject<Object>>() {
+			public void onFail(OneReject<Object> result) {
 				failCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(3, doneCount.get());
 		Assert.assertEquals(0, failCount.get());
 	}
-	
+
 	@Test
 	public void testPorgressWait() {
 		DeferredCallable<Integer, Integer> task1 = new DeferredCallable<Integer, Integer>() {
@@ -228,11 +218,11 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					notify(i);
 					sum += i;
 				}
-				
+
 				return sum;
 			}
 		};
-		
+
 		DeferredRunnable<String> task2 = new DeferredRunnable<String>() {
 
 			@Override
@@ -246,56 +236,60 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 				}
 			}
 		};
-		
+
 		final AtomicInteger alwaysCounter = new AtomicInteger();
 		final AtomicInteger doneCounter = new AtomicInteger();
 		final AtomicInteger task1ProgressCounter = new AtomicInteger();
 		final AtomicInteger task2ProgressCounter = new AtomicInteger();
 		final AtomicInteger combinedProgressCounter = new AtomicInteger();
-		
+
 		deferredManager
 			.when(
 				new DeferredFutureTask<Integer, Integer>(task1),
 				new DeferredFutureTask<Void, String>(task2))
-			.done(new DoneCallback<MultipleResults>() {
-				public void onDone(MultipleResults results) {
+			.done(new DoneCallback<MultipleResults2<Integer, Void>>() {
+				public void onDone(MultipleResults2<Integer, Void> results) {
 					Assert.assertEquals(2, results.size());
 					Assert.assertEquals(55, results.get(0).getResult());
 					Assert.assertEquals(null, results.get(1).getResult());
+					Assert.assertEquals(55, (int) results.getFirst().getResult());
+					Assert.assertEquals(null, results.getSecond().getResult());
 					doneCounter.incrementAndGet();
 				}
-			}).fail(new FailCallback<OneReject>() {
-				public void onFail(OneReject result) {
-					Assert.fail("Shouldn't be here");
+			}).fail(new FailCallback<OneReject<Object>>() {
+			public void onFail(OneReject result) {
+				Assert.fail("Shouldn't be here");
+			}
+		}).progress(new ProgressCallback<MasterProgress>() {
+			@Override
+			public void onProgress(MasterProgress progress) {
+				if (progress instanceof OneProgress) {
+					OneProgress oneProgress = (OneProgress) progress;
+					if (oneProgress.getIndex() == 0)
+						task1ProgressCounter.incrementAndGet();
+					else if (oneProgress.getIndex() == 1)
+						task2ProgressCounter.incrementAndGet();
+					else
+						Assert.fail("shouldn't be here");
+				} else {
+					Assert.assertEquals(2, progress.getTotal());
+					combinedProgressCounter.incrementAndGet();
 				}
-			}).progress(new ProgressCallback<MasterProgress>() {
-				@Override
-				public void onProgress(MasterProgress progress) {
-					if (progress instanceof OneProgress) {
-						OneProgress oneProgress = (OneProgress) progress;
-						if (oneProgress.getIndex() == 0)
-							task1ProgressCounter.incrementAndGet();
-						else if (oneProgress.getIndex() == 1)
-							task2ProgressCounter.incrementAndGet();
-						else
-							Assert.fail("shouldn't be here");
-					} else {
-						Assert.assertEquals(2, progress.getTotal());
-						combinedProgressCounter.incrementAndGet();
-					}
-				}
-			}).always(new AlwaysCallback<MultipleResults, OneReject>() {
-				@Override
-				public void onAlways(State state, MultipleResults results,
-						OneReject rejected) {
-					Assert.assertEquals(State.RESOLVED, state);
-					Assert.assertEquals(2, results.size());
-					Assert.assertEquals(55, results.get(0).getResult());
-					Assert.assertEquals(null, results.get(1).getResult());
-					alwaysCounter.incrementAndGet();
-				}
-			});
-		
+			}
+		}).always(new AlwaysCallback<MultipleResults2<Integer, Void>, OneReject<Object>>() {
+			@Override
+			public void onAlways(State state, MultipleResults2<Integer, Void> results,
+			                     OneReject<Object> rejected) {
+				Assert.assertEquals(State.RESOLVED, state);
+				Assert.assertEquals(2, results.size());
+				Assert.assertEquals(55, results.get(0).getResult());
+				Assert.assertEquals(null, results.get(1).getResult());
+				Assert.assertEquals(55, (int) results.getFirst().getResult());
+				Assert.assertEquals(null, results.getSecond().getResult());
+				alwaysCounter.incrementAndGet();
+			}
+		});
+
 		waitForCompletion();
 		try {
 			Thread.sleep(1000);
@@ -307,41 +301,43 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		Assert.assertEquals(10, task1ProgressCounter.get());
 		Assert.assertEquals(3, task2ProgressCounter.get());
 	}
-	
+
 	@Test
 	public void testFutures() {
 		final Callable<Integer> callable1 = successCallable(999, 100);
 		final Callable<String> callable2 = successCallable("HI", 1000);
-		
+
 		ExecutorService es = deferredManager.getExecutorService();
 		Future<Integer> future1 = es.submit(callable1);
 		Future<String> future2 = es.submit(callable2);
 		final AtomicInteger doneCount = new AtomicInteger();
-		deferredManager.when(future1, future2).done(new DoneCallback<MultipleResults>() {
+		deferredManager.when(future1, future2).done(new DoneCallback<MultipleResults2<Integer, String>>() {
 			@Override
-			public void onDone(MultipleResults result) {
+			public void onDone(MultipleResults2<Integer, String> result) {
 				Assert.assertEquals(2, result.size());
 				Assert.assertEquals(999, result.get(0).getResult());
 				Assert.assertEquals("HI", result.get(1).getResult());
+				Assert.assertEquals(999, (int) result.getFirst().getResult());
+				Assert.assertEquals("HI", result.getSecond().getResult());
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(1, doneCount.get());
 	}
-	
+
 	@Test
 	public void testMultipleWait() {
 		final AtomicInteger doneCount = new AtomicInteger();
-		
-		Promise<MultipleResults, OneReject, MasterProgress> p = deferredManager.when(new Callable<Integer>() {
+
+		Promise<MultipleResults2<Integer, String>, OneReject<Object>, MasterProgress> p = deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return 100;
 			}
 		}, new Callable<String>() {
@@ -350,18 +346,16 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
-		}).then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
+		}).then(new DoneCallback<MultipleResults2<Integer, String>>() {
+			public void onDone(MultipleResults2<Integer, String> results) {
+				assertMultipleResults(results);
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		synchronized (p) {
 			try {
 				while (p.isPending()) {
@@ -373,18 +367,18 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		}
 		Assert.assertEquals(1, doneCount.get());
 	}
-	
+
 	@Test
 	public void testMultipleWaitSafely() {
 		final AtomicInteger doneCount = new AtomicInteger();
-		
-		Promise<MultipleResults, OneReject, MasterProgress> p = deferredManager.when(new Callable<Integer>() {
+
+		Promise<MultipleResults2<Integer, String>, OneReject<Object>, MasterProgress> p = deferredManager.when(new Callable<Integer>() {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return 100;
 			}
 		}, new Callable<String>() {
@@ -393,23 +387,29 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 				}
-				
+
 				return "Hello";
 			}
-		}).then(new DoneCallback<MultipleResults>() {
-			public void onDone(MultipleResults results) {
-				Assert.assertEquals(2, results.size());
-				Assert.assertEquals(100, results.get(0).getResult());
-				Assert.assertEquals("Hello", results.get(1).getResult());
+		}).then(new DoneCallback<MultipleResults2<Integer, String>>() {
+			public void onDone(MultipleResults2<Integer, String> results) {
+				assertMultipleResults(results);
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		try {
 			p.waitSafely();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
 		Assert.assertEquals(1, doneCount.get());
+	}
+
+	private void assertMultipleResults(MultipleResults2<Integer, String> results) {
+		Assert.assertEquals(2, results.size());
+		Assert.assertEquals(100, results.get(0).getResult());
+		Assert.assertEquals("Hello", results.get(1).getResult());
+		Assert.assertEquals(100, (int) results.getFirst().getResult()); // ambiguous call without cast!
+		Assert.assertEquals("Hello", results.getSecond().getResult());
 	}
 }

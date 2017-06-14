@@ -19,18 +19,16 @@ import org.jdeferred.Promise;
 
 /**
  * Progress update by one of the {@link Promise}.
- * 
- * @author Ray Tsang
  *
+ * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneProgress extends MasterProgress {
+public class OneProgress<P> extends MasterProgress {
 	private final int index;
-	
-	private final Promise promise;
-	private final Object progress;
-	
-	public OneProgress(int done, int fail, int total, int index, Promise promise, Object progress) {
+	private final Promise<?, ?, P> promise;
+	private final P progress;
+
+	public OneProgress(int done, int fail, int total, int index, Promise<?, ?, P> promise, P progress) {
 		super(done, fail, total);
 		this.index = index;
 		this.promise = promise;
@@ -40,20 +38,20 @@ public class OneProgress extends MasterProgress {
 	public int getIndex() {
 		return index;
 	}
-	
-	public Promise getPromise() {
+
+	public Promise<?, ?, P> getPromise() {
 		return promise;
 	}
 
-	public Object getProgress() {
+	public P getProgress() {
 		return progress;
 	}
 
 	@Override
 	public String toString() {
 		return "OneProgress [index=" + index + ", promise=" + promise
-				+ ", progress=" + progress + ", getDone()=" + getDone()
-				+ ", getFail()=" + getFail() + ", getTotal()=" + getTotal()
-				+ "]";
+			+ ", progress=" + progress + ", getDone()=" + getDone()
+			+ ", getFail()=" + getFail() + ", getTotal()=" + getTotal()
+			+ "]";
 	}
 }

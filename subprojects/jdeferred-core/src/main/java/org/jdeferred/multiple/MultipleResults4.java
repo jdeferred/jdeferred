@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android;
+package org.jdeferred.multiple;
 
-import org.jdeferred.FailCallback;
+/**
+ * @author Ray Tsang
+ * @author Andres Almiray
+ * @author Domen
+ */
+public interface MultipleResults4<V1, V2, V3, V4> extends MultipleResults {
+	OneResult<V1> getFirst();
 
-public interface AndroidFailCallback<F> extends FailCallback<F>, AndroidExecutionScopeable {
+	OneResult<V2> getSecond();
 
+	OneResult<V3> getThird();
+
+	OneResult<V4> getFourth();
 }
