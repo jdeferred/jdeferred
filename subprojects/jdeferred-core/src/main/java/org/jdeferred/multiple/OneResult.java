@@ -18,34 +18,36 @@ package org.jdeferred.multiple;
 import org.jdeferred.Promise;
 
 /**
- * 
  * @author Ray Tsang
- *
  */
 @SuppressWarnings("rawtypes")
-public class OneResult<T> {
+public class OneResult<D> {
 	private final int index;
-	private final Promise promise;
-	private final T result;
-	
-	public OneResult(int index, Promise promise, T result) {
+	private final Promise<D, ?, ?> promise;
+	private final D result;
+
+	public OneResult(int index, Promise<D, ?, ?> promise, D result) {
 		super();
 		this.index = index;
 		this.promise = promise;
 		this.result = result;
 	}
+
 	public int getIndex() {
 		return index;
 	}
-	public Promise getPromise() {
+
+	public Promise<D, ?, ?> getPromise() {
 		return promise;
 	}
-	public T getResult() {
+
+	public D getResult() {
 		return result;
 	}
+
 	@Override
 	public String toString() {
 		return "OneResult [index=" + index + ", promise=" + promise
-				+ ", result=" + result + "]";
+			+ ", result=" + result + "]";
 	}
 }

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.multiple;
+package org.jdeferred.impl;
 
-/**
- * Contains a list of {@link OneResult}.
- *
+import org.jdeferred.Promise;
+
+/***
  * @author Ray Tsang
  * @author Andres Almiray
- * @author Domen
  */
-public interface MultipleResults extends Iterable<OneResult<?>> {
-	void set(int index, OneResult<?> result);
-
-	OneResult<?> get(int index);
-
-	int size();
+class MasterDeferredObject2<V1, V2> extends AbstractMasterDeferredObject {
+	MasterDeferredObject2(Promise<V1, ?, ?> promiseV1,
+	                      Promise<V2, ?, ?> promiseV2) {
+		super(new MutableMultipleResults2<V1, V2>());
+		configurePromise(0, promiseV1);
+		configurePromise(1, promiseV2);
+	}
 }

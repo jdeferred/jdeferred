@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.multiple;
+package org.jdeferred.impl;
+
+import org.jdeferred.multiple.OneResult;
 
 /**
- * Contains a list of {@link OneResult}.
+ * Base implementation of {@link MutableMultipleResults}.
  *
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Domen
  */
-public interface MultipleResults extends Iterable<OneResult<?>> {
-	void set(int index, OneResult<?> result);
+abstract class AbstractMutableMultipleResults extends AbstractMultipleResults implements MutableMultipleResults {
+	AbstractMutableMultipleResults(int size) {
+		super(size);
+	}
 
-	OneResult<?> get(int index);
-
-	int size();
+	public void set(int index, OneResult<?> result) {
+		results.set(index, result);
+	}
 }

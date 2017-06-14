@@ -27,7 +27,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 
 public class CancelTaskTest extends AbstractDeferredTest {
-
 	@Test
 	public void testCancelTask() {
 		DeferredFutureTask<String, Void> deferredFutureTask =

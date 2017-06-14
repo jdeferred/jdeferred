@@ -19,16 +19,16 @@ import org.jdeferred.Promise;
 
 /**
  * Progress fail by one of the {@link Promise}.
- * @author Ray Tsang
  *
+ * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneReject<T> {
+public class OneReject<F> {
 	private final int index;
-	private final Promise promise;
-	private final T reject;
-	
-	public OneReject(int index, Promise promise, T reject) {
+	private final Promise<?, F, ?> promise;
+	private final F reject;
+
+	public OneReject(int index, Promise<?, F, ?> promise, F reject) {
 		super();
 		this.index = index;
 		this.promise = promise;
@@ -39,20 +39,17 @@ public class OneReject<T> {
 		return index;
 	}
 
-	public Promise getPromise() {
+	public Promise<?, F, ?> getPromise() {
 		return promise;
 	}
 
-	public T getReject() {
+	public F getReject() {
 		return reject;
 	}
 
 	@Override
 	public String toString() {
 		return "OneReject [index=" + index + ", promise=" + promise
-				+ ", reject=" + reject + "]";
+			+ ", reject=" + reject + "]";
 	}
-	
-	
-	
 }
