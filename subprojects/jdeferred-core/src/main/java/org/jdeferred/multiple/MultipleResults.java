@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  */
 public class MultipleResults implements Iterable<OneResult<?>> {
-	private final List<OneResult<?>> results;
+	protected final List<OneResult<?>> results;
 	
 	public MultipleResults(int size) {
 		this.results = new CopyOnWriteArrayList<OneResult<?>>(new OneResult[size]);

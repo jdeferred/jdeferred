@@ -20,10 +20,13 @@ package org.jdeferred.multiple;
  *
  * @author Ray Tsang
  */
-public class MultipleResults2<A, B> {
+public class MultipleResults2<A, B> extends MultipleResults {
     protected OneResult<A> a;
     protected OneResult<B> b;
 
+    public MultipleResults2() {
+      super(2);
+    }
     protected void setFirst(OneResult<A> a) {
         this.a = a;
     }
@@ -39,7 +42,21 @@ public class MultipleResults2<A, B> {
     public OneResult<B> getSecond() {
         return b;
     }
+    
+    @Override
+    protected void set(int index, OneResult<?> result) {
+      super.set(index, result);
+      switch(index) {
+        case 0:
+          setFirst((OneResult<A>) result);
+          break;
+        case 1:
+          setSecond((OneResult<B>) result);
+          break;
+      }
+    }
 
+    @Override
     public int size() {
         return 2;
     }
