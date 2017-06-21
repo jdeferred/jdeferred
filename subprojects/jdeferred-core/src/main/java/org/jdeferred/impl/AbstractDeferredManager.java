@@ -82,14 +82,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	public abstract boolean isAutoSubmit();
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2) {
+	public <F, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<F>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2) {
 		assertNotNull(promiseV1, PROMISE_V1);
 		assertNotNull(promiseV2, PROMISE_V2);
 		return new MasterDeferredObject2(promiseV1, promiseV2);
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3) {
+	public <F, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<F>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3) {
 		assertNotNull(promiseV1, PROMISE_V1);
 		assertNotNull(promiseV2, PROMISE_V2);
 		assertNotNull(promiseV3, PROMISE_V3);
@@ -97,7 +97,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4) {
+	public <F, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<F>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4) {
 		assertNotNull(promiseV1, PROMISE_V1);
 		assertNotNull(promiseV2, PROMISE_V2);
 		assertNotNull(promiseV3, PROMISE_V3);
@@ -106,7 +106,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4, Promise<? extends V5, ?, ?> promiseV5) {
+	public <F, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4, Promise<? extends V5, ?, ?> promiseV5) {
 		assertNotNull(promiseV1, PROMISE_V1);
 		assertNotNull(promiseV2, PROMISE_V2);
 		assertNotNull(promiseV3, PROMISE_V3);
@@ -116,7 +116,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4, Promise<? extends V5, ?, ?> promiseV5, Promise<?, ?, ?> promise6, Promise<?, ?, ?>... promises) {
+	public <F, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(Promise<? extends V1, ?, ?> promiseV1, Promise<? extends V2, ?, ?> promiseV2, Promise<? extends V3, ?, ?> promiseV3, Promise<? extends V4, ?, ?> promiseV4, Promise<? extends V5, ?, ?> promiseV5, Promise<?, ?, ?> promise6, Promise<?, ?, ?>... promises) {
 		assertNotNull(promiseV1, PROMISE_V1);
 		assertNotNull(promiseV2, PROMISE_V2);
 		assertNotNull(promiseV3, PROMISE_V3);
@@ -130,16 +130,18 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R> Promise<MultipleResults, OneReject<R>, MasterProgress> when(Runnable... runnables) {
-		assertNotEmpty(runnables);
-
-		Promise[] promises = new Promise[runnables.length];
+	public Promise<MultipleResults, OneReject<Throwable>, MasterProgress> when(Runnable runnable1, Runnable runnable2, Runnable... runnables) {
+		assertNotNull(runnable1, "runnable1");
+		assertNotNull(runnable2, "runnable2");
+		Promise[] promises = new Promise[runnables.length + 2];
+		promises[0] = when(runnable1);
+		promises[1] = when(runnable2);
 
 		for (int i = 0; i < runnables.length; i++) {
 			if (runnables[i] instanceof DeferredRunnable) {
-				promises[i] = when((DeferredRunnable<?>) runnables[i]);
+				promises[i + 2] = when((DeferredRunnable<?>) runnables[i]);
 			} else {
-				promises[i] = when(runnables[i]);
+				promises[i + 2] = when(runnables[i]);
 			}
 		}
 
@@ -156,14 +158,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2) {
+	public <V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		return new MasterDeferredObject2(when(callableV1), when(callableV2));
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3) {
+	public <V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -171,7 +173,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4) {
+	public <V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -180,7 +182,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4, Callable<? extends V5> callableV5) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4, Callable<? extends V5> callableV5) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -190,7 +192,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4, Callable<? extends V5> callableV5, Callable<?> callable6, Callable<?>... callables) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(Callable<? extends V1> callableV1, Callable<? extends V2> callableV2, Callable<? extends V3> callableV3, Callable<? extends V4> callableV4, Callable<? extends V5> callableV5, Callable<?> callable6, Callable<?>... callables) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -210,14 +212,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2) {
+	public <V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 		return new MasterDeferredObject2(when(runnableV1), when(runnableV2));
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3) {
+	public <V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 		assertNotNull(runnableV3, RUNNABLE_V3);
@@ -225,7 +227,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4) {
+	public <V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 		assertNotNull(runnableV3, RUNNABLE_V3);
@@ -234,7 +236,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4, DeferredRunnable<? extends V5> runnableV5) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4, DeferredRunnable<? extends V5> runnableV5) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 		assertNotNull(runnableV3, RUNNABLE_V3);
@@ -244,7 +246,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4, DeferredRunnable<? extends V5> runnableV5, DeferredRunnable<?> runnable6, DeferredRunnable<?>... runnables) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredRunnable<? extends V1> runnableV1, DeferredRunnable<? extends V2> runnableV2, DeferredRunnable<? extends V3> runnableV3, DeferredRunnable<? extends V4> runnableV4, DeferredRunnable<? extends V5> runnableV5, DeferredRunnable<?> runnable6, DeferredRunnable<?>... runnables) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 		assertNotNull(runnableV3, RUNNABLE_V3);
@@ -260,14 +262,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2) {
+	public <V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		return new MasterDeferredObject2(when(callableV1), when(callableV2));
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3) {
+	public <V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -275,7 +277,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4) {
+	public <V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -284,7 +286,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4, DeferredCallable<? extends V5, ?> callableV5) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4, DeferredCallable<? extends V5, ?> callableV5) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -294,7 +296,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4, DeferredCallable<? extends V5, ?> callableV5, DeferredCallable<?, ?> callable6, DeferredCallable<?, ?>... callables) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredCallable<? extends V1, ?> callableV1, DeferredCallable<? extends V2, ?> callableV2, DeferredCallable<? extends V3, ?> callableV3, DeferredCallable<? extends V4, ?> callableV4, DeferredCallable<? extends V5, ?> callableV5, DeferredCallable<?, ?> callable6, DeferredCallable<?, ?>... callables) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 		assertNotNull(callableV3, CALLABLE_V3);
@@ -310,14 +312,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2) {
+	public <V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		return new MasterDeferredObject2(when(taskV1), when(taskV2));
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3) {
+	public <V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
@@ -325,7 +327,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4) {
+	public <V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
@@ -334,7 +336,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4, DeferredFutureTask<? extends V5, ?> taskV5) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4, DeferredFutureTask<? extends V5, ?> taskV5) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
@@ -344,7 +346,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4, DeferredFutureTask<? extends V5, ?> taskV5, DeferredFutureTask<?, ?> task6, DeferredFutureTask<?, ?>... tasks) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(DeferredFutureTask<? extends V1, ?> taskV1, DeferredFutureTask<? extends V2, ?> taskV2, DeferredFutureTask<? extends V3, ?> taskV3, DeferredFutureTask<? extends V4, ?> taskV4, DeferredFutureTask<? extends V5, ?> taskV5, DeferredFutureTask<?, ?> task6, DeferredFutureTask<?, ?>... tasks) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
@@ -360,14 +362,14 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2) {
+	public <V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 		return new MasterDeferredObject2(when(futureV1), when(futureV2));
 	}
 
 	@Override
-	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3) {
+	public <V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 		assertNotNull(futureV3, FUTURE_V3);
@@ -375,7 +377,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4) {
+	public <V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 		assertNotNull(futureV3, FUTURE_V3);
@@ -384,7 +386,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4, Future<? extends V5> futureV5) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4, Future<? extends V5> futureV5) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 		assertNotNull(futureV3, FUTURE_V3);
@@ -394,7 +396,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4, Future<? extends V5> futureV5, Future<?> future6, Future<?>... futures) {
+	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(Future<? extends V1> futureV1, Future<? extends V2> futureV2, Future<? extends V3> futureV3, Future<? extends V4> futureV4, Future<? extends V5> futureV5, Future<?> future6, Future<?>... futures) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 		assertNotNull(futureV3, FUTURE_V3);
