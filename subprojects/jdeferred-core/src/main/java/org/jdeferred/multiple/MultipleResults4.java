@@ -16,6 +16,8 @@
 package org.jdeferred.multiple;
 
 /**
+ * Contains 4 results, typed <tt>V1</tt>, <tt>V2</tt>, <tt>V3</tt>, <tt>V4</tt> wrapped in {@link OneResult}.
+ *
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Domen

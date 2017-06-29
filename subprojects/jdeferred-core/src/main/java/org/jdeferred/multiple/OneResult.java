@@ -18,6 +18,8 @@ package org.jdeferred.multiple;
 import org.jdeferred.Promise;
 
 /**
+ * Progress result by one of the {@link Promise}.
+ *
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")

@@ -16,6 +16,8 @@
 package org.jdeferred.multiple;
 
 /**
+ * Contains a list of {@link OneResult}, where the first 5 elements are of type <tt>V1</tt>, <tt>V2</tt>, <tt>V3</tt>, <tt>V4</tt>, <tt>V5</tt>.
+ *
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Domen
