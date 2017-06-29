@@ -168,33 +168,33 @@ public interface DeferredManager {
 		DeferredFutureTask<D, P> task);
 
 	<F, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<F>, MasterProgress> when(
-		Promise<? extends V1, ?, ?> promiseV1,
-		Promise<? extends V2, ?, ?> promiseV2);
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2);
 
 	<F, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<F>, MasterProgress> when(
-		Promise<? extends V1, ?, ?> promiseV1,
-		Promise<? extends V2, ?, ?> promiseV2,
-		Promise<? extends V3, ?, ?> promiseV3);
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3);
 
 	<F, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<F>, MasterProgress> when(
-		Promise<? extends V1, ?, ?> promiseV1,
-		Promise<? extends V2, ?, ?> promiseV2,
-		Promise<? extends V3, ?, ?> promiseV3,
-		Promise<? extends V4, ?, ?> promiseV4);
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4);
 
 	<F, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(
-		Promise<? extends V1, ?, ?> promiseV1,
-		Promise<? extends V2, ?, ?> promiseV2,
-		Promise<? extends V3, ?, ?> promiseV3,
-		Promise<? extends V4, ?, ?> promiseV4,
-		Promise<? extends V5, ?, ?> promiseV5);
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4,
+		Promise<V5, ?, ?> promiseV5);
 
 	<F, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(
-		Promise<? extends V1, ?, ?> promiseV1,
-		Promise<? extends V2, ?, ?> promiseV2,
-		Promise<? extends V3, ?, ?> promiseV3,
-		Promise<? extends V4, ?, ?> promiseV4,
-		Promise<? extends V5, ?, ?> promiseV5,
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4,
+		Promise<V5, ?, ?> promiseV5,
 		Promise<?, ?, ?> promise6,
 		Promise<?, ?, ?>... promises);
 
@@ -215,157 +215,157 @@ public interface DeferredManager {
 		Runnable runnable1, Runnable runnable2, Runnable... runnables);
 
 	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
-		Callable<? extends V1> callableV1,
-		Callable<? extends V2> callableV2);
+		Callable<V1> callableV1,
+		Callable<V2> callableV2);
 
 	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
-		Callable<? extends V1> callableV1,
-		Callable<? extends V2> callableV2,
-		Callable<? extends V3> callableV3);
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3);
 
 	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
-		Callable<? extends V1> callableV1,
-		Callable<? extends V2> callableV2,
-		Callable<? extends V3> callableV3,
-		Callable<? extends V4> callableV4);
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		Callable<? extends V1> callableV1,
-		Callable<? extends V2> callableV2,
-		Callable<? extends V3> callableV3,
-		Callable<? extends V4> callableV4,
-		Callable<? extends V5> callableV5);
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4,
+		Callable<V5> callableV5);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		Callable<? extends V1> callableV1,
-		Callable<? extends V2> callableV2,
-		Callable<? extends V3> callableV3,
-		Callable<? extends V4> callableV4,
-		Callable<? extends V5> callableV5,
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4,
+		Callable<V5> callableV5,
 		Callable<?> callable6,
 		Callable<?>... callables);
 
-	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
-		DeferredRunnable<? extends V1> runnableV1,
-		DeferredRunnable<? extends V2> runnableV2);
+	<P1, P2> Promise<MultipleResults2<Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2);
 
-	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
-		DeferredRunnable<? extends V1> runnableV1,
-		DeferredRunnable<? extends V2> runnableV2,
-		DeferredRunnable<? extends V3> runnableV3);
+	<P1, P2, P3> Promise<MultipleResults3<Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3);
 
-	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
-		DeferredRunnable<? extends V1> runnableV1,
-		DeferredRunnable<? extends V2> runnableV2,
-		DeferredRunnable<? extends V3> runnableV3,
-		DeferredRunnable<? extends V4> runnableV4);
+	<P1, P2, P3, P4> Promise<MultipleResults4<Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4);
 
-	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredRunnable<? extends V1> runnableV1,
-		DeferredRunnable<? extends V2> runnableV2,
-		DeferredRunnable<? extends V3> runnableV3,
-		DeferredRunnable<? extends V4> runnableV4,
-		DeferredRunnable<? extends V5> runnableV5);
+	<P1, P2, P3, P4, P5> Promise<MultipleResults5<Void, Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4,
+		DeferredRunnable<P5> runnableP5);
 
-	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredRunnable<? extends V1> runnableV1,
-		DeferredRunnable<? extends V2> runnableV2,
-		DeferredRunnable<? extends V3> runnableV3,
-		DeferredRunnable<? extends V4> runnableV4,
-		DeferredRunnable<? extends V5> runnableV5,
+	<P1, P2, P3, P4, P5> Promise<MultipleResultsN<Void, Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4,
+		DeferredRunnable<P5> runnableP5,
 		DeferredRunnable<?> runnable6,
 		DeferredRunnable<?>... runnables);
 
 	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
-		DeferredCallable<? extends V1, ?> callableV1,
-		DeferredCallable<? extends V2, ?> callableV2);
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2);
 
 	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
-		DeferredCallable<? extends V1, ?> callableV1,
-		DeferredCallable<? extends V2, ?> callableV2,
-		DeferredCallable<? extends V3, ?> callableV3);
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3);
 
 	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
-		DeferredCallable<? extends V1, ?> callableV1,
-		DeferredCallable<? extends V2, ?> callableV2,
-		DeferredCallable<? extends V3, ?> callableV3,
-		DeferredCallable<? extends V4, ?> callableV4);
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredCallable<? extends V1, ?> callableV1,
-		DeferredCallable<? extends V2, ?> callableV2,
-		DeferredCallable<? extends V3, ?> callableV3,
-		DeferredCallable<? extends V4, ?> callableV4,
-		DeferredCallable<? extends V5, ?> callableV5);
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4,
+		DeferredCallable<V5, ?> callableV5);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredCallable<? extends V1, ?> callableV1,
-		DeferredCallable<? extends V2, ?> callableV2,
-		DeferredCallable<? extends V3, ?> callableV3,
-		DeferredCallable<? extends V4, ?> callableV4,
-		DeferredCallable<? extends V5, ?> callableV5,
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4,
+		DeferredCallable<V5, ?> callableV5,
 		DeferredCallable<?, ?> callable6,
 		DeferredCallable<?, ?>... callables);
 
 	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
-		DeferredFutureTask<? extends V1, ?> taskV1,
-		DeferredFutureTask<? extends V2, ?> taskV2);
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2);
 
 	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
-		DeferredFutureTask<? extends V1, ?> taskV1,
-		DeferredFutureTask<? extends V2, ?> taskV2,
-		DeferredFutureTask<? extends V3, ?> taskV3);
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3);
 
 	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
-		DeferredFutureTask<? extends V1, ?> taskV1,
-		DeferredFutureTask<? extends V2, ?> taskV2,
-		DeferredFutureTask<? extends V3, ?> taskV3,
-		DeferredFutureTask<? extends V4, ?> taskV4);
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredFutureTask<? extends V1, ?> taskV1,
-		DeferredFutureTask<? extends V2, ?> taskV2,
-		DeferredFutureTask<? extends V3, ?> taskV3,
-		DeferredFutureTask<? extends V4, ?> taskV4,
-		DeferredFutureTask<? extends V5, ?> taskV5);
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4,
+		DeferredFutureTask<V5, ?> taskV5);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		DeferredFutureTask<? extends V1, ?> taskV1,
-		DeferredFutureTask<? extends V2, ?> taskV2,
-		DeferredFutureTask<? extends V3, ?> taskV3,
-		DeferredFutureTask<? extends V4, ?> taskV4,
-		DeferredFutureTask<? extends V5, ?> taskV5,
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4,
+		DeferredFutureTask<V5, ?> taskV5,
 		DeferredFutureTask<?, ?> task6,
 		DeferredFutureTask<?, ?>... tasks);
 
 	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
-		Future<? extends V1> futureV1,
-		Future<? extends V2> futureV2);
+		Future<V1> futureV1,
+		Future<V2> futureV2);
 
 	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
-		Future<? extends V1> futureV1,
-		Future<? extends V2> futureV2,
-		Future<? extends V3> futureV3);
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3);
 
 	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
-		Future<? extends V1> futureV1,
-		Future<? extends V2> futureV2,
-		Future<? extends V3> futureV3,
-		Future<? extends V4> futureV4);
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		Future<? extends V1> futureV1,
-		Future<? extends V2> futureV2,
-		Future<? extends V3> futureV3,
-		Future<? extends V4> futureV4,
-		Future<? extends V5> futureV5);
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4,
+		Future<V5> futureV5);
 
 	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
-		Future<? extends V1> futureV1,
-		Future<? extends V2> futureV2,
-		Future<? extends V3> futureV3,
-		Future<? extends V4> futureV4,
-		Future<? extends V5> futureV5,
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4,
+		Future<V5> futureV5,
 		Future<?> future6,
 		Future<?>... futures);
 }
