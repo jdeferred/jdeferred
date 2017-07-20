@@ -13,10 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android;
+package org.jdeferred.multiple;
 
-import org.jdeferred.FailCallback;
+/**
+ * Contains a list of {@link OneResult}, where the first 5 elements are of type <tt>V1</tt>, <tt>V2</tt>, <tt>V3</tt>, <tt>V4</tt>, <tt>V5</tt>.
+ *
+ * @author Ray Tsang
+ * @author Andres Almiray
+ * @author Domen
+ */
+public interface MultipleResultsN<V1, V2, V3, V4, V5> extends MultipleResults {
+	OneResult<V1> getFirst();
 
-public interface AndroidFailCallback<F> extends FailCallback<F>, AndroidExecutionScopeable {
+	OneResult<V2> getSecond();
 
+	OneResult<V3> getThird();
+
+	OneResult<V4> getFourth();
+
+	OneResult<V5> getFifth();
 }

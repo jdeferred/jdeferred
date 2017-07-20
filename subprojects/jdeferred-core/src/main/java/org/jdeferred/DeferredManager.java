@@ -15,26 +15,30 @@
  */
 package org.jdeferred;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.jdeferred.impl.DefaultDeferredManager;
-import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.MultipleResults2;
+import org.jdeferred.multiple.MultipleResults3;
+import org.jdeferred.multiple.MultipleResults4;
+import org.jdeferred.multiple.MultipleResults5;
+import org.jdeferred.multiple.MultipleResultsN;
 import org.jdeferred.multiple.OneReject;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * {@link DeferredManager} is especially useful when dealing with asynchronous
  * tasks, either {@link Runnable} or {@link Callable} objects.
- * 
+ * <p>
  * It's also very useful when you need to get callbacks from multiple
  * {@link Promise} objects.
- * 
+ * <p>
  * <pre>
  * <code>
  * {@link DeferredManager} dm = new {@link DefaultDeferredManager}();
- * 
+ *
  * {@link Promise} p1, p2, p3;
  * // p1 = ...; p2 = ...; p3 = ...;
  * dm.when(p1, p2, p3)
@@ -43,42 +47,40 @@ import org.jdeferred.multiple.OneReject;
  *   .progress(new ProgressCallback() { ... })
  * </code>
  * </pre>
- * 
+ * <p>
  * When dealing with async threads:
- * 
+ * <p>
  * <pre>
  * <code>
  * dm.when(new Callable() { ... }, new Callable() { ... })
  *   .done(new DoneCallback() { ... })
- *   .fail(new FailCallback() { ... }) 
+ *   .fail(new FailCallback() { ... })
  * </code>
  * </pre>
- * 
- * @see DefaultDeferredManager
- * @see MasterDeferredObject
+ *
  * @author Ray Tsang
- * 
+ * @see DefaultDeferredManager
  */
-@SuppressWarnings({ "rawtypes" })
+@SuppressWarnings({"rawtypes"})
 public interface DeferredManager {
-	public static enum StartPolicy {
+	enum StartPolicy {
 		/**
 		 * Let Deferred Manager to determine whether to start the task at its own
 		 * discretion.
 		 */
 		DEFAULT,
-		
+
 		/**
 		 * Tells Deferred Manager to automatically start the task
 		 */
 		AUTO,
-		
+
 		/**
 		 * Tells Deferred Manager that this task will be manually started
 		 *
-		 * @deprecated  As of Version 1.2.5, this element is deprecated.
-		 *      Use MANUAL instead. 
-		 *      It will be removed in version 1.3
+		 * @deprecated As of Version 1.2.5, this element is deprecated.
+		 * Use MANUAL instead.
+		 * It will be removed in version 1.3
 		 */
 		@Deprecated
 		MANAUL,
@@ -88,141 +90,282 @@ public interface DeferredManager {
 		 */
 		MANUAL
 	}
-	
+
 	/**
 	 * Simply returns the promise.
-	 * 
+	 *
 	 * @param promise
+	 *
 	 * @return promise
 	 */
-	public abstract <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise);
+	<D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise);
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}.
-	 * 
-	 * @see #when(DeferredFutureTask)
+	 *
 	 * @param runnable
+	 *
 	 * @return {@link #when(DeferredFutureTask)}
+	 *
+	 * @see #when(DeferredFutureTask)
 	 */
-	public abstract Promise<Void, Throwable, Void> when(Runnable runnable);
+	Promise<Void, Throwable, Void> when(Runnable runnable);
 
 	/**
 	 * Wraps {@link Callable} with {@link DeferredFutureTask}
-	 * 
-	 * @see #when(DeferredFutureTask)
+	 *
 	 * @param callable
+	 *
 	 * @return {@link #when(DeferredFutureTask)}
+	 *
+	 * @see #when(DeferredFutureTask)
 	 */
-	public abstract <D> Promise<D, Throwable, Void> when(Callable<D> callable);
-	
+	<D> Promise<D, Throwable, Void> when(Callable<D> callable);
+
 	/**
 	 * Wraps {@link Future} and waits for {@link Future#get()} to return a result
 	 * in the background.
-	 *  
+	 *
 	 * @param future
+	 *
 	 * @return {@link #when(Callable)}
 	 */
-	public abstract <D> Promise<D, Throwable, Void> when(Future<D> future);
+	<D> Promise<D, Throwable, Void> when(Future<D> future);
 
 	/**
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
-	 * 
-	 * @see #when(DeferredFutureTask)
+	 *
 	 * @param runnable
+	 *
 	 * @return {@link #when(DeferredFutureTask)}
+	 *
+	 * @see #when(DeferredFutureTask)
 	 */
-	public abstract <P> Promise<Void, Throwable, P> when(
-			DeferredRunnable<P> runnable);
+	<P> Promise<Void, Throwable, P> when(
+		DeferredRunnable<P> runnable);
 
 	/**
 	 * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
-	 * 
-	 * @see #when(DeferredFutureTask)
+	 *
 	 * @param callable
+	 *
 	 * @return {@link #when(DeferredFutureTask)}
+	 *
+	 * @see #when(DeferredFutureTask)
 	 */
-	public abstract <D, P> Promise<D, Throwable, P> when(
-			DeferredCallable<D, P> callable);
+	<D, P> Promise<D, Throwable, P> when(
+		DeferredCallable<D, P> callable);
 
 	/**
 	 * May or may not submit {@link DeferredFutureTask} for execution. See
 	 * implementation documentation.
-	 * 
+	 *
 	 * @param task
+	 *
 	 * @return {@link DeferredFutureTask#promise()}
 	 */
-	public abstract <D, P> Promise<D, Throwable, P> when(
-			DeferredFutureTask<D, P> task);
+	<D, P> Promise<D, Throwable, P> when(
+		DeferredFutureTask<D, P> task);
 
-	/**
-	 * This will return a special Promise called {@link MasterDeferredObject}. In
-	 * short,
-	 * <ul>
-	 * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises
-	 * resolves (i.e., all finished successfully).</li>
-	 * <li>{@link Promise#fail(FailCallback)} will be triggered if any promises
-	 * rejects (i.e., if any one failed).</li>
-	 * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever
-	 * one promise resolves or rejects, or whenever a promise was notified
-	 * progress.</li>
-	 * <li>{@link Promise#always(AlwaysCallback)} will be triggered whenever
-	 * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
-	 * would be triggered</li>
-	 * </ul>
-	 * 
-	 * @param promises
-	 * @return {@link MasterDeferredObject}
-	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Promise... promises);
+	<F, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<F>, MasterProgress> when(
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2);
+
+	<F, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<F>, MasterProgress> when(
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3);
+
+	<F, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<F>, MasterProgress> when(
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4);
+
+	<F, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4,
+		Promise<V5, ?, ?> promiseV5);
+
+	<F, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<F>, MasterProgress> when(
+		Promise<V1, ?, ?> promiseV1,
+		Promise<V2, ?, ?> promiseV2,
+		Promise<V3, ?, ?> promiseV3,
+		Promise<V4, ?, ?> promiseV4,
+		Promise<V5, ?, ?> promiseV5,
+		Promise<?, ?, ?> promise6,
+		Promise<?, ?, ?>... promises);
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}
-	 * 
+	 *
+	 * @param runnable1
+	 * @param runnable2
 	 * @param runnables
-	 * @return {@link #when(DeferredFutureTask...)}
+	 *
+	 * @see #when(DeferredFutureTask)
+	 * @see #when(DeferredFutureTask, DeferredFutureTask,)
+	 * @see #when(DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask,)
+	 * @see #when(DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask,)
+	 * @see #when(DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask, DeferredFutureTask...)
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Runnable... runnables);
+	Promise<MultipleResults, OneReject<Throwable>, MasterProgress> when(
+		Runnable runnable1, Runnable runnable2, Runnable... runnables);
 
-	/**
-	 * Wraps {@link Callable} with {@link DeferredFutureTask}
-	 * 
-	 * @param callables
-	 * @return {@link #when(DeferredFutureTask...)}
-	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Callable<?>... callables);
+	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
+		Callable<V1> callableV1,
+		Callable<V2> callableV2);
 
-	/**
-	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
-	 * 
-	 * @param runnables
-	 * @return {@link #when(DeferredFutureTask...)}
-	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			DeferredRunnable<?>... runnables);
+	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3);
 
-	/**
-	 * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
-	 * 
-	 * @param callables
-	 * @return {@link #when(DeferredFutureTask...)}
-	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			DeferredCallable<?, ?>... callables);
+	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4);
 
-	/**
-	 * May or may not submit {@link DeferredFutureTask} for execution. See
-	 * implementation documentation.
-	 * 
-	 * @param tasks
-	 * @return {@link #when(Promise...)}
-	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			DeferredFutureTask<?, ?>... tasks);
-	
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Future<?> ... futures);
+	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4,
+		Callable<V5> callableV5);
 
+	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		Callable<V1> callableV1,
+		Callable<V2> callableV2,
+		Callable<V3> callableV3,
+		Callable<V4> callableV4,
+		Callable<V5> callableV5,
+		Callable<?> callable6,
+		Callable<?>... callables);
+
+	<P1, P2> Promise<MultipleResults2<Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2);
+
+	<P1, P2, P3> Promise<MultipleResults3<Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3);
+
+	<P1, P2, P3, P4> Promise<MultipleResults4<Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4);
+
+	<P1, P2, P3, P4, P5> Promise<MultipleResults5<Void, Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4,
+		DeferredRunnable<P5> runnableP5);
+
+	<P1, P2, P3, P4, P5> Promise<MultipleResultsN<Void, Void, Void, Void, Void>, OneReject<Throwable>, MasterProgress> when(
+		DeferredRunnable<P1> runnableP1,
+		DeferredRunnable<P2> runnableP2,
+		DeferredRunnable<P3> runnableP3,
+		DeferredRunnable<P4> runnableP4,
+		DeferredRunnable<P5> runnableP5,
+		DeferredRunnable<?> runnable6,
+		DeferredRunnable<?>... runnables);
+
+	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2);
+
+	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3);
+
+	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4,
+		DeferredCallable<V5, ?> callableV5);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		DeferredCallable<V1, ?> callableV1,
+		DeferredCallable<V2, ?> callableV2,
+		DeferredCallable<V3, ?> callableV3,
+		DeferredCallable<V4, ?> callableV4,
+		DeferredCallable<V5, ?> callableV5,
+		DeferredCallable<?, ?> callable6,
+		DeferredCallable<?, ?>... callables);
+
+	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2);
+
+	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3);
+
+	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4,
+		DeferredFutureTask<V5, ?> taskV5);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		DeferredFutureTask<V1, ?> taskV1,
+		DeferredFutureTask<V2, ?> taskV2,
+		DeferredFutureTask<V3, ?> taskV3,
+		DeferredFutureTask<V4, ?> taskV4,
+		DeferredFutureTask<V5, ?> taskV5,
+		DeferredFutureTask<?, ?> task6,
+		DeferredFutureTask<?, ?>... tasks);
+
+	<V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<Throwable>, MasterProgress> when(
+		Future<V1> futureV1,
+		Future<V2> futureV2);
+
+	<V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<Throwable>, MasterProgress> when(
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3);
+
+	<V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<Throwable>, MasterProgress> when(
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4,
+		Future<V5> futureV5);
+
+	<V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<Throwable>, MasterProgress> when(
+		Future<V1> futureV1,
+		Future<V2> futureV2,
+		Future<V3> futureV3,
+		Future<V4> futureV4,
+		Future<V5> futureV5,
+		Future<?> future6,
+		Future<?>... futures);
 }
