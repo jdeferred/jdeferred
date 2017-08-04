@@ -15,14 +15,14 @@
  */
 package org.jdeferred.multiple;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This will return a special Promise called {@link MasterDeferredObject}. In short,
@@ -32,31 +32,30 @@ import org.jdeferred.impl.DeferredObject;
  * <li>{@link Promise#fail(FailCallback)} will be
  * triggered if any promises rejects (i.e., if any one failed) with {@link OneReject}.</li>
  * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever one
- * promise resolves or rejects ({#link {@link MasterProgress}), 
+ * promise resolves or rejects ({#link {@link MasterProgress}),
  * or whenever a promise was notified progress ({@link OneProgress}).</li>
  * <li>{@link Promise#always(AlwaysCallback)} will be triggered whenever
  * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
  * would be triggered</li>
  * </ul>
- * 
+ *
  * @author Ray Tsang
- * 
+ *
  */
 @SuppressWarnings("rawtypes")
-public class MasterDeferredObject extends
-		DeferredObject<MultipleResults, OneReject, MasterProgress>
-		implements Promise<MultipleResults, OneReject, MasterProgress> {
+public class MasterDeferredObject<D extends MultipleOutcomes, F> extends
+		DeferredObject<D, F, MasterProgress>
+		implements Promise<D, F, MasterProgress> {
+
 	private final int numberOfPromises;
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
-	private final MultipleResults results;
 
 	@SuppressWarnings("unchecked")
-	public MasterDeferredObject(Promise... promises) {
+	public MasterDeferredObject(final D outcomes, Promise... promises) {
 		if (promises == null || promises.length == 0)
 			throw new IllegalArgumentException("Promises is null or empty");
 		this.numberOfPromises = promises.length;
-		results = new MultipleResults(numberOfPromises);
 
 		int count = 0;
 		for (final Promise promise : promises) {
@@ -66,14 +65,32 @@ public class MasterDeferredObject extends
 					synchronized (MasterDeferredObject.this) {
 						if (!MasterDeferredObject.this.isPending())
 							return;
-						
-						final int fail = failCount.incrementAndGet();
+
+						int done = 0, fail = 0;
+						if (outcomes instanceof MultipleResults) {
+							// all
+							fail = failCount.incrementAndGet();
+						} else {
+							// allSettled
+							done = doneCount.incrementAndGet();
+							outcomes.set(index, new OneReject(index, promise, result));
+						}
+
 						MasterDeferredObject.this.notify(new MasterProgress(
-								doneCount.get(),
+								done,
 								fail,
 								numberOfPromises));
-						
-						MasterDeferredObject.this.reject(new OneReject(index, promise, result));
+
+						if (outcomes instanceof MultipleResults) {
+							// all
+							MasterDeferredObject.this.reject(
+									(F) new OneReject(index, promise, result));
+						} else {
+							// allSettled
+							if (done == numberOfPromises) {
+								MasterDeferredObject.this.resolve(outcomes);
+							}
+						}
 					}
 				}
 			}).progress(new ProgressCallback() {
@@ -81,7 +98,7 @@ public class MasterDeferredObject extends
 					synchronized (MasterDeferredObject.this) {
 						if (!MasterDeferredObject.this.isPending())
 							return;
-	
+
 						MasterDeferredObject.this.notify(new OneProgress(
 								doneCount.get(),
 								failCount.get(),
@@ -93,18 +110,17 @@ public class MasterDeferredObject extends
 					synchronized (MasterDeferredObject.this) {
 						if (!MasterDeferredObject.this.isPending())
 							return;
-	
-						results.set(index, new OneResult(index, promise,
-								result));
+
+						outcomes.set(index, new OneResult(index, promise, result));
 						int done = doneCount.incrementAndGet();
-	
+
 						MasterDeferredObject.this.notify(new MasterProgress(
 								done,
 								failCount.get(),
 								numberOfPromises));
-						
+
 						if (done == numberOfPromises) {
-							MasterDeferredObject.this.resolve(results);
+							MasterDeferredObject.this.resolve(outcomes);
 						}
 					}
 				}

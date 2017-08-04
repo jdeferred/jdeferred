@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2017 Enno Gottschalk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,6 @@
  */
 package org.jdeferred.multiple;
 
-/**
- * Contains a list of {@link OneResult}.
- *
- * @author Ray Tsang
- */
-public class MultipleResults extends MultipleOutcomes<OneResult> {
+public interface OneOutcome {
 
-    public MultipleResults(int size) {
-        super(size);
-    }
-
-    @Override
-    public String toString() {
-        return "MultipleResults [results=" + results + "]";
-    }
 }

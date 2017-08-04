@@ -26,7 +26,9 @@ import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MasterDeferredObject;
+import org.jdeferred.multiple.MultipleOutcomes;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.OneOutcome;
 import org.jdeferred.multiple.OneReject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +139,17 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	@Override
 	public Promise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
 		assertNotEmpty(promises);
-		return new MasterDeferredObject(promises).promise();
+		MultipleResults results = new MultipleResults(promises.length);
+		return new MasterDeferredObject<MultipleResults, OneReject>(results, promises).promise();
+	}
+
+	@Override
+	public Promise<MultipleOutcomes<OneOutcome>, Void, MasterProgress> whenSettled(
+			Promise... promises) {
+		assertNotEmpty(promises);
+		MultipleOutcomes<OneOutcome> outcomes = new MultipleOutcomes<OneOutcome>(promises.length);
+		return new MasterDeferredObject<MultipleOutcomes<OneOutcome>, Void>(outcomes, promises)
+				.promise();
 	}
 
 	@Override

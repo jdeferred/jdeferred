@@ -23,7 +23,7 @@ import org.jdeferred.Promise;
  *
  */
 @SuppressWarnings("rawtypes")
-public class OneResult {
+public class OneResult implements OneOutcome {
 	private final int index;
 	private final Promise promise;
 	private final Object result;

@@ -146,8 +146,9 @@ public interface DeferredManager {
 			DeferredFutureTask<D, P> task);
 
 	/**
-	 * This will return a special Promise called {@link MasterDeferredObject}. In
-	 * short,
+	 * This will return a special Promise called {@link MasterDeferredObject}.
+	 * Equivalent to Promise.all in Javascript.
+	 * In short,
 	 * <ul>
 	 * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises
 	 * resolves (i.e., all finished successfully).</li>
@@ -160,11 +161,33 @@ public interface DeferredManager {
 	 * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
 	 * would be triggered</li>
 	 * </ul>
-	 * 
-	 * @param promises
+	 *
+	 * @param promises the {@link Promise}s that will be processed
 	 * @return {@link MasterDeferredObject}
 	 */
 	Promise<MultipleResults, OneReject, MasterProgress> when(
+			Promise... promises);
+
+	/**
+	 * This will return a special Promise called {@link MasterDeferredObject}.
+	 * Equivalent to Promise.allSettled in Javascript.
+	 * In short,
+	 * <ul>
+	 * <li>{@link Promise#done(DoneCallback)} will be triggered if all promises
+	 * resolve or reject (i.e., all finished successfully or otherwise).</li>
+	 * <li>{@link Promise#fail(FailCallback)} will never be triggered.</li>
+	 * <li>{@link Promise#progress(ProgressCallback)} will be triggered whenever
+	 * one promise resolves or rejects, or whenever a promise was notified
+	 * progress.</li>
+	 * <li>{@link Promise#always(AlwaysCallback)} will be triggered whenever
+	 * {@link Promise#done(DoneCallback)} or {@link Promise#fail(FailCallback)}
+	 * would be triggered</li>
+	 * </ul>
+	 *
+	 * @param promises the {@link Promise}s that will be processed
+	 * @return {@link MasterDeferredObject}
+	 */
+	Promise<MultipleOutcomes<OneOutcome>, Void, MasterProgress> whenSettled(
 			Promise... promises);
 
 	/**

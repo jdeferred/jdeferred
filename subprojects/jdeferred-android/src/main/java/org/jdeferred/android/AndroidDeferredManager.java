@@ -25,7 +25,9 @@ import org.jdeferred.Promise;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
+import org.jdeferred.multiple.MultipleOutcomes;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.OneOutcome;
 import org.jdeferred.multiple.OneReject;
 
 import android.annotation.SuppressLint;
@@ -175,6 +177,18 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 	public Promise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
 		return new AndroidDeferredObject<MultipleResults, OneReject, MasterProgress>
 			(super.when(promises)).promise();
+	}
+
+	/**
+	 * Wraps {@link MasterDeferredObject} with {@link AndroidDeferredObject} so that callbacks can
+	 * be executed in UI thread.
+	 */
+	@SuppressWarnings({"rawtypes"})
+	@Override
+	public Promise<MultipleOutcomes<OneOutcome>, Void, MasterProgress> whenSettled(
+			Promise... promises) {
+		return new AndroidDeferredObject<MultipleOutcomes<OneOutcome>, Void, MasterProgress>
+				(super.whenSettled(promises)).promise();
 	}
 
 	/**
