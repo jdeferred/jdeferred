@@ -21,7 +21,9 @@ import java.util.concurrent.Future;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
+import org.jdeferred.multiple.MultipleOutcomes;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.OneOutcome;
 import org.jdeferred.multiple.OneReject;
 
 /**
@@ -61,7 +63,7 @@ import org.jdeferred.multiple.OneReject;
  */
 @SuppressWarnings({ "rawtypes" })
 public interface DeferredManager {
-	public static enum StartPolicy {
+	enum StartPolicy {
 		/**
 		 * Let Deferred Manager to determine whether to start the task at its own
 		 * discretion.
@@ -92,7 +94,7 @@ public interface DeferredManager {
 	/**
 	 * Simply returns the promise.
 	 */
-	public abstract <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise);
+	<D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise);
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}.
@@ -100,7 +102,7 @@ public interface DeferredManager {
 	 * @see #when(DeferredFutureTask)
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
-	public abstract Promise<Void, Throwable, Void> when(Runnable runnable);
+	Promise<Void, Throwable, Void> when(Runnable runnable);
 
 	/**
 	 * Wraps {@link Callable} with {@link DeferredFutureTask}
@@ -108,7 +110,7 @@ public interface DeferredManager {
 	 * @see #when(DeferredFutureTask)
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
-	public abstract <D> Promise<D, Throwable, Void> when(Callable<D> callable);
+	<D> Promise<D, Throwable, Void> when(Callable<D> callable);
 	
 	/**
 	 * Wraps {@link Future} and waits for {@link Future#get()} to return a result
@@ -116,7 +118,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(Callable)}
 	 */
-	public abstract <D> Promise<D, Throwable, Void> when(Future<D> future);
+	<D> Promise<D, Throwable, Void> when(Future<D> future);
 
 	/**
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
@@ -124,7 +126,7 @@ public interface DeferredManager {
 	 * @see #when(DeferredFutureTask)
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
-	public abstract <P> Promise<Void, Throwable, P> when(
+	<P> Promise<Void, Throwable, P> when(
 			DeferredRunnable<P> runnable);
 
 	/**
@@ -133,7 +135,7 @@ public interface DeferredManager {
 	 * @see #when(DeferredFutureTask)
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
-	public abstract <D, P> Promise<D, Throwable, P> when(
+	<D, P> Promise<D, Throwable, P> when(
 			DeferredCallable<D, P> callable);
 
 	/**
@@ -142,7 +144,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link DeferredFutureTask#promise()}
 	 */
-	public abstract <D, P> Promise<D, Throwable, P> when(
+	<D, P> Promise<D, Throwable, P> when(
 			DeferredFutureTask<D, P> task);
 
 	/**
@@ -164,7 +166,7 @@ public interface DeferredManager {
 	 * @param promises
 	 * @return {@link MasterDeferredObject}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			Promise... promises);
 
 	/**
@@ -172,7 +174,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			Runnable... runnables);
 
 	/**
@@ -180,7 +182,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			Callable<?>... callables);
 
 	/**
@@ -188,7 +190,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredRunnable<?>... runnables);
 
 	/**
@@ -196,7 +198,7 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredCallable<?, ?>... callables);
 
 	/**
@@ -205,10 +207,10 @@ public interface DeferredManager {
 	 *
 	 * @return {@link #when(Promise...)}
 	 */
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
+	Promise<MultipleResults, OneReject, MasterProgress> when(
 			DeferredFutureTask<?, ?>... tasks);
 	
-	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
-			Future<?> ... futures);
+	Promise<MultipleResults, OneReject, MasterProgress> when(
+			Future<?>... futures);
 
 }

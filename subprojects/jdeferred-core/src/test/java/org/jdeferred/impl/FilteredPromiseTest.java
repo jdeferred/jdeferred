@@ -88,7 +88,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				for (int i = 0; i < 10; i++) {
 					try {
 						Thread.sleep(200);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException ignored) {
 					}
 					notify("HI");
 				}

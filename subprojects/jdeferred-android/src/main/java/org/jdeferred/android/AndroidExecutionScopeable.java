@@ -26,5 +26,5 @@ package org.jdeferred.android;
  *
  */
 public interface AndroidExecutionScopeable {
-	public AndroidExecutionScope getExecutionScope();
+	AndroidExecutionScope getExecutionScope();
 }

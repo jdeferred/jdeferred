@@ -36,7 +36,7 @@ public class CancelTaskTest extends AbstractDeferredTest {
 					public String call() throws Exception {
 						try {
 							Thread.sleep(1000);
-						} catch (InterruptedException e) {
+						} catch (InterruptedException ignored) {
 						}
 
 						return "Hello";
@@ -49,7 +49,7 @@ public class CancelTaskTest extends AbstractDeferredTest {
 
 		try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignored) {
 		}
 
 		promise.then(new DoneCallback<String>() {

@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <D_OUT> Type of the output from this filter
  */
 public interface DoneFilter<D, D_OUT> {
-	public D_OUT filterDone(final D result);
+	D_OUT filterDone(final D result);
 }

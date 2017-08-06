@@ -200,8 +200,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			public D call() throws Exception {
 				try {
 					return future.get();
-				} catch (InterruptedException e) {
-					throw e;
 				} catch (ExecutionException e) {
 					if (e.getCause() instanceof Exception)
 						throw (Exception) e.getCause();

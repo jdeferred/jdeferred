@@ -27,5 +27,5 @@ package org.jdeferred;
  * @see Deferred#notify(Object)
  */
 public interface FailPipe<F, D_OUT, F_OUT, P_OUT> {
-	public Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
+	Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
 }

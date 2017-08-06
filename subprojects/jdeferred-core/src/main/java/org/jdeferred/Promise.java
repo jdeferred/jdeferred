@@ -51,7 +51,7 @@ package org.jdeferred;
  *            Type used for {@link #progress(ProgressCallback)}
  */
 public interface Promise<D, F, P> {
-	public enum State {
+	enum State {
 		/**
 		 * The Promise is still pending - it could be created, submitted for execution,
 		 * or currently running, but not yet finished.
@@ -75,36 +75,36 @@ public interface Promise<D, F, P> {
 		RESOLVED
 	}
 
-	public State state();
+	State state();
 
 	/**
 	 * @see State#PENDING
 	 */
-	public boolean isPending();
+	boolean isPending();
 
 	/**
 	 * @see State#RESOLVED
 	 */
-	public boolean isResolved();
+	boolean isResolved();
 
 	/**
 	 * @see State#REJECTED
 	 */
-	public boolean isRejected();
+	boolean isRejected();
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}
 	 * 
 	 * @param doneCallback {@link #done(DoneCallback)}
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback);
+	Promise<D, F, P> then(DoneCallback<D> doneCallback);
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)} and then {@link FailCallback}
 	 * @param doneCallback {@link #done(DoneCallback)}
 	 * @param failCallback {@link #fail(FailCallback)}
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback,
+	Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback);
 
 	/**
@@ -114,21 +114,21 @@ public interface Promise<D, F, P> {
 	 * @param failCallback {@link #fail(FailCallback)}
 	 * @param progressCallback {@link #progress(ProgressCallback)}
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback,
+	Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback, ProgressCallback<P> progressCallback);
 	
 	/**
 	 * Equivalent to then(doneFilter, null, null)
 	 * @see {@link #then(DoneFilter, FailFilter, ProgressFilter)}
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter);
 
 	/**
 	 * Equivalent to then(doneFilter, failFilter, null)
 	 * @see {@link #then(DoneFilter, FailFilter, ProgressFilter)}
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter);
 
 	/**
@@ -159,20 +159,20 @@ public interface Promise<D, F, P> {
 	 * @param failFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpFailFilter}
 	 * @param progressFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpProgressFilter}
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter);
 	
 	/**
 	 * Equivalent to then(DonePipe, null, null)
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
 	
 	/**
 	 * Equivalent to then(DonePipe, FailPipe, null)
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
 	
 	/**
@@ -197,7 +197,7 @@ public interface Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
 			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe);
 	
@@ -220,7 +220,7 @@ public interface Promise<D, F, P> {
 	 * 
 	 * @see Deferred#resolve(Object)
 	 */
-	public Promise<D, F, P> done(DoneCallback<D> callback);
+	Promise<D, F, P> done(DoneCallback<D> callback);
 	
 	/**
 	 * This method will register {@link FailCallback} so that when a Deferred object 
@@ -241,7 +241,7 @@ public interface Promise<D, F, P> {
 	 * 
 	 * @see Deferred#reject(Object)
 	 */
-	public Promise<D, F, P> fail(FailCallback<F> callback);
+	Promise<D, F, P> fail(FailCallback<F> callback);
 	
 	/**
 	 * This method will register {@link AlwaysCallback} so that when it's always triggered
@@ -267,7 +267,7 @@ public interface Promise<D, F, P> {
 	 * @see Deferred#resolve(Object)
 	 * @see Deferred#reject(Object)
 	 */
-	public Promise<D, F, P> always(AlwaysCallback<D, F> callback);
+	Promise<D, F, P> always(AlwaysCallback<D, F> callback);
 	
 	/**
 	 * This method will register {@link ProgressCallback} so that when a Deferred object 
@@ -288,7 +288,7 @@ public interface Promise<D, F, P> {
 	 * 
 	 * @see Deferred#notify(Object)
 	 */
-	public Promise<D, F, P> progress(ProgressCallback<P> callback);
+	Promise<D, F, P> progress(ProgressCallback<P> callback);
 
 	/**
 	 * This method will wait as long as the State is Pending. This method will fail fast
@@ -297,7 +297,7 @@ public interface Promise<D, F, P> {
 	 * @throws InterruptedException thrown when failing fast because {@link State} is no longer
 	 *                              {@link State#PENDING}
 	 */
-	public void waitSafely() throws InterruptedException;
+	void waitSafely() throws InterruptedException;
 
 	/**
 	 * This method will wait when the State is Pending, and return when timeout has reached.
@@ -307,6 +307,6 @@ public interface Promise<D, F, P> {
 	 * @throws InterruptedException thrown when failing fast because {@link State} is no longer
 	 *                              {@link State#PENDING}
 	 */
-	public void waitSafely(long timeout) throws InterruptedException;
+	void waitSafely(long timeout) throws InterruptedException;
 	
 }

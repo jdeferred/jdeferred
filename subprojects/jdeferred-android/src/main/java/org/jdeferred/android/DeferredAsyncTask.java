@@ -59,8 +59,8 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 	
 	protected final void onCancelled(Result result) {
 		deferred.reject(new CancellationException());
-	};
-	
+	}
+
 	@Override
 	protected final void onPostExecute(Result result) {
 		if (throwable != null) {
@@ -80,8 +80,8 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 			log.warn("There were multiple progress values.  Only the first one was used!");
 			deferred.notify(values[0]);
 		}
-	};
-	
+	}
+
 	protected final Result doInBackground(Params ... params) {
 		try {
 			return doInBackgroundSafe(params);
@@ -89,8 +89,8 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 			throwable = e;
 			return null;
 		}
-	};
-	
+	}
+
 	protected abstract Result doInBackgroundSafe(Params ... params) throws Exception;
 	
 	@SuppressWarnings("unchecked")

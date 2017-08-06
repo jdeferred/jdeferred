@@ -109,7 +109,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		} else {
 			super.triggerDone(callback, resolved);
 		}
-	};
+	}
 
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
@@ -118,7 +118,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		} else {
 			super.triggerFail(callback, rejected);
 		}
-	};
+	}
 
 	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
@@ -127,7 +127,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		} else {
 			super.triggerProgress(callback, progress);
 		}
-	};
+	}
 
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state,
 			D resolve, F reject) {
@@ -137,7 +137,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		} else {
 			super.triggerAlways(callback, state, resolve, reject);
 		}
-	};
+	}
 
 	protected <Callback> void executeInUiThread(int what, Callback callback,
 			State state, D resolve, F reject, P progress) {

@@ -48,7 +48,7 @@ import android.os.Build;
  *
  */
 public class AndroidDeferredManager extends DefaultDeferredManager {
-	private static Void[] EMPTY_PARAMS = new Void[]{};
+	private static final Void[] EMPTY_PARAMS = new Void[]{};
 	
 	public AndroidDeferredManager() {
 		super();
@@ -85,12 +85,8 @@ public class AndroidDeferredManager extends DefaultDeferredManager {
 		
 		if (task.getStartPolicy() == StartPolicy.AUTO 
 				|| (task.getStartPolicy() == StartPolicy.DEFAULT && isAutoSubmit())) {
-			
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				task.executeOnExecutor(getExecutorService(), EMPTY_PARAMS);
-			} else {
-				task.execute(EMPTY_PARAMS);
-			}
+
+			task.executeOnExecutor(getExecutorService(), EMPTY_PARAMS);
 		}
 		
 		return task.promise();
