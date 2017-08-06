@@ -51,9 +51,6 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * 
 	 * </code>
 	 * </pre>
-	 * 
-	 * @param resolve
-	 * @return
 	 */
 	Deferred<D, F, P> resolve(final D resolve);
 
@@ -76,9 +73,6 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * 
 	 * </code>
 	 * </pre>
-	 * 
-	 * @param resolve
-	 * @return
 	 */
 	Deferred<D, F, P> reject(final F reject);
 
@@ -101,16 +95,11 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * 
 	 * </code>
 	 * </pre>
-	 * 
-	 * @param resolve
-	 * @return
 	 */
 	Deferred<D, F, P> notify(final P progress);
 
 	/**
 	 * Return an {@link Promise} instance (i.e., an observer).  You can register callbacks in this observer.
-	 * 
-	 * @return
 	 */
 	Promise<D, F, P> promise();
 }

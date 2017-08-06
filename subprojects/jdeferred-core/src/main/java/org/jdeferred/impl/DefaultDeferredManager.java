@@ -22,13 +22,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A default implementation that runs deferred tasks using an {@link ExecutorService}.
- * Also, by default, deferred tasks are executed (submitted to the ExecutorService) automatically
- * when it's passed into {@link DeferredManager}'s when(...) methods.  This behavior can be changed
- * by setting {@link #setAutoSubmit(boolean)}.
- * 
- * @author Ray Tsang
+ * A default implementation that runs deferred tasks using an {@link ExecutorService}. Also, by
+ * default, deferred tasks are executed (submitted to the ExecutorService) automatically when it's
+ * passed into {@link org.jdeferred.DeferredManager}'s when(...) methods.  This behavior can be
+ * changed by setting {@link #setAutoSubmit(boolean)}.
  *
+ * @author Ray Tsang
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DefaultDeferredManager extends AbstractDeferredManager {
@@ -39,7 +38,7 @@ public class DefaultDeferredManager extends AbstractDeferredManager {
 	 * {@link Runnable} or {@link Callable} are executed.
 	 */
 	public static final boolean DEFAULT_AUTO_SUBMIT = true;
-	
+
 	private final ExecutorService executorService;
 	private boolean autoSubmit = DEFAULT_AUTO_SUBMIT;
 
@@ -51,10 +50,6 @@ public class DefaultDeferredManager extends AbstractDeferredManager {
 		this.executorService = Executors.newCachedThreadPool();
 	}
 
-	/**
-	 * 
-	 * @param executorService
-	 */
 	public DefaultDeferredManager(ExecutorService executorService) {
 		this.executorService = executorService;
 	}
@@ -88,7 +83,7 @@ public class DefaultDeferredManager extends AbstractDeferredManager {
 	protected void submit(Runnable runnable) {
 		executorService.submit(runnable);
 	}
-	
+
 	@Override
 	protected void submit(Callable callable) {
 		executorService.submit(callable);
@@ -102,5 +97,5 @@ public class DefaultDeferredManager extends AbstractDeferredManager {
 	public void setAutoSubmit(boolean autoSubmit) {
 		this.autoSubmit = autoSubmit;
 	}
-	
+
 }

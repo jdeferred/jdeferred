@@ -15,7 +15,6 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DonePipe;
 import org.jdeferred.FailCallback;

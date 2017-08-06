@@ -16,7 +16,7 @@
 package org.jdeferred;
 
 /**
- * @see Promise#then(ProgressPipe, FailFilter)
+ * @see Promise#then(DonePipe, FailPipe, ProgressPipe)
  * @author Ray Tsang
  *
  * @param <P> Type of the input

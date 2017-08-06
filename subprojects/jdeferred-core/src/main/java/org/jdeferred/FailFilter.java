@@ -19,8 +19,8 @@ package org.jdeferred;
  * @see Promise#then(DoneFilter, FailFilter)
  * @author Ray Tsang
  *
- * @param <P> Type of the input
- * @param <P_OUT> Type of the output from this filter
+ * @param <F> Type of the input
+ * @param <F_OUT> Type of the output from this filter
  */
 public interface FailFilter<F, F_OUT> {
 	public F_OUT filterFail(final F result);

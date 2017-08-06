@@ -41,7 +41,6 @@ public abstract class DeferredRunnable<P> implements Runnable {
 	
 	/**
 	 * @see Deferred#notify(Object)
-	 * @param progress
 	 */
 	protected void notify(P progress) {
 		deferred.notify(progress);

@@ -91,9 +91,6 @@ public interface DeferredManager {
 	
 	/**
 	 * Simply returns the promise.
-	 * 
-	 * @param promise
-	 * @return promise
 	 */
 	public abstract <D, F, P> Promise<D, F, P> when(Promise<D, F, P> promise);
 
@@ -101,7 +98,6 @@ public interface DeferredManager {
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}.
 	 * 
 	 * @see #when(DeferredFutureTask)
-	 * @param runnable
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
 	public abstract Promise<Void, Throwable, Void> when(Runnable runnable);
@@ -110,7 +106,6 @@ public interface DeferredManager {
 	 * Wraps {@link Callable} with {@link DeferredFutureTask}
 	 * 
 	 * @see #when(DeferredFutureTask)
-	 * @param callable
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
 	public abstract <D> Promise<D, Throwable, Void> when(Callable<D> callable);
@@ -118,8 +113,7 @@ public interface DeferredManager {
 	/**
 	 * Wraps {@link Future} and waits for {@link Future#get()} to return a result
 	 * in the background.
-	 *  
-	 * @param future
+	 *
 	 * @return {@link #when(Callable)}
 	 */
 	public abstract <D> Promise<D, Throwable, Void> when(Future<D> future);
@@ -128,7 +122,6 @@ public interface DeferredManager {
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
 	 * 
 	 * @see #when(DeferredFutureTask)
-	 * @param runnable
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
 	public abstract <P> Promise<Void, Throwable, P> when(
@@ -138,7 +131,6 @@ public interface DeferredManager {
 	 * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
 	 * 
 	 * @see #when(DeferredFutureTask)
-	 * @param callable
 	 * @return {@link #when(DeferredFutureTask)}
 	 */
 	public abstract <D, P> Promise<D, Throwable, P> when(
@@ -147,8 +139,7 @@ public interface DeferredManager {
 	/**
 	 * May or may not submit {@link DeferredFutureTask} for execution. See
 	 * implementation documentation.
-	 * 
-	 * @param task
+	 *
 	 * @return {@link DeferredFutureTask#promise()}
 	 */
 	public abstract <D, P> Promise<D, Throwable, P> when(
@@ -178,8 +169,7 @@ public interface DeferredManager {
 
 	/**
 	 * Wraps {@link Runnable} with {@link DeferredFutureTask}
-	 * 
-	 * @param runnables
+	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
@@ -187,8 +177,7 @@ public interface DeferredManager {
 
 	/**
 	 * Wraps {@link Callable} with {@link DeferredFutureTask}
-	 * 
-	 * @param callables
+	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
@@ -196,8 +185,7 @@ public interface DeferredManager {
 
 	/**
 	 * Wraps {@link DeferredRunnable} with {@link DeferredFutureTask}
-	 * 
-	 * @param runnables
+	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
@@ -205,8 +193,7 @@ public interface DeferredManager {
 
 	/**
 	 * Wraps {@link DeferredCallable} with {@link DeferredFutureTask}
-	 * 
-	 * @param callables
+	 *
 	 * @return {@link #when(DeferredFutureTask...)}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(
@@ -215,8 +202,7 @@ public interface DeferredManager {
 	/**
 	 * May or may not submit {@link DeferredFutureTask} for execution. See
 	 * implementation documentation.
-	 * 
-	 * @param tasks
+	 *
 	 * @return {@link #when(Promise...)}
 	 */
 	public abstract Promise<MultipleResults, OneReject, MasterProgress> when(

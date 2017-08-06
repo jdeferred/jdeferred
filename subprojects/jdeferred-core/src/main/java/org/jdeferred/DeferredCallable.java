@@ -44,7 +44,6 @@ public abstract class DeferredCallable<D, P> implements Callable<D> {
 	
 	/**
 	 * @see Deferred#notify(Object)
-	 * @param progress
 	 */
 	protected void notify(P progress) {
 		deferred.notify(progress);
