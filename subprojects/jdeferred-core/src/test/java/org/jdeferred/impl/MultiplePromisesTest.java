@@ -24,17 +24,16 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
-import org.jdeferred.multiple.MasterProgress;
-import org.jdeferred.multiple.MultipleResults2;
-import org.jdeferred.multiple.OneProgress;
-import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings({"rawtypes"})
 public class MultiplePromisesTest extends AbstractDeferredTest {
@@ -374,6 +373,48 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			}
 		}
 		Assert.assertEquals(1, doneCount.get());
+	}
+
+	@Test
+	public void testIterable() {
+		final AtomicReference<MultipleResults> results = new AtomicReference<MultipleResults>();
+		List actions = new LinkedList();
+
+		actions.add(new DeferredCallable<String, Integer>() {
+			@Override
+			public String call() throws Exception {
+			    return "r1";
+			}
+		});
+
+		actions.add("r2");
+
+		actions.add(successCallable("r3", 100));
+
+		Promise<MultipleResults, OneReject<?>, MasterProgress> p = deferredManager.when(actions);
+		p.done(new DoneCallback<MultipleResults>() {
+			@Override
+			public void onDone(MultipleResults result) {
+			    results.set(result);
+			}
+		});
+
+		try {
+			p.waitSafely();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		Set<String> resultSet = new LinkedHashSet<String>();
+
+		for (OneResult<?> r : results.get()) {
+			resultSet.add(r.getResult().toString());
+		}
+		Assert.assertEquals(3, resultSet.size());
+
+		Assert.assertTrue("r1 is not in result", resultSet.contains("r1"));
+		Assert.assertTrue("r2 is not in result", resultSet.contains("r2"));
+		Assert.assertTrue("r3 is not in result", resultSet.contains("r3"));
 	}
 
 	@Test
