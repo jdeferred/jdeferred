@@ -15,22 +15,14 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.DeferredCallable;
-import org.jdeferred.DeferredFutureTask;
-import org.jdeferred.DeferredManager;
-import org.jdeferred.DeferredRunnable;
-import org.jdeferred.Promise;
-import org.jdeferred.multiple.MasterProgress;
-import org.jdeferred.multiple.MultipleResults;
-import org.jdeferred.multiple.MultipleResults2;
-import org.jdeferred.multiple.MultipleResults3;
-import org.jdeferred.multiple.MultipleResults4;
-import org.jdeferred.multiple.MultipleResults5;
-import org.jdeferred.multiple.MultipleResultsN;
-import org.jdeferred.multiple.OneReject;
+import org.jdeferred.*;
+import org.jdeferred.multiple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -540,6 +532,46 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	protected void assertNotNull(Object object, String name) {
 		if (object == null) {
 			throw new IllegalArgumentException("Argument '" + name + "' must not be null");
+		}
+	}
+
+	@Override
+	public Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable iterable) {
+	    if (iterable == null) {
+			throw new IllegalArgumentException("Iterable is null");
+		}
+
+		Iterator iterator = iterable.iterator();
+	    if (!iterator.hasNext()) {
+	    	throw new IllegalArgumentException("Iterable is empty");
+		}
+
+		List<Promise> promises = new ArrayList<Promise>();
+	    while (iterator.hasNext()) {
+	    	promises.add(toPromise(iterator.next()));
+		}
+		return new MasterDeferredObjectUntypedN(promises.toArray(new Promise[]{})).promise();
+	}
+
+	protected Promise toPromise(Object o) {
+		if (o instanceof DeferredFutureTask) {
+			return when((DeferredFutureTask) o);
+		} else if (o instanceof DeferredRunnable) {
+			return when((DeferredRunnable) o);
+		} else if (o instanceof DeferredCallable) {
+			return when((DeferredCallable) o);
+		} else if (o instanceof Runnable) {
+			return when((Runnable) o);
+		} else if (o instanceof Callable) {
+			return when((Callable) o);
+		} else if (o instanceof Future) {
+			return when((Future) o);
+		} else if (o instanceof Promise) {
+			return (Promise) o;
+		} else {
+			DeferredObject deferred = new DeferredObject();
+			deferred.resolve(o);
+			return deferred.promise();
 		}
 	}
 }

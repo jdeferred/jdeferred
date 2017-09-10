@@ -368,4 +368,12 @@ public interface DeferredManager {
 		Future<V5> futureV5,
 		Future<?> future6,
 		Future<?>... futures);
+
+	/**
+	 * May or may not submit tasks for execution. See implementation documentation.
+	 *
+	 * @param iterable
+	 * @return
+	 */
+	Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable iterable);
 }
