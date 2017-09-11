@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <P>
  */
 public interface ProgressCallback<P> {
-	public void onProgress(final P progress);
+	void onProgress(final P progress);
 }

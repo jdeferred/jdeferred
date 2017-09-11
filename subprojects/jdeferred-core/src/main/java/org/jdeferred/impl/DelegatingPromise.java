@@ -49,8 +49,6 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
 
     /**
      * Returns the delegate Promise wrapped by this Promise.
-     *
-     * @return
      */
     protected Promise<D, F, P> getDelegate() {
         return delegate;

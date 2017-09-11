@@ -16,12 +16,16 @@
 package org.jdeferred;
 
 /**
- * @see Promise#then(DonePipe, FailPipe)
+ * @param <F>     Type of this {@link FailPipe}'s input
+ * @param <D_OUT> Type used for {@link Promise#done(DoneCallback)}
+ * @param <F_OUT> Type used for {@link Promise#fail(FailCallback)}
+ * @param <P_OUT> Type used for {@link Promise#progress(ProgressCallback)}
  * @author Ray Tsang
- *
- * @param <P> Type of the input
- * @param <P_OUT> Type of the output from this filter
+ * @see Promise#then(DonePipe, FailPipe)
+ * @see Deferred#resolve(Object)
+ * @see Deferred#reject(Object)
+ * @see Deferred#notify(Object)
  */
 public interface FailPipe<F, D_OUT, F_OUT, P_OUT> {
-	public Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
+	Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);
 }

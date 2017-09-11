@@ -9,7 +9,7 @@ import org.jdeferred.android.DeferredAsyncTask;
 import android.test.AndroidTestCase;
 
 public class AndroidDeferredManagerTest extends AndroidTestCase {
-	protected AndroidDeferredManager dm = new AndroidDeferredManager();
+	protected final AndroidDeferredManager dm = new AndroidDeferredManager();
 
 	public void testDeferredAsyncTask() {
 		final ValueHolder<String> backgroundThreadGroupName = new ValueHolder<String>();

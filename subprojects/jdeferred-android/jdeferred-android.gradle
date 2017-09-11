@@ -20,7 +20,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
 
@@ -38,14 +38,14 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 16
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     lintOptions {
         abortOnError false
     }
     defaultConfig {
          minSdkVersion 15
-         targetSdkVersion 19
+         targetSdkVersion 26
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6

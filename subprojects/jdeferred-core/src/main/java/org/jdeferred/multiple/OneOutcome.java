@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Ray Tsang
+ * Copyright 2017 Enno Gottschalk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android;
+package org.jdeferred.multiple;
 
-/**
- * This interface allows a callback to specify whether it should run in the UI thread
- * or background thread.
- * 
- * Anonymous class doesn't retain annotations at type nor method level!
- * So rather than annotating class and/or methods, we must use an interface. 
- * 
- * @author Ray Tsang
- *
- */
-public interface AndroidExecutionScopeable {
-	AndroidExecutionScope getExecutionScope();
+public interface OneOutcome {
+
 }

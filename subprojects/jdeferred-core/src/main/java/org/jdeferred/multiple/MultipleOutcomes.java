@@ -15,15 +15,37 @@
  */
 package org.jdeferred.multiple;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Contains a list of {@link OneResult}.
  *
  * @author Ray Tsang
  */
-public class MultipleResults extends MultipleOutcomes<OneResult> {
+public class MultipleOutcomes<T extends OneOutcome> implements Iterable<T> {
 
-    public MultipleResults(int size) {
-        super(size);
+    protected final List<T> results;
+
+    public MultipleOutcomes(int size) {
+        this.results = new CopyOnWriteArrayList(new Object[size]);
+    }
+
+    protected void set(int index, T result) {
+        results.set(index, result);
+    }
+
+    public T get(int index) {
+        return results.get(index);
+    }
+
+    public Iterator<T> iterator() {
+        return results.iterator();
+    }
+
+    public int size() {
+        return results.size();
     }
 
     @Override

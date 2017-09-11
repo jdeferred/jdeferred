@@ -81,7 +81,7 @@ public abstract class AbstractDeferredTest {
 		while (!deferredManager.isTerminated()) {
 			try {
 				deferredManager.awaitTermination(1, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ignored) {
 			}
 		}
 	}

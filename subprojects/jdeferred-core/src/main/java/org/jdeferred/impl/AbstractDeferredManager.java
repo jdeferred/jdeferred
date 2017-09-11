@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -26,7 +27,9 @@ import org.jdeferred.DeferredRunnable;
 import org.jdeferred.Promise;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MasterDeferredObject;
+import org.jdeferred.multiple.MultipleOutcomes;
 import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.OneOutcome;
 import org.jdeferred.multiple.OneReject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +52,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * <li>{@link #when(DeferredRunnable)}</li>
 	 * <li>{@link #when(DeferredFutureTask))}</li>
 	 * </ul>
-	 * @return
 	 */
 	public abstract boolean isAutoSubmit();
 	
@@ -135,10 +137,33 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 		return when(promises);
 	}
 
+	public Promise<MultipleResults, OneReject, MasterProgress> when(List<Promise> promises) {
+		assertNotEmpty(promises);
+		Promise[] promiseArray = promises.toArray(new Promise[promises.size()]);
+		return when(promiseArray);
+	}
+
 	@Override
 	public Promise<MultipleResults, OneReject, MasterProgress> when(Promise... promises) {
 		assertNotEmpty(promises);
-		return new MasterDeferredObject(promises).promise();
+		MultipleResults results = new MultipleResults(promises.length);
+		return new MasterDeferredObject<MultipleResults, OneReject>(results, promises).promise();
+	}
+
+	public Promise<MultipleOutcomes<OneOutcome>, Void, MasterProgress> whenSettled(
+			List<Promise> promises) {
+		assertNotEmpty(promises);
+		Promise[] promiseArray = promises.toArray(new Promise[promises.size()]);
+		return whenSettled(promiseArray);
+	}
+
+	@Override
+	public Promise<MultipleOutcomes<OneOutcome>, Void, MasterProgress> whenSettled(
+			Promise... promises) {
+		assertNotEmpty(promises);
+		MultipleOutcomes<OneOutcome> outcomes = new MultipleOutcomes<OneOutcome>(promises.length);
+		return new MasterDeferredObject<MultipleOutcomes<OneOutcome>, Void>(outcomes, promises)
+				.promise();
 	}
 
 	@Override
@@ -172,7 +197,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * 	<li>{@link #when(Callable)}</li>
 	 *  <li>{@link #when(Callable...)}</li>
 	 *  <li>{@link #when(Runnable)}</li>
-	 *  <li>{@link #when(Runnable..)}</li>
+	 *  <li>{@link #when(Runnable...)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future...)}</li>
 	 *  <li>{@link #when(org.jdeferred.DeferredRunnable...)}</li>
@@ -201,8 +226,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			public D call() throws Exception {
 				try {
 					return future.get();
-				} catch (InterruptedException e) {
-					throw e;
 				} catch (ExecutionException e) {
 					if (e.getCause() instanceof Exception)
 						throw (Exception) e.getCause();
@@ -216,5 +239,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 		if (objects == null || objects.length == 0)
 			throw new IllegalArgumentException(
 					"Arguments is null or its length is empty");
-	}	
+	}
+
+	protected void assertNotEmpty(List list) {
+		if (list == null || list.size() == 0)
+			throw new IllegalArgumentException(
+					"Arguments is null or its length is empty");
+	}
 }

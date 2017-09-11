@@ -46,7 +46,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return 100;
@@ -55,7 +55,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";
@@ -82,7 +82,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return 100;
@@ -91,7 +91,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";
@@ -129,7 +129,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				throw new RuntimeException("oops");
@@ -138,7 +138,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";
@@ -168,7 +168,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return 100;
@@ -183,7 +183,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";
@@ -223,7 +223,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 				for (int i = 1; i <= 10; i++) {
 					try {
 						Thread.sleep(100);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException ignored) {
 					}
 					notify(i);
 					sum += i;
@@ -240,7 +240,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 				for (int i = 1; i <= 3; i++) {
 					try {
 						Thread.sleep(30);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException ignored) {
 					}
 					notify("R-" + i);
 				}
@@ -299,7 +299,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		waitForCompletion();
 		try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignored) {
 		}
 		Assert.assertEquals(1, alwaysCounter.get());
 		Assert.assertEquals(1, doneCounter.get());
@@ -339,7 +339,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return 100;
@@ -348,7 +348,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(2000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";
@@ -382,7 +382,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public Integer call() {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return 100;
@@ -391,7 +391,7 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			public String call() {
 				try {
 					Thread.sleep(2000);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignored) {
 				}
 				
 				return "Hello";

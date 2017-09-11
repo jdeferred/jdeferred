@@ -188,7 +188,7 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 				for (int i = 1; i <= 10; i++) {
 					try {
 						Thread.sleep(100);
-					} catch (InterruptedException e) {
+					} catch (InterruptedException ignored) {
 					}
 					notify(i);
 					sum += i;
