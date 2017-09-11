@@ -27,6 +27,5 @@ package org.jdeferred;
  * @see Deferred#notify(Object)
  */
 public interface DonePipe<D, D_OUT, F_OUT, P_OUT> {
-
 	Promise<D_OUT, F_OUT, P_OUT> pipeDone(final D result);
 }

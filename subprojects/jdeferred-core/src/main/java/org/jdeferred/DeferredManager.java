@@ -21,9 +21,7 @@ import java.util.concurrent.Future;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MasterDeferredObject;
 import org.jdeferred.multiple.MasterProgress;
-import org.jdeferred.multiple.MultipleOutcomes;
 import org.jdeferred.multiple.MultipleResults;
-import org.jdeferred.multiple.OneOutcome;
 import org.jdeferred.multiple.OneReject;
 
 /**
