@@ -15,9 +15,11 @@
  ******************************************************************************/
 package org.jdeferred.android;
 
-import java.lang.reflect.Method;
-
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
@@ -28,9 +30,7 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.os.Looper;
-import android.os.Handler;
-import android.os.Message;
+import java.lang.reflect.Method;
 
 public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	private static final InternalHandler sHandler = new InternalHandler();
@@ -39,6 +39,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 	private static final int MESSAGE_POST_PROGRESS = 0x2;
 	private static final int MESSAGE_POST_FAIL = 0x3;
 	private static final int MESSAGE_POST_ALWAYS = 0x4;
+	private static final int MESSAGE_POST_CANCEL = 0x5;
 
 	final protected Logger log = LoggerFactory
 			.getLogger(AndroidDeferredObject.class);
@@ -84,20 +85,23 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		public void handleMessage(Message msg) {
 			CallbackMessage<?, ?, ?, ?> result = (CallbackMessage<?, ?, ?, ?>) msg.obj;
 			switch (msg.what) {
-			case MESSAGE_POST_DONE:
-				((DoneCallback) result.callback).onDone(result.resolved);
-				break;
-			case MESSAGE_POST_PROGRESS:
-				((ProgressCallback) result.callback)
+				case MESSAGE_POST_DONE:
+					((DoneCallback) result.callback).onDone(result.resolved);
+					break;
+				case MESSAGE_POST_PROGRESS:
+					((ProgressCallback) result.callback)
 						.onProgress(result.progress);
-				break;
-			case MESSAGE_POST_FAIL:
-				((FailCallback) result.callback).onFail(result.rejected);
-				break;
-			case MESSAGE_POST_ALWAYS:
-				((AlwaysCallback) result.callback).onAlways(result.state,
+					break;
+				case MESSAGE_POST_FAIL:
+					((FailCallback) result.callback).onFail(result.rejected);
+					break;
+				case MESSAGE_POST_ALWAYS:
+					((AlwaysCallback) result.callback).onAlways(result.state,
 						result.resolved, result.rejected);
-				break;
+					break;
+				case MESSAGE_POST_CANCEL:
+					((CancelCallback) result.callback).onCancel();
+					break;
 			}
 		}
 	}
@@ -139,6 +143,15 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		}
 	};
 
+	protected void triggerCancel(CancelCallback callback) {
+		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
+			executeInUiThread(MESSAGE_POST_CANCEL, callback, State.PENDING,
+				null, null, null);
+		} else {
+			super.triggerCancel(callback);
+		}
+	};
+
 	protected <Callback> void executeInUiThread(int what, Callback callback,
 			State state, D resolve, F reject, P progress) {
 		Message message = sHandler.obtainMessage(what,
@@ -177,6 +190,8 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 			return determineAndroidExecutionScope(callback.getClass(), "onProgress", Object.class);
 		} else if (callback instanceof AlwaysCallback) {
 			return determineAndroidExecutionScope(callback.getClass(), "onAlways", State.class, Object.class, Object.class);
+		}else if (callback instanceof CancelCallback) {
+			return determineAndroidExecutionScope(callback.getClass(), "onCancel");
 		}
 		return scope == null ? defaultAndroidExecutionScope : scope;
 	}

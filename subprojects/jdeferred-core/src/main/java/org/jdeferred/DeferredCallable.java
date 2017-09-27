@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package org.jdeferred;
 
-import java.util.concurrent.Callable;
-
 import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
+
+import java.util.concurrent.Callable;
 
 /**
  * Use this as superclass in case you need to be able to return a result and notify progress.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ public class OneProgress extends MasterProgress {
 	private final Promise promise;
 	private final Object progress;
 	
-	public OneProgress(int done, int fail, int total, int index, Promise promise, Object progress) {
-		super(done, fail, total);
+	public OneProgress(int done, int fail, int total, int cancel, int index, Promise promise, Object progress) {
+		super(done, fail, cancel, total);
 		this.index = index;
 		this.promise = promise;
 		this.progress = progress;
@@ -53,7 +53,8 @@ public class OneProgress extends MasterProgress {
 	public String toString() {
 		return "OneProgress [index=" + index + ", promise=" + promise
 				+ ", progress=" + progress + ", getDone()=" + getDone()
-				+ ", getFail()=" + getFail() + ", getTotal()=" + getTotal()
+			    + ", getFail()=" + getFail() + ", getCancel()=" + getCancel()
+				+ ", getTotal()=" + getTotal()
 				+ "]";
 	}
 }

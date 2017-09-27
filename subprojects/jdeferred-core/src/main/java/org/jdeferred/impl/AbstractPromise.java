@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
  */
 package org.jdeferred.impl;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -31,6 +29,10 @@ import org.jdeferred.ProgressPipe;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -47,7 +49,8 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
 	protected final List<ProgressCallback<P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<P>>();
 	protected final List<AlwaysCallback<D, F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<D, F>>();
-	
+	protected final List<CancelCallback> cancelCallbacks = new CopyOnWriteArrayList<CancelCallback>();
+
 	protected D resolveResult;
 	protected F rejectResult;
 
@@ -91,13 +94,25 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 		return this;
 	}
+
+	@Override
+	public Promise<D, F, P> cancel(CancelCallback callback) {
+		synchronized (this) {
+			if(isCancelled()){
+				triggerCancel(callback);
+			}else{
+				cancelCallbacks.add(callback);
+			}
+		}
+		return this;
+	}
 	
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
 			try {
 				triggerDone(callback, resolved);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a DoneCallback", e);
+				log.error("an uncaught exception occurred in a DoneCallback", e);
 			}
 		}
 		doneCallbacks.clear();
@@ -108,16 +123,28 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 	
 	protected void triggerFail(F rejected) {
+		if (rejected instanceof CancellationException) {
+			this.state = State.CANCELLED;
+			if(!cancelCallbacks.isEmpty()) {
+				doTriggerCancel();
+				return;
+			}
+		}
+
+		doTriggerFail(rejected);
+	}
+
+	private void doTriggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
 			try {
 				triggerFail(callback, rejected);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a FailCallback", e);
+				log.error("an uncaught exception occurred in a FailCallback", e);
 			}
 		}
 		failCallbacks.clear();
 	}
-	
+
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
 		callback.onFail(rejected);
 	}
@@ -127,7 +154,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerProgress(callback, progress);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a ProgressCallback", e);
+				log.error("an uncaught exception occurred in a ProgressCallback", e);
 			}
 		}
 	}
@@ -141,7 +168,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerAlways(callback, state, resolve, reject);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a AlwaysCallback", e);
+				log.error("an uncaught exception occurred in a AlwaysCallback", e);
 			}
 		}
 		alwaysCallbacks.clear();
@@ -150,7 +177,30 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			this.notifyAll();
 		}
 	}
-	
+
+	protected void triggerCancel() {
+		if (cancelCallbacks.isEmpty()) {
+			doTriggerFail(null);
+			return;
+		}
+		doTriggerCancel();
+	}
+
+	private void doTriggerCancel() {
+		for (CancelCallback callback : cancelCallbacks) {
+			try {
+				triggerCancel(callback);
+			} catch (Exception e) {
+				log.error("an uncaught exception occurred in a CancelCallback", e);
+			}
+		}
+		doneCallbacks.clear();
+	}
+
+	protected void triggerCancel(CancelCallback callback) {
+		callback.onCancel();
+	}
+
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
 		callback.onAlways(state, resolve, reject);
 	}
@@ -235,6 +285,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public boolean isRejected() {
 		return state == State.REJECTED;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return state == State.CANCELLED;
 	}
 	
 	public void waitSafely() throws InterruptedException {

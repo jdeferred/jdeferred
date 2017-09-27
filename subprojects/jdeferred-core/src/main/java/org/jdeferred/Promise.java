@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.jdeferred;
+
+import org.jdeferred.impl.FilteredPromise;
 
 /**
  * Promise interface to observe when some action has occurred on the corresponding {@link Deferred} object.
@@ -72,7 +74,12 @@ public interface Promise<D, F, P> {
 		 * 
 		 * @see Deferred#resolve(Object)
 		 */
-		RESOLVED
+		RESOLVED,
+
+		/**
+		 * The Promise was cancelled
+		 */
+		CANCELLED
 	}
 
 	public State state();
@@ -94,6 +101,12 @@ public interface Promise<D, F, P> {
 	 * @return
 	 */
 	public boolean isRejected();
+
+	/**
+	 * @see State#CANCELLED
+	 * @return
+	 */
+	public boolean isCancelled();
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}
@@ -165,10 +178,10 @@ public interface Promise<D, F, P> {
 	 * deferred.resolve(1); // prints 10
 	 * </code>
 	 * </pre>
-	 * 
-	 * @param doneFilter if null, use {@link NoOpDoneFilter}
-	 * @param failFilter if null, use {@link NoOpFailFilter}
-	 * @param progressFilter if null, use {@link NoOpProgressFilter}
+	 *
+	 * @param doneFilter if null, use {@link FilteredPromise.NoOpDoneFilter}
+	 * @param failFilter if null, use {@link FilteredPromise.NoOpFailFilter}
+	 * @param progressFilter if null, use {@link FilteredPromise.NoOpProgressFilter}
 	 * @return
 	 */
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
@@ -338,5 +351,27 @@ public interface Promise<D, F, P> {
 	 * @throws InterruptedException
 	 */
 	public void waitSafely(long timeout) throws InterruptedException;
-	
+
+	/**
+	 * This method will register {@link CancelCallback} so that when a Deferred object
+	 * is cancelled ({@link Deferred#cancel()}), {@link CancelCallback} will be triggered.
+	 *
+	 * You can register multiple {@link CancelCallback} by calling the method multiple times.
+	 * The order of callback trigger is based on the order you call this method.
+	 *
+	 * <pre>
+	 * <code>
+	 * promise.cancel(new CancelCallback(){
+	 * 	 public void onCancel() {
+	 *     ...
+	 *   }
+	 * });
+	 * </code>
+	 * </pre>
+	 *
+	 * @see Deferred#cancel()
+	 * @param callback
+	 * @return
+	 */
+	public Promise<D, F, P> cancel(CancelCallback callback);
 }

@@ -1,5 +1,5 @@
-/*                                                                                            
- * Copyright 2013-2016 Ray Tsang
+/*
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
 import org.junit.Assert;
@@ -25,46 +27,159 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class CancelTaskTest extends AbstractDeferredTest {
-
 	@Test
 	public void testCancelTask() {
+		final AtomicBoolean cancelWitness = new AtomicBoolean(false);
+
 		DeferredFutureTask<String, Void> deferredFutureTask =
-				new DeferredFutureTask<String, Void>(new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-						}
-
-						return "Hello";
+			new DeferredFutureTask<String, Void>(new Callable<String>() {
+				@Override
+				public String call() throws Exception {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-		Promise<String, Throwable, Void> promise = deferredManager.when(deferredFutureTask);
+					return "Hello";
+				}
+			});
 
-		deferredFutureTask.cancel(false);
+		Promise<String, Throwable, Void> promise = deferredManager.when(deferredFutureTask)
+			.then(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.fail("Shouldn't be called, because task was cancelled");
+				}
+			}).always(new AlwaysCallback<String, Throwable>() {
+				@Override
+				public void onAlways(State state, String resolved, Throwable rejected) {
+					assertEquals(State.CANCELLED, state);
+					assertNull(resolved);
+					assertNull(rejected);
+				}
+			}).cancel(new CancelCallback() {
+				@Override
+				public void onCancel() {
+					cancelWitness.set(true);
+				}
+			});
 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
+		deferredFutureTask.cancel(true);
 
-		promise.then(new DoneCallback<String>() {
-			@Override
-			public void onDone(String result) {
-				Assert.fail("Shouldn't be called, because task was cancelled");
-			}
-		}).always(new AlwaysCallback<String, Throwable>() {
-			@Override
-			public void onAlways(State state, String resolved, Throwable rejected) {
-				Assert.assertEquals(State.REJECTED, state);
-				Assert.assertTrue(rejected instanceof CancellationException);
-			}
-		});
+		assertTrue(promise.isCancelled());
+		assertTrue(cancelWitness.get());
+	}
 
-		Assert.assertTrue(deferredFutureTask.isCancelled());
+	@Test
+	public void cancelTaskWithNoRegisteredCancelCallback() {
+		final AtomicBoolean failWitness = new AtomicBoolean(false);
+
+		DeferredFutureTask<String, Void> deferredFutureTask =
+			new DeferredFutureTask<String, Void>(new Callable<String>() {
+				@Override
+				public String call() throws Exception {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+
+					return "Hello";
+				}
+			});
+
+		Promise<String, Throwable, Void> promise = deferredManager.when(deferredFutureTask)
+			.then(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.fail("Shouldn't be called, because task was cancelled");
+				}
+			}).always(new AlwaysCallback<String, Throwable>() {
+				@Override
+				public void onAlways(State state, String resolved, Throwable rejected) {
+					assertEquals(State.CANCELLED, state);
+					assertNull(resolved);
+					assertNull(rejected);
+				}
+			}).fail(new FailCallback<Throwable>() {
+				@Override
+				public void onFail(Throwable result) {
+					failWitness.set(true);
+				}
+			});
+
+		deferredFutureTask.cancel(true);
+
+		assertTrue(promise.isCancelled());
+		assertTrue(failWitness.get());
+	}
+
+	@Test
+	public void explicitRejectionWithCancellationExceptionAndFailCallback() {
+		final AtomicBoolean failWitness = new AtomicBoolean(false);
+
+		DeferredObject<String,Throwable,Void> deferredObject = new DeferredObject<>();
+
+		Promise<String, Throwable, Void> promise = deferredObject.promise()
+			.then(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.fail("Shouldn't be called, because task was cancelled");
+				}
+			}).always(new AlwaysCallback<String, Throwable>() {
+				@Override
+				public void onAlways(State state, String resolved, Throwable rejected) {
+					assertEquals(State.CANCELLED, state);
+					assertNull(resolved);
+					assertTrue(rejected instanceof CancellationException);
+				}
+			}).fail(new FailCallback<Throwable>() {
+				@Override
+				public void onFail(Throwable result) {
+					failWitness.set(true);
+				}
+			});
+		deferredObject.reject(new CancellationException());
+
+		assertTrue(promise.isCancelled());
+		assertTrue(failWitness.get());
+	}
+
+
+	@Test
+	public void explicitRejectionWithCancellationExceptionAndCancelCallback() {
+		final AtomicBoolean cancelWitness = new AtomicBoolean(false);
+
+		DeferredObject<String,Throwable,Void> deferredObject = new DeferredObject<>();
+
+		Promise<String, Throwable, Void> promise = deferredObject.promise()
+			.then(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.fail("Shouldn't be called, because task was cancelled");
+				}
+			}).always(new AlwaysCallback<String, Throwable>() {
+				@Override
+				public void onAlways(State state, String resolved, Throwable rejected) {
+					assertEquals(State.CANCELLED, state);
+					assertNull(resolved);
+					assertTrue(rejected instanceof CancellationException);
+				}
+			}).cancel(new CancelCallback() {
+				@Override
+				public void onCancel() {
+					cancelWitness.set(true);
+				}
+			});
+		deferredObject.reject(new CancellationException());
+
+		assertTrue(promise.isCancelled());
+		assertTrue(cancelWitness.get());
 	}
 }
