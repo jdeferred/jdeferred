@@ -112,7 +112,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerDone(callback, resolved);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a DoneCallback", e);
+				log.error("an uncaught exception occurred in a DoneCallback", e);
 			}
 		}
 		doneCallbacks.clear();
@@ -124,20 +124,27 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	
 	protected void triggerFail(F rejected) {
 		if (rejected instanceof CancellationException) {
-			triggerCancel();
-			return;
+			this.state = State.CANCELLED;
+			if(!cancelCallbacks.isEmpty()) {
+				doTriggerCancel();
+				return;
+			}
 		}
 
+		doTriggerFail(rejected);
+	}
+
+	private void doTriggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
 			try {
 				triggerFail(callback, rejected);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a FailCallback", e);
+				log.error("an uncaught exception occurred in a FailCallback", e);
 			}
 		}
 		failCallbacks.clear();
 	}
-	
+
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
 		callback.onFail(rejected);
 	}
@@ -147,7 +154,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerProgress(callback, progress);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a ProgressCallback", e);
+				log.error("an uncaught exception occurred in a ProgressCallback", e);
 			}
 		}
 	}
@@ -161,7 +168,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerAlways(callback, state, resolve, reject);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a AlwaysCallback", e);
+				log.error("an uncaught exception occurred in a AlwaysCallback", e);
 			}
 		}
 		alwaysCallbacks.clear();
@@ -172,11 +179,19 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerCancel() {
+		if (cancelCallbacks.isEmpty()) {
+			doTriggerFail(null);
+			return;
+		}
+		doTriggerCancel();
+	}
+
+	private void doTriggerCancel() {
 		for (CancelCallback callback : cancelCallbacks) {
 			try {
 				triggerCancel(callback);
 			} catch (Exception e) {
-				log.error("an uncaught exception occured in a CancelCallback", e);
+				log.error("an uncaught exception occurred in a CancelCallback", e);
 			}
 		}
 		doneCallbacks.clear();
