@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,21 @@ package org.jdeferred.multiple;
 
 /**
  * Progress indicating how many promises need to finish ({@link #total}),
- * and how many had already finish ({@link #fulfilled}).
+ * and how many had already finish ({@code fulfilled}).
  * @author Ray Tsang
  *
  */
 public class MasterProgress {
 	private final int done;
 	private final int fail;
+	private final int cancel;
 	private final int total;
 	
-	public MasterProgress(int done, int fail, int total) {
+	public MasterProgress(int done, int fail, int cancel, int total) {
 		super();
 		this.done = done;
 		this.fail = fail;
+		this.cancel = cancel;
 		this.total = total;
 	}
 
@@ -41,6 +43,10 @@ public class MasterProgress {
 		return fail;
 	}
 
+	public int getCancel() {
+		return cancel;
+	}
+
 	public int getTotal() {
 		return total;
 	}
@@ -48,6 +54,6 @@ public class MasterProgress {
 	@Override
 	public String toString() {
 		return "MasterProgress [done=" + done + ", fail=" + fail
-				+ ", total=" + total + "]";
+			+ ", cancel=" + cancel + ", total=" + total + "]";
 	}
 }

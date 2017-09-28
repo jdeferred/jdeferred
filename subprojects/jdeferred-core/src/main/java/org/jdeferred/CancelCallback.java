@@ -16,12 +16,10 @@
 package org.jdeferred;
 
 /**
- * @see Promise#then(DonePipe, FailPipe)
- * @author Ray Tsang
- *
- * @param <P> Type of the input
- * @param <P_OUT> Type of the output from this filter
+ * @see Deferred#cancel()
+ * @see Promise#cancel(CancelCallback)
+ * @author Andres Almiray
  */
-public interface DonePipe<D, D_OUT, F_OUT, P_OUT> {
-	public Promise<D_OUT, F_OUT, P_OUT> pipeDone(final D result);
+public interface CancelCallback {
+	void onCancel();
 }

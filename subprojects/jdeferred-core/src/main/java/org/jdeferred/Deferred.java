@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * @param resolve
+	 * @param reject
 	 * @return
 	 */
 	Deferred<D, F, P> reject(final F reject);
@@ -102,7 +102,7 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * @param resolve
+	 * @param progress
 	 * @return
 	 */
 	Deferred<D, F, P> notify(final P progress);
@@ -113,4 +113,27 @@ public interface Deferred<D, F, P> extends Promise<D, F, P> {
 	 * @return
 	 */
 	Promise<D, F, P> promise();
+
+	/**
+	 * This should be called when a task has been cancelled.
+	 *
+	 * <pre>
+	 * <code>
+	 * {@link Deferred} deferredObject = new {@link DeferredObject}();
+	 * {@link Promise} promise = deferredObject.promise();
+	 * promise.cancel(new {@link CancelCallback}() {
+	 *   public void onCancel() {
+	 *   	// Cancelled :(
+	 *   }
+	 * });
+	 *
+	 * // another thread using the same deferredObject
+	 * deferredObject.cancel();
+	 *
+	 * </code>
+	 * </pre>
+	 *
+	 * @return
+	 */
+	Deferred<D, F, P> cancel();
 }

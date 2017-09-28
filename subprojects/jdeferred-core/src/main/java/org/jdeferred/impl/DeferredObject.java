@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements Deferred<D, F, P> {
-	
+
 	@Override
 	public Deferred<D, F, P> resolve(final D resolve) {
 		synchronized (this) {
@@ -104,6 +104,23 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 	}
 
 	public Promise<D, F, P> promise() {
+		return this;
+	}
+
+	@Override
+	public Deferred<D, F, P> cancel() {
+		synchronized (this) {
+			if (!isPending())
+				throw new IllegalStateException("Deferred object already finished, cannot cancel");
+
+			this.state = State.CANCELLED;
+
+			try {
+				triggerCancel();
+			} finally {
+				triggerAlways(state, null, null);
+			}
+		}
 		return this;
 	}
 }

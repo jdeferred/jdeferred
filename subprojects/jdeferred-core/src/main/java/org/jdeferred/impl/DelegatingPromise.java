@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CancelCallback;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -149,5 +150,15 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
     @Override
     public void waitSafely(long timeout) throws InterruptedException {
         getDelegate().waitSafely(timeout);
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return getDelegate().isCancelled();
+    }
+
+    @Override
+    public Promise<D, F, P> cancel(CancelCallback callback) {
+        return getDelegate().cancel(callback);
     }
 }
