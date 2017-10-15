@@ -15,11 +15,7 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.Promise;
+import org.jdeferred.*;
 
 /**
  * An implementation of {@link Deferred} interface.
@@ -56,7 +52,7 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements Deferred<D, F, P> {
-	
+
 	@Override
 	public Deferred<D, F, P> resolve(final D resolve) {
 		synchronized (this) {
