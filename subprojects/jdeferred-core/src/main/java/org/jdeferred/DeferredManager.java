@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,16 +74,6 @@ public interface DeferredManager {
 		 * Tells Deferred Manager to automatically start the task
 		 */
 		AUTO,
-
-		/**
-		 * Tells Deferred Manager that this task will be manually started
-		 *
-		 * @deprecated As of Version 1.2.5, this element is deprecated.
-		 * Use MANUAL instead.
-		 * It will be removed in version 1.3
-		 */
-		@Deprecated
-		MANAUL,
 
 		/**
 		 * Tells Deferred Manager that this task will be manually started

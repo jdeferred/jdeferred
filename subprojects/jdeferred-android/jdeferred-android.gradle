@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ dependencies {
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
-    testCompile "org.awaitility:awaitility:$awaitilityVersion"
     testCompile "com.google.android:android:$androidVersion"
 }
 
