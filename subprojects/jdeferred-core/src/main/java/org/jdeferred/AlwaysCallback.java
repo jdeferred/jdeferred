@@ -17,6 +17,22 @@ package org.jdeferred;
 
 import org.jdeferred.Promise.State;
 
+/**
+ * A callback that's invoked regardless of the success or fail state of a {@code Promise}.
+ *
+ * @param <D> Type used for {@link Deferred#resolve(Object)}
+ * @param <R> Type used for {@link Deferred#reject(Object)}
+ *
+ * @author Ray Tsang
+ * @see Promise#always(AlwaysCallback)
+ */
 public interface AlwaysCallback<D, R> {
-	public void onAlways(final State state, final D resolved, final R rejected);
+	/**
+	 * Invoked when the {@code Promise} resolves or rejects a value.
+	 *
+	 * @param state    the state of the {@code Promise}
+	 * @param resolved the resolved value (if any) of the {@code Promise}
+	 * @param rejected the rejected value (if any) of the {@code Promise}
+	 */
+	void onAlways(final State state, final D resolved, final R rejected);
 }
