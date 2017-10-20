@@ -43,48 +43,150 @@ import org.jdeferred.impl.DeferredObject;
 public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	protected final Deferred<D, Throwable, P> deferred;
 	protected final StartPolicy startPolicy;
-	
-	public DeferredFutureTask(Callable<D> callable) {
-		super(callable);
+	private Object taskDelegate;
+	private CancellationHandler cancellationHandler;
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task.
+	 * The given task may implement the {@code CancellationHandler} interface.
+	 *
+	 * @param task the task to be executed. Must not be null.
+	 */
+	public DeferredFutureTask(Callable<D> task) {
+		this(task, null);
+	}
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task.
+	 * The given task may implement the {@code CancellationHandler} interface.
+	 *
+	 * @param task the task to be executed. Must not be null.
+	 */
+	public DeferredFutureTask(Runnable task) {
+		this(task, null);
+	}
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task.
+	 * The given task may implement the {@code CancellationHandler} interface.
+	 *
+	 * @param task the task to be executed. Must not be null.
+	 */
+	public DeferredFutureTask(DeferredCallable<D, P> task) {
+		this(task, null);
+	}
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task.
+	 * The given task may implement the {@code CancellationHandler} interface.
+	 *
+	 * @param task the task to be executed. Must not be null.
+	 */
+	public DeferredFutureTask(DeferredRunnable<P> task) {
+		this(task, null);
+	}
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task and a explicit {@code CancellationHandler}
+	 * The given {@code cancellationHandler} has precedence over the given task if the task implements the {@code CancellationHandler} interface.
+	 *
+	 * @param task                the task to be executed. Must not be null.
+	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 */
+	public DeferredFutureTask(Callable<D> task, CancellationHandler cancellationHandler) {
+		super(task);
+		this.taskDelegate = task;
+		this.cancellationHandler = cancellationHandler;
 		this.deferred = new DeferredObject<D, Throwable, P>();
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
-	
-	public DeferredFutureTask(Runnable runnable) {
-		super(runnable, null);
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task and a explicit {@code CancellationHandler}
+	 * The given {@code cancellationHandler} has precedence over the given task if the task implements the {@code CancellationHandler} interface.
+	 *
+	 * @param task                the task to be executed. Must not be null.
+	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 */
+	public DeferredFutureTask(Runnable task, CancellationHandler cancellationHandler) {
+		super(task, null);
+		this.taskDelegate = task;
+		this.cancellationHandler = cancellationHandler;
 		this.deferred = new DeferredObject<D, Throwable, P>();
 		this.startPolicy = StartPolicy.DEFAULT;
 	}
-	
-	public DeferredFutureTask(DeferredCallable<D, P> callable) {
-		super(callable);
-		this.deferred = callable.getDeferred();
-		this.startPolicy = callable.getStartPolicy();
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task and a explicit {@code CancellationHandler}
+	 * The given {@code cancellationHandler} has precedence over the given task if the task implements the {@code CancellationHandler} interface.
+	 *
+	 * @param task                the task to be executed. Must not be null.
+	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 */
+	public DeferredFutureTask(DeferredCallable<D, P> task, CancellationHandler cancellationHandler) {
+		super(task);
+		this.taskDelegate = task;
+		this.cancellationHandler = cancellationHandler;
+		this.deferred = task.getDeferred();
+		this.startPolicy = task.getStartPolicy();
 	}
-	
+
+	/**
+	 * Creates a new {@code DeferredFutureTask} with the given task and a explicit {@code CancellationHandler}
+	 * The given {@code cancellationHandler} has precedence over the given task if the task implements the {@code CancellationHandler} interface.
+	 *
+	 * @param task                the task to be executed. Must not be null.
+	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 */
 	@SuppressWarnings("unchecked")
-	public DeferredFutureTask(DeferredRunnable<P> runnable) {
-		super(runnable, null);
-		this.deferred = (Deferred<D, Throwable, P>) runnable.getDeferred();
-		this.startPolicy = runnable.getStartPolicy();
+	public DeferredFutureTask(DeferredRunnable<P> task, CancellationHandler cancellationHandler) {
+		super(task, null);
+		this.taskDelegate = task;
+		this.cancellationHandler = cancellationHandler;
+		this.deferred = (Deferred<D, Throwable, P>) task.getDeferred();
+		this.startPolicy = task.getStartPolicy();
 	}
-	
+
 	public Promise<D, Throwable, P> promise() {
 		return deferred.promise();
 	}
-	
+
 	@Override
 	protected void done() {
+		if (isCancelled()) {
+			deferred.reject(new CancellationException());
+			cleanup();
+			return;
+		}
+
 		try {
-			if (isCancelled()) {
-				deferred.reject(new CancellationException());
-				return;
-			}
-			D result = get();
-			deferred.resolve(result);
+			deferred.resolve(get());
 		} catch (InterruptedException e) {
+			// TODO: should cleanup be called here?
+			cleanup();
 		} catch (ExecutionException e) {
-			deferred.reject(e.getCause());
+			try {
+				deferred.reject(e.getCause());
+			} finally {
+				cleanup();
+			}
+		} catch (Throwable t) {
+			// TODO: this exception will be lost. Handle it via global ExceptionHandler?
+			t.printStackTrace();
+		}
+	}
+
+	/**
+	 * Performs resource cleanup upon interruption or cancellation of the underlying task.
+	 * This method gives precedence to {@code cancellationHandler} it not null, otherwise
+	 * it invokes the underlying task's {@code onCancel()} if it implements the {@code CancellationHandler} interface.
+	 */
+	protected void cleanup() {
+		// TODO: handle any exceptions that may occur during cleanup via global ExceptionHandler?
+		if (cancellationHandler != null) {
+			cancellationHandler.onCancel();
+		} else if (taskDelegate instanceof CancellationHandler) {
+			((CancellationHandler) taskDelegate).onCancel();
 		}
 	}
 
