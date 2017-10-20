@@ -15,13 +15,15 @@
  */
 package org.jdeferred;
 
+import org.jdeferred.DeferredManager.StartPolicy;
+import org.jdeferred.impl.DeferredObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-
-import org.jdeferred.DeferredManager.StartPolicy;
-import org.jdeferred.impl.DeferredObject;
 
 /**
  * FutureTask can wrap around {@link Callable} and {@link Runnable}.
@@ -41,6 +43,8 @@ import org.jdeferred.impl.DeferredObject;
  * @param <P> Type used for {@link Deferred#notify(Object)}
  */
 public class DeferredFutureTask<D, P> extends FutureTask<D> {
+	private static final Logger LOG = LoggerFactory.getLogger(DeferredFutureTask.class);
+
 	protected final Deferred<D, Throwable, P> deferred;
 	protected final StartPolicy startPolicy;
 	private Object taskDelegate;
@@ -162,18 +166,26 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 		try {
 			deferred.resolve(get());
 		} catch (InterruptedException e) {
-			// TODO: should cleanup be called here?
-			cleanup();
+			try {
+				deferred.reject(causeOf(e));
+			} finally {
+				cleanup();
+			}
 		} catch (ExecutionException e) {
 			try {
-				deferred.reject(e.getCause());
+				deferred.reject(causeOf(e));
 			} finally {
 				cleanup();
 			}
 		} catch (Throwable t) {
-			// TODO: this exception will be lost. Handle it via global ExceptionHandler?
 			t.printStackTrace();
+			// TODO: forward to global ExceptionHandler
+			LOG.warn("Unexpected error when resolving value", t);
 		}
+	}
+
+	protected Throwable causeOf(Exception e) {
+		return e.getCause() != null ? e.getCause() : e;
 	}
 
 	/**
@@ -182,11 +194,16 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 * it invokes the underlying task's {@code onCancel()} if it implements the {@code CancellationHandler} interface.
 	 */
 	protected void cleanup() {
-		// TODO: handle any exceptions that may occur during cleanup via global ExceptionHandler?
-		if (cancellationHandler != null) {
-			cancellationHandler.onCancel();
-		} else if (taskDelegate instanceof CancellationHandler) {
-			((CancellationHandler) taskDelegate).onCancel();
+		try {
+			if (cancellationHandler != null) {
+				cancellationHandler.onCancel();
+			} else if (taskDelegate instanceof CancellationHandler) {
+				((CancellationHandler) taskDelegate).onCancel();
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			// TODO: forward to global ExceptionHandler
+			LOG.warn("Unexpected error when cleaning up", t);
 		}
 	}
 
