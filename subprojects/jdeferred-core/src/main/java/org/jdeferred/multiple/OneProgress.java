@@ -23,7 +23,7 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneProgress<P> extends MasterProgress {
+public class OneProgress<P> extends MasterProgress implements OneOf<P> {
 	private final int index;
 	private final Promise<?, ?, P> promise;
 	private final P progress;
@@ -35,8 +35,14 @@ public class OneProgress<P> extends MasterProgress {
 		this.progress = progress;
 	}
 
+	@Override
 	public int getIndex() {
 		return index;
+	}
+
+	@Override
+	public P getValue() {
+		return getProgress();
 	}
 
 	public Promise<?, ?, P> getPromise() {
