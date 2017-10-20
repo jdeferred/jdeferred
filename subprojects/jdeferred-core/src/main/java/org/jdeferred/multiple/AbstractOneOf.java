@@ -18,7 +18,7 @@ package org.jdeferred.multiple;
 /**
  * @author Andres Almiray
  */
-abstract class AbstractOneOf<T> implements OneOf<T> {
+abstract class AbstractOneOf<T> implements OneValue<T> {
 	protected final int index;
 
 	AbstractOneOf(int index) {

@@ -16,13 +16,13 @@
 package org.jdeferred.multiple;
 
 /**
- * Contains a list of {@link OneOf}.
+ * Contains a list of {@link OneValue}.
  *
  * @author Ray Tsang
  * @author Andres Almiray
  */
-public interface MultipleValues extends Iterable<OneOf<?>> {
-	OneOf<?> get(int index);
+public interface AllValues extends Iterable<OneValue<?>> {
+	OneValue<?> get(int index);
 
 	int size();
 }

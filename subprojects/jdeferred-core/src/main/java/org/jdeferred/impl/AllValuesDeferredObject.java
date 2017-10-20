@@ -20,7 +20,7 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.multiple.MasterProgress;
-import org.jdeferred.multiple.MultipleValues;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneProgress;
 import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
@@ -30,15 +30,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Andres Almiray
  */
-class MultipleValuesDeferredObject extends DeferredObject<MultipleValues, Throwable, MasterProgress> implements Promise<MultipleValues, Throwable, MasterProgress> {
-	private final MutableMultipleValues values;
+class AllValuesDeferredObject extends DeferredObject<AllValues, Throwable, MasterProgress> implements Promise<AllValues, Throwable, MasterProgress> {
+	private final MutableAllValues values;
 	private final int numberOfPromises;
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
 
-	MultipleValuesDeferredObject(Promise<?, ?, ?>[] promises) {
+	AllValuesDeferredObject(Promise<?, ?, ?>[] promises) {
 		this.numberOfPromises = promises.length;
-		this.values = new DefaultMutableMultipleValues(promises.length);
+		this.values = new DefaultMutableAllValues(promises.length);
 
 		for (int i = 0; i < numberOfPromises; i++) {
 			configurePromise(i, promises[i]);
@@ -48,31 +48,31 @@ class MultipleValuesDeferredObject extends DeferredObject<MultipleValues, Throwa
 	protected <D, F, P> void configurePromise(final int index, final Promise<D, F, P> promise) {
 		promise.fail(new FailCallback<F>() {
 			public void onFail(F result) {
-				synchronized (MultipleValuesDeferredObject.this) {
-					if (!MultipleValuesDeferredObject.this.isPending())
+				synchronized (AllValuesDeferredObject.this) {
+					if (!AllValuesDeferredObject.this.isPending())
 						return;
 
 					values.set(index, new OneReject<F>(index, promise, result));
 					final int fail = failCount.incrementAndGet();
 					final int done = doneCount.get();
 
-					MultipleValuesDeferredObject.this.notify(new MasterProgress(
+					AllValuesDeferredObject.this.notify(new MasterProgress(
 						doneCount.get(),
 						fail,
 						numberOfPromises));
 
 					if (fail + done == numberOfPromises) {
-						MultipleValuesDeferredObject.this.resolve(values);
+						AllValuesDeferredObject.this.resolve(values);
 					}
 				}
 			}
 		}).progress(new ProgressCallback<P>() {
 			public void onProgress(P progress) {
-				synchronized (MultipleValuesDeferredObject.this) {
-					if (!MultipleValuesDeferredObject.this.isPending())
+				synchronized (AllValuesDeferredObject.this) {
+					if (!AllValuesDeferredObject.this.isPending())
 						return;
 
-					MultipleValuesDeferredObject.this.notify(new OneProgress<P>(
+					AllValuesDeferredObject.this.notify(new OneProgress<P>(
 						doneCount.get(),
 						failCount.get(),
 						numberOfPromises, index, promise, progress));
@@ -80,21 +80,21 @@ class MultipleValuesDeferredObject extends DeferredObject<MultipleValues, Throwa
 			}
 		}).done(new DoneCallback<D>() {
 			public void onDone(D result) {
-				synchronized (MultipleValuesDeferredObject.this) {
-					if (!MultipleValuesDeferredObject.this.isPending())
+				synchronized (AllValuesDeferredObject.this) {
+					if (!AllValuesDeferredObject.this.isPending())
 						return;
 
 					values.set(index, new OneResult<D>(index, promise, result));
 					final int fail = failCount.get();
 					final int done = doneCount.incrementAndGet();
 
-					MultipleValuesDeferredObject.this.notify(new MasterProgress(
+					AllValuesDeferredObject.this.notify(new MasterProgress(
 						done,
 						failCount.get(),
 						numberOfPromises));
 
 					if (fail + done == numberOfPromises) {
-						MultipleValuesDeferredObject.this.resolve(values);
+						AllValuesDeferredObject.this.resolve(values);
 					}
 				}
 			}

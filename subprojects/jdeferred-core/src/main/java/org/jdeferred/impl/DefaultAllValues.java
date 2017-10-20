@@ -15,33 +15,33 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.multiple.MultipleValues;
-import org.jdeferred.multiple.OneOf;
+import org.jdeferred.multiple.AllValues;
+import org.jdeferred.multiple.OneValue;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Base implementation of {@link MultipleValues}.
+ * Base implementation of {@link AllValues}.
  *
  * @author Ray Tsang
  * @author Andres Almiray
  */
-class DefaultMultipleValues implements MultipleValues {
-	protected final List<OneOf<?>> values;
+class DefaultAllValues implements AllValues {
+	protected final List<OneValue<?>> values;
 
-	DefaultMultipleValues(int size) {
-		this.values = new CopyOnWriteArrayList<OneOf<?>>(new OneOf[size]);
+	DefaultAllValues(int size) {
+		this.values = new CopyOnWriteArrayList<OneValue<?>>(new OneValue[size]);
 	}
 
 	@Override
-	public OneOf<?> get(int index) {
+	public OneValue<?> get(int index) {
 		return values.get(index);
 	}
 
 	@Override
-	public Iterator<OneOf<?>> iterator() {
+	public Iterator<OneValue<?>> iterator() {
 		return values.iterator();
 	}
 

@@ -23,7 +23,7 @@ import org.jdeferred.multiple.MultipleResults3;
 import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
-import org.jdeferred.multiple.MultipleValues;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
 
