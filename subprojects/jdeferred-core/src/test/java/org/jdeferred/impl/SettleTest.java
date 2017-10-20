@@ -19,7 +19,7 @@ import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.MultipleValues;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
 import org.junit.Test;
@@ -50,12 +50,12 @@ public class SettleTest extends AbstractDeferredTest {
 			promises[2 + i] = tasks[i].promise();
 		}
 
-		final MultipleValues[] values = new MultipleValues[1];
+		final AllValues[] values = new AllValues[1];
 
 		deferredManager.settle(task1, task2, tasks)
-			.done(new DoneCallback<MultipleValues>() {
+			.done(new DoneCallback<AllValues>() {
 				@Override
-				public void onDone(MultipleValues result) {
+				public void onDone(AllValues result) {
 					values[0] = result;
 				}
 			}).fail(new FailCallback<Throwable>() {

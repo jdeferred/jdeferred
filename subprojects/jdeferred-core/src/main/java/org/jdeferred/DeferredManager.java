@@ -23,7 +23,7 @@ import org.jdeferred.multiple.MultipleResults3;
 import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
-import org.jdeferred.multiple.MultipleValues;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
 
 import java.util.concurrent.Callable;
@@ -370,7 +370,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		Runnable runnableV1,
 		Runnable runnableV2,
 		Runnable... runnables);
@@ -385,7 +385,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		Callable<?> callableV1,
 		Callable<?> callableV2,
 		Callable<?>... callables);
@@ -400,7 +400,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredRunnable<?> runnableV1,
 		DeferredRunnable<?> runnableV2,
 		DeferredRunnable<?>... runnables);
@@ -415,7 +415,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredCallable<?, ?> callableV1,
 		DeferredCallable<?, ?> callableV2,
 		DeferredCallable<?, ?>... callables);
@@ -430,7 +430,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		Future<?> futureV1,
 		Future<?> futureV2,
 		Future<?>... futures);
@@ -444,7 +444,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredFutureTask<?, ?> taskV1,
 		DeferredFutureTask<?, ?> taskV2,
 		DeferredFutureTask<?, ?>... tasks);
@@ -458,7 +458,7 @@ public interface DeferredManager {
 	 *
 	 * @return a composite {@code Promise} that collects resolve/reject values from all promises.
 	 */
-	Promise<MultipleValues, Throwable, MasterProgress> settle(
+	Promise<AllValues, Throwable, MasterProgress> settle(
 		Promise<?, ?, ?> promiseV1,
 		Promise<?, ?, ?> promiseV2,
 		Promise<?, ?, ?>... promises);

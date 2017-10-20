@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.impl;
-
-import org.jdeferred.multiple.MultipleValues;
-import org.jdeferred.multiple.OneOf;
+package org.jdeferred.multiple;
 
 /**
- * @author Ray Tsang
  * @author Andres Almiray
  */
-interface MutableMultipleValues extends MultipleValues {
-	void set(int index, OneOf<?> result);
+public interface OneValue<T> {
+	int getIndex();
+
+	T getValue();
 }

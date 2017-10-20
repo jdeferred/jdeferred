@@ -27,7 +27,7 @@ import org.jdeferred.multiple.MultipleResults3;
 import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
-import org.jdeferred.multiple.MultipleValues;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -532,7 +532,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(Runnable runnableV1, Runnable runnableV2, Runnable... runnables) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(Runnable runnableV1, Runnable runnableV2, Runnable... runnables) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 
@@ -545,11 +545,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(Callable<?> callableV1, Callable<?> callableV2, Callable<?>... callables) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(Callable<?> callableV1, Callable<?> callableV2, Callable<?>... callables) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 
@@ -562,11 +562,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(DeferredRunnable<?> runnableV1, DeferredRunnable<?> runnableV2, DeferredRunnable<?>... runnables) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredRunnable<?> runnableV1, DeferredRunnable<?> runnableV2, DeferredRunnable<?>... runnables) {
 		assertNotNull(runnableV1, RUNNABLE_V1);
 		assertNotNull(runnableV2, RUNNABLE_V2);
 
@@ -579,11 +579,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(DeferredCallable<?, ?> callableV1, DeferredCallable<?, ?> callableV2, DeferredCallable<?, ?>... callables) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredCallable<?, ?> callableV1, DeferredCallable<?, ?> callableV2, DeferredCallable<?, ?>... callables) {
 		assertNotNull(callableV1, CALLABLE_V1);
 		assertNotNull(callableV2, CALLABLE_V2);
 
@@ -596,11 +596,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(Future<?> futureV1, Future<?> futureV2, Future<?>... futures) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(Future<?> futureV1, Future<?> futureV2, Future<?>... futures) {
 		assertNotNull(futureV1, FUTURE_V1);
 		assertNotNull(futureV2, FUTURE_V2);
 
@@ -613,11 +613,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(DeferredFutureTask<?, ?> taskV1, DeferredFutureTask<?, ?> taskV2, DeferredFutureTask<?, ?>... tasks) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredFutureTask<?, ?> taskV1, DeferredFutureTask<?, ?> taskV2, DeferredFutureTask<?, ?>... tasks) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 
@@ -630,11 +630,11 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			}
 		}
 
-		return new MultipleValuesDeferredObject(promises);
+		return new AllValuesDeferredObject(promises);
 	}
 
 	@Override
-	public Promise<MultipleValues, Throwable, MasterProgress> settle(Promise<?, ?, ?> promiseV1, Promise<?, ?, ?> promiseV2, Promise<?, ?, ?>... promises) {
+	public Promise<AllValues, Throwable, MasterProgress> settle(Promise<?, ?, ?> promiseV1, Promise<?, ?, ?> promiseV2, Promise<?, ?, ?>... promises) {
 		assertNotNull(promiseV1, "promiseV1");
 		assertNotNull(promiseV2, "promiseV2");
 
@@ -645,7 +645,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			System.arraycopy(promises, 0, allPromises, 2, promises.length);
 		}
 
-		return new MultipleValuesDeferredObject(allPromises);
+		return new AllValuesDeferredObject(allPromises);
 	}
 
 	protected void assertNotEmpty(Object[] objects) {

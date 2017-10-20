@@ -15,20 +15,20 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.multiple.OneOf;
+import org.jdeferred.multiple.OneValue;
 
 /**
- * Base implementation of {@link MutableMultipleValues}.
+ * Base implementation of {@link MutableAllValues}.
  *
  * @author Ray Tsang
  * @author Andres Almiray
  */
-class DefaultMutableMultipleValues extends DefaultMultipleValues implements MutableMultipleValues {
-	DefaultMutableMultipleValues(int size) {
+class DefaultMutableAllValues extends DefaultAllValues implements MutableAllValues {
+	DefaultMutableAllValues(int size) {
 		super(size);
 	}
 
-	public void set(int index, OneOf<?> reject) {
+	public void set(int index, OneValue<?> reject) {
 		values.set(index, reject);
 	}
 }

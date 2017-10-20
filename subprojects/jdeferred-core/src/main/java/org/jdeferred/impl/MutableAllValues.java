@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.multiple;
+package org.jdeferred.impl;
+
+import org.jdeferred.multiple.AllValues;
+import org.jdeferred.multiple.OneValue;
 
 /**
+ * @author Ray Tsang
  * @author Andres Almiray
  */
-public interface OneOf<T> {
-	int getIndex();
-
-	T getValue();
+interface MutableAllValues extends AllValues {
+	void set(int index, OneValue<?> result);
 }
