@@ -78,7 +78,7 @@ public class CancelTaskTest extends AbstractDeferredTest {
 	public void explicitRejectionWithCancellationException() {
 		final AtomicBoolean failWitness = new AtomicBoolean(false);
 
-		DeferredObject<String, Throwable, Void> deferredObject = new DeferredObject<>();
+		DeferredObject<String, Throwable, Void> deferredObject = new DeferredObject<String, Throwable, Void>();
 
 		Promise<String, Throwable, Void> promise = deferredObject.promise()
 			.then(new DoneCallback<String>() {
