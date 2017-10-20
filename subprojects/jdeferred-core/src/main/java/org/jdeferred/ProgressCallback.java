@@ -16,12 +16,14 @@
 package org.jdeferred;
 
 /**
+ * A callback invoked when the {@code Promise} publishes intermediate results.
+ *
+ * @param <P> Type used for {@link Deferred#notify(Object)}
+ *
+ * @author Ray Tsang
  * @see Deferred#notify(Object)
  * @see Promise#progress(ProgressCallback)
- * @author Ray Tsang
- *
- * @param <P>
  */
 public interface ProgressCallback<P> {
-	public void onProgress(final P progress);
+	void onProgress(final P progress);
 }
