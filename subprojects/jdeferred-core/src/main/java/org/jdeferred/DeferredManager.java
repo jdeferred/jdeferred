@@ -23,6 +23,7 @@ import org.jdeferred.multiple.MultipleResults3;
 import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
+import org.jdeferred.multiple.MultipleValues;
 import org.jdeferred.multiple.OneReject;
 
 import java.util.concurrent.Callable;
@@ -358,4 +359,107 @@ public interface DeferredManager {
 		Future<V5> futureV5,
 		Future<?> future6,
 		Future<?>... futures);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each runnable does so.
+	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 *
+	 * @param runnableV1 a task to be executed. Must not be null
+	 * @param runnableV2 a task to be executed. Must not be null
+	 * @param runnables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		Runnable runnableV1,
+		Runnable runnableV2,
+		Runnable... runnables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each callable does so.
+	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 *
+	 * @param callableV1 a task to be executed. Must not be null
+	 * @param callableV2 a task to be executed. Must not be null
+	 * @param callables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		Callable<?> callableV1,
+		Callable<?> callableV2,
+		Callable<?>... callables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each runnable does so.
+	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 *
+	 * @param runnableV1 a task to be executed. Must not be null
+	 * @param runnableV2 a task to be executed. Must not be null
+	 * @param runnables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		DeferredRunnable<?> runnableV1,
+		DeferredRunnable<?> runnableV2,
+		DeferredRunnable<?>... runnables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each callable does so.
+	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 *
+	 * @param callableV1 a task to be executed. Must not be null
+	 * @param callableV2 a task to be executed. Must not be null
+	 * @param callables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		DeferredCallable<?, ?> callableV1,
+		DeferredCallable<?, ?> callableV2,
+		DeferredCallable<?, ?>... callables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each future does so.
+	 * Wraps each {@code future} with {@code DeferredFutureTask}.
+	 *
+	 * @param futureV1 a task to be executed. Must not be null
+	 * @param futureV2 a task to be executed. Must not be null
+	 * @param futures  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		Future<?> futureV1,
+		Future<?> futureV2,
+		Future<?>... futures);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each task does so.
+	 *
+	 * @param taskV1 a task to be executed. Must not be null
+	 * @param taskV2 a task to be executed. Must not be null
+	 * @param tasks  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		DeferredFutureTask<?, ?> taskV1,
+		DeferredFutureTask<?, ?> taskV2,
+		DeferredFutureTask<?, ?>... tasks);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each promise does so.
+	 *
+	 * @param promiseV1 a promise. Must not be null
+	 * @param promiseV2 a promise. Must not be null
+	 * @param promises  additional promises. May be null
+	 *
+	 * @return a composite {@code Promise} that collects resolve/reject values from all promises.
+	 */
+	Promise<MultipleValues, Throwable, MasterProgress> settle(
+		Promise<?, ?, ?> promiseV1,
+		Promise<?, ?, ?> promiseV2,
+		Promise<?, ?, ?>... promises);
 }
