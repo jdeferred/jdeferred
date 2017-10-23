@@ -15,7 +15,12 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.*;
+import org.jdeferred.DeferredCallable;
+import org.jdeferred.DeferredFutureTask;
+import org.jdeferred.DeferredManager;
+import org.jdeferred.DeferredRunnable;
+import org.jdeferred.ExceptionHandler;
+import org.jdeferred.Promise;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
 import org.jdeferred.multiple.MultipleResults2;
