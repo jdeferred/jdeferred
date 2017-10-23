@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package org.jdeferred;
 
 /**
+ * A cllback invoked when the {@code Promise} has been resolved.
+ *
+ * @param <D> Type used for {@link Deferred#resolve(Object)}
+ *
+ * @author Ray Tsang
  * @see Deferred#resolve(Object)
  * @see Promise#done(DoneCallback)
- * @author Ray Tsang
- *
- * @param <D>
  */
 public interface DoneCallback<D> {
-	public void onDone(final D result);
+	void onDone(final D result);
 }

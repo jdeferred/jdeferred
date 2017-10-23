@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ package org.jdeferred;
  *            Type used for {@link #progress(ProgressCallback)}
  */
 public interface Promise<D, F, P> {
-	public enum State {
+	enum State {
 		/**
 		 * The Promise is still pending - it could be created, submitted for execution,
 		 * or currently running, but not yet finished.
@@ -75,25 +75,25 @@ public interface Promise<D, F, P> {
 		RESOLVED
 	}
 
-	public State state();
+	State state();
 
 	/**
 	 * @see State#PENDING
 	 * @return
 	 */
-	public boolean isPending();
+	boolean isPending();
 
 	/**
 	 * @see State#RESOLVED
 	 * @return
 	 */
-	public boolean isResolved();
+	boolean isResolved();
 
 	/**
 	 * @see State#REJECTED
 	 * @return
 	 */
-	public boolean isRejected();
+	boolean isRejected();
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}
@@ -101,7 +101,7 @@ public interface Promise<D, F, P> {
 	 * @param doneCallback {@link #done(DoneCallback)}
 	 * @return
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback);
+	Promise<D, F, P> then(DoneCallback<D> doneCallback);
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)} and then {@link FailCallback}
@@ -109,7 +109,7 @@ public interface Promise<D, F, P> {
 	 * @param failCallback {@link #fail(FailCallback)}
 	 * @return
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback,
+	Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback);
 
 	/**
@@ -120,7 +120,7 @@ public interface Promise<D, F, P> {
 	 * @param progressCallback {@link #progress(ProgressCallback)}
 	 * @return
 	 */
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback,
+	Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback, ProgressCallback<P> progressCallback);
 	
 	/**
@@ -129,7 +129,7 @@ public interface Promise<D, F, P> {
 	 * @param doneFilter
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter);
 
 	/**
@@ -139,7 +139,7 @@ public interface Promise<D, F, P> {
 	 * @param failFilter
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter);
 
 	/**
@@ -151,13 +151,13 @@ public interface Promise<D, F, P> {
 	 * Deferred deferred = new DeferredObject();
 	 * Promise promise = deferred.promise();
 	 * Promise filtered = promise.then(new DoneFilter<Integer, Integer>() {
-	 *   public Integer filterDone(Integer result) {
+	 *   Integer filterDone(Integer result) {
 	 *     return result * 10;
 	 *   }
 	 * });
 	 * 
 	 * filtered.then(new DoneCallback<Integer>() {
-	 *   public void onDone(Integer result) {
+	 *   void onDone(Integer result) {
 	 *     System.out.println(result);
 	 *   }
 	 * });
@@ -166,12 +166,12 @@ public interface Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * @param doneFilter if null, use {@link NoOpDoneFilter}
-	 * @param failFilter if null, use {@link NoOpFailFilter}
-	 * @param progressFilter if null, use {@link NoOpProgressFilter}
+	 * @param doneFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpDoneFilter}
+	 * @param failFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpFailFilter}
+	 * @param progressFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpProgressFilter}
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter);
 	
@@ -181,7 +181,7 @@ public interface Promise<D, F, P> {
 	 * @param donePipe
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
 	
 	/**
@@ -191,7 +191,7 @@ public interface Promise<D, F, P> {
 	 * @param failPipe
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
 	
 	/**
@@ -203,7 +203,7 @@ public interface Promise<D, F, P> {
 	 * <code>
 	 * promise.then(new DonePipe<Integer, Integer, String, Void>() {
 	 *   @Override
-	 *   public Deferred<Integer, Void, Void> pipeDone(Integer result) {
+	 *   Deferred<Integer, Void, Void> pipeDone(Integer result) {
 	 *     // Reject values greater than 100
 	 *     if (result > 100) {
 	 *       return new DeferredObject<Integer, Void, Void>().reject("Failed");
@@ -221,7 +221,7 @@ public interface Promise<D, F, P> {
 	 * @param progressPipe
 	 * @return
 	 */
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
 			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe);
 	
@@ -235,7 +235,7 @@ public interface Promise<D, F, P> {
 	 * <pre>
 	 * <code>
 	 * promise.progress(new DoneCallback(){
-	 * 	 public void onDone(Object done) {
+	 * 	 void onDone(Object done) {
 	 *     ...
 	 *   }
 	 * });
@@ -246,7 +246,7 @@ public interface Promise<D, F, P> {
 	 * @param callback
 	 * @return
 	 */
-	public Promise<D, F, P> done(DoneCallback<D> callback);
+	Promise<D, F, P> done(DoneCallback<D> callback);
 	
 	/**
 	 * This method will register {@link FailCallback} so that when a Deferred object 
@@ -258,7 +258,7 @@ public interface Promise<D, F, P> {
 	 * <pre>
 	 * <code>
 	 * promise.fail(new FaillCallback(){
-	 * 	 public void onFail(Object rejection) {
+	 * 	 void onFail(Object rejection) {
 	 *     ...
 	 *   }
 	 * });
@@ -269,7 +269,7 @@ public interface Promise<D, F, P> {
 	 * @param callback
 	 * @return
 	 */
-	public Promise<D, F, P> fail(FailCallback<F> callback);
+	Promise<D, F, P> fail(FailCallback<F> callback);
 	
 	/**
 	 * This method will register {@link AlwaysCallback} so that when it's always triggered
@@ -281,7 +281,7 @@ public interface Promise<D, F, P> {
 	 * <pre>
 	 * <code>
 	 * promise.always(new AlwaysCallback(){
-	 * 	 public void onAlways(State state, Object result, Object rejection) {
+	 * 	 void onAlways(State state, Object result, Object rejection) {
 	 *     if (state == State.RESOLVED) {
 	 *       // do something w/ result
 	 *     } else {
@@ -297,7 +297,7 @@ public interface Promise<D, F, P> {
 	 * @param callback
 	 * @return
 	 */
-	public Promise<D, F, P> always(AlwaysCallback<D, F> callback);
+	Promise<D, F, P> always(AlwaysCallback<D, F> callback);
 	
 	/**
 	 * This method will register {@link ProgressCallback} so that when a Deferred object 
@@ -309,7 +309,7 @@ public interface Promise<D, F, P> {
 	 * <pre>
 	 * <code>
 	 * promise.progress(new ProgressCallback(){
-	 * 	 public void onProgress(Object progress) {
+	 * 	 void onProgress(Object progress) {
 	 *     // e.g., update progress in the GUI while the background task is still running.
 	 *   }
 	 * });
@@ -320,7 +320,7 @@ public interface Promise<D, F, P> {
 	 * @param callback
 	 * @return
 	 */
-	public Promise<D, F, P> progress(ProgressCallback<P> callback);
+	Promise<D, F, P> progress(ProgressCallback<P> callback);
 	
 	/**
 	 * This method will wait as long as the State is Pending.  This method will fail fast
@@ -328,7 +328,7 @@ public interface Promise<D, F, P> {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void waitSafely() throws InterruptedException;
+	void waitSafely() throws InterruptedException;
 	
 	/**
 	 * This method will wait when the State is Pending, and return when timeout has reached.
@@ -337,6 +337,5 @@ public interface Promise<D, F, P> {
 	 * @param timeout the maximum time to wait in milliseconds
 	 * @throws InterruptedException
 	 */
-	public void waitSafely(long timeout) throws InterruptedException;
-	
+	void waitSafely(long timeout) throws InterruptedException;
 }

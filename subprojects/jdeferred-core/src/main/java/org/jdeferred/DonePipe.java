@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 package org.jdeferred;
 
 /**
- * @see Promise#then(DonePipe, FailPipe)
- * @author Ray Tsang
- *
- * @param <P> Type of the input
+ * @param <P>     Type of the input
  * @param <P_OUT> Type of the output from this filter
+ *
+ * @author Ray Tsang
+ * @see Promise#then(DonePipe, FailPipe)
  */
 public interface DonePipe<D, D_OUT, F_OUT, P_OUT> {
-	public Promise<D_OUT, F_OUT, P_OUT> pipeDone(final D result);
+	Promise<D_OUT, F_OUT, P_OUT> pipeDone(final D result);
 }

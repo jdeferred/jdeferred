@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package org.jdeferred;
 
 /**
+ * A callback invoked when the {@code Promise}'s state is {@code Promise.State.REJECTED}.
+ *
+ * @param <F> Type used for {@link Deferred#reject(Object)}
+ *
+ * @author Ray Tsang
  * @see Deferred#reject(Object)
  * @see Promise#fail(FailCallback)
- * @author Ray Tsang
- *
- * @param <F>
  */
 public interface FailCallback<F> {
-	public void onFail(final F result);
+	void onFail(final F result);
 }

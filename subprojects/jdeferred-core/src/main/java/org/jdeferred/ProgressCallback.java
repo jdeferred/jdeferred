@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package org.jdeferred;
 
 /**
+ * A callback invoked when the {@code Promise} publishes intermediate results.
+ *
+ * @param <P> Type used for {@link Deferred#notify(Object)}
+ *
+ * @author Ray Tsang
  * @see Deferred#notify(Object)
  * @see Promise#progress(ProgressCallback)
- * @author Ray Tsang
- *
- * @param <P>
  */
 public interface ProgressCallback<P> {
-	public void onProgress(final P progress);
+	void onProgress(final P progress);
 }
