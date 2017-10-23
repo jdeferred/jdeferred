@@ -15,13 +15,16 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
+import org.jdeferred.ExceptionHandler;
 import org.jdeferred.FailCallback;
+import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
@@ -102,5 +105,29 @@ public class FailureTest extends AbstractDeferredTest {
 		
 		waitForCompletion();
 		Assert.assertTrue(exceptionCaught.get());
+	}
+
+	@Test
+	public void testGlobalExceptionHandler() {
+		final ConcurrentHashMap<ExceptionHandler.CallbackType, Exception> handled =
+				new ConcurrentHashMap<ExceptionHandler.CallbackType, Exception>();
+
+		GlobalConfiguration.setGlobalExceptionHandler(new ExceptionHandler() {
+			@Override
+			public void handleException(CallbackType callbackType, Exception e) {
+			    handled.put(callbackType, e);
+			}
+		});
+
+		Promise<String, String, Void> p = new DeferredObject<String, String, Void>().resolve("ok").promise();
+		p.done(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+			    throw new RuntimeException("oops");
+			}
+		});
+
+		Assert.assertEquals(1, handled.size());
+		Assert.assertTrue("DONE_CALLBACK is missing", handled.contains(ExceptionHandler.CallbackType.DONE_CALLBACK));
 	}
 }

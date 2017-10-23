@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
  * @author Ray Tsang
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
-    final protected Logger log = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
     @Override
     public void handleException(CallbackType callbackType, Exception e) {
-        log.error("an uncaught exception occured in " + callbackType, e);
+        LOG.error("An uncaught exception occured in " + callbackType, e);
     }
 }

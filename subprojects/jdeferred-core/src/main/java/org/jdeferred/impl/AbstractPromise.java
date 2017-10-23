@@ -41,10 +41,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	protected D resolveResult;
 	protected F rejectResult;
 
-	protected final ExceptionHandler exceptionHandler;
-
 	protected AbstractPromise() {
-		this.exceptionHandler = GlobalDeferredManagerConfiguration.getGlobalExceptionHandler();
 	}
 
 	@Override
@@ -93,7 +90,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerDone(callback, resolved);
 			} catch (Exception e) {
-			    exceptionHandler.handleException(ExceptionHandler.CallbackType.DONE_CALLBACK, e);
+			    handleException(ExceptionHandler.CallbackType.DONE_CALLBACK, e);
 			}
 		}
 		doneCallbacks.clear();
@@ -108,7 +105,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerFail(callback, rejected);
 			} catch (Exception e) {
-			    exceptionHandler.handleException(ExceptionHandler.CallbackType.FAIL_CALLBACK, e);
+			    handleException(ExceptionHandler.CallbackType.FAIL_CALLBACK, e);
 			}
 		}
 		failCallbacks.clear();
@@ -123,7 +120,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerProgress(callback, progress);
 			} catch (Exception e) {
-			    exceptionHandler.handleException(ExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
+			    handleException(ExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
 			}
 		}
 	}
@@ -137,7 +134,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			try {
 				triggerAlways(callback, state, resolve, reject);
 			} catch (Exception e) {
-			    exceptionHandler.handleException(ExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
+			    handleException(ExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
 			}
 		}
 		alwaysCallbacks.clear();
@@ -260,5 +257,9 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				}
 			}
 		}
+	}
+
+	protected void handleException(ExceptionHandler.CallbackType callbackType, Exception e) {
+		GlobalConfiguration.getGlobalExceptionHandler().handleException(callbackType, e);
 	}
 }
