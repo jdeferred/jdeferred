@@ -18,7 +18,18 @@ package org.jdeferred.impl;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.jdeferred.*;
+import org.jdeferred.AlwaysCallback;
+import org.jdeferred.DoneCallback;
+import org.jdeferred.DoneFilter;
+import org.jdeferred.DonePipe;
+import org.jdeferred.ExceptionHandler;
+import org.jdeferred.FailCallback;
+import org.jdeferred.FailFilter;
+import org.jdeferred.FailPipe;
+import org.jdeferred.ProgressCallback;
+import org.jdeferred.ProgressFilter;
+import org.jdeferred.ProgressPipe;
+import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +51,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	protected D resolveResult;
 	protected F rejectResult;
-
-	protected AbstractPromise() {
-	}
 
 	@Override
 	public State state() {

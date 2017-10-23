@@ -16,12 +16,14 @@
 package org.jdeferred;
 
 /**
+ * A cllback invoked when the {@code Promise} has been resolved.
+ *
+ * @param <D> Type used for {@link Deferred#resolve(Object)}
+ *
+ * @author Ray Tsang
  * @see Deferred#resolve(Object)
  * @see Promise#done(DoneCallback)
- * @author Ray Tsang
- *
- * @param <D>
  */
 public interface DoneCallback<D> {
-	public void onDone(final D result);
+	void onDone(final D result);
 }

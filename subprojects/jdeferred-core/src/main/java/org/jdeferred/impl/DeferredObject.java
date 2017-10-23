@@ -15,21 +15,25 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.*;
+import org.jdeferred.Deferred;
+import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
+import org.jdeferred.ProgressCallback;
+import org.jdeferred.Promise;
 
 /**
  * An implementation of {@link Deferred} interface.
- * 
+ * <p>
  * <pre>
  * <code>
  * final {@link Deferred} deferredObject = new {@link DeferredObject}
- * 
+ *
  * {@link Promise} promise = deferredObject.promise();
  * promise
  *   .done(new DoneCallback() { ... })
  *   .fail(new FailCallback() { ... })
  *   .progress(new ProgressCallback() { ... });
- *   
+ *
  * {@link Runnable} runnable = new {@link Runnable}() {
  *   public void run() {
  *     int sum = 0;
@@ -42,26 +46,25 @@ import org.jdeferred.*;
  *   }
  * }
  * // submit the task to run
- * 
+ *
  * </code>
  * </pre>
- * 
+ *
+ * @author Ray Tsang
  * @see DoneCallback
  * @see FailCallback
  * @see ProgressCallback
- * @author Ray Tsang
  */
 public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements Deferred<D, F, P> {
-
 	@Override
 	public Deferred<D, F, P> resolve(final D resolve) {
 		synchronized (this) {
 			if (!isPending())
 				throw new IllegalStateException("Deferred object already finished, cannot resolve again");
-			
+
 			this.state = State.RESOLVED;
 			this.resolveResult = resolve;
-			
+
 			try {
 				triggerDone(resolve);
 			} finally {
@@ -76,7 +79,7 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 		synchronized (this) {
 			if (!isPending())
 				throw new IllegalStateException("Deferred object already finished, cannot notify progress");
-			
+
 			triggerProgress(progress);
 		}
 		return this;
@@ -89,7 +92,7 @@ public class DeferredObject<D, F, P> extends AbstractPromise<D, F, P> implements
 				throw new IllegalStateException("Deferred object already finished, cannot reject again");
 			this.state = State.REJECTED;
 			this.rejectResult = reject;
-			
+
 			try {
 				triggerFail(reject);
 			} finally {
