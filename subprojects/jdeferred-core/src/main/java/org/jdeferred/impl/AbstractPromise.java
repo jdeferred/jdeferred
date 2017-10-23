@@ -87,55 +87,51 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	protected void triggerDone(D resolved) {
 		for (DoneCallback<D> callback : doneCallbacks) {
-			try {
-				triggerDone(callback, resolved);
-			} catch (Exception e) {
-			    handleException(ExceptionHandler.CallbackType.DONE_CALLBACK, e);
-			}
+			triggerDone(callback, resolved);
 		}
 		doneCallbacks.clear();
 	}
 
 	protected void triggerDone(DoneCallback<D> callback, D resolved) {
-		callback.onDone(resolved);
+		try {
+			callback.onDone(resolved);
+		} catch (Exception e) {
+			handleException(ExceptionHandler.CallbackType.DONE_CALLBACK, e);
+		}
 	}
 
 	protected void triggerFail(F rejected) {
 		for (FailCallback<F> callback : failCallbacks) {
-			try {
-				triggerFail(callback, rejected);
-			} catch (Exception e) {
-			    handleException(ExceptionHandler.CallbackType.FAIL_CALLBACK, e);
-			}
+			triggerFail(callback, rejected);
 		}
 		failCallbacks.clear();
 	}
 
 	protected void triggerFail(FailCallback<F> callback, F rejected) {
-		callback.onFail(rejected);
+		try {
+			callback.onFail(rejected);
+		} catch (Exception e) {
+			handleException(ExceptionHandler.CallbackType.FAIL_CALLBACK, e);
+		}
 	}
 
 	protected void triggerProgress(P progress) {
 		for (ProgressCallback<P> callback : progressCallbacks) {
-			try {
-				triggerProgress(callback, progress);
-			} catch (Exception e) {
-			    handleException(ExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
-			}
+			triggerProgress(callback, progress);
 		}
 	}
 
 	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
-		callback.onProgress(progress);
+		try {
+			callback.onProgress(progress);
+		} catch (Exception e) {
+			handleException(ExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
+		}
 	}
 
 	protected void triggerAlways(State state, D resolve, F reject) {
 		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
-			try {
-				triggerAlways(callback, state, resolve, reject);
-			} catch (Exception e) {
-			    handleException(ExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
-			}
+			triggerAlways(callback, state, resolve, reject);
 		}
 		alwaysCallbacks.clear();
 
@@ -145,7 +141,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
-		callback.onAlways(state, resolve, reject);
+	    try {
+			callback.onAlways(state, resolve, reject);
+		} catch (Exception e) {
+	        handleException(ExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
+		}
 	}
 
 	@Override

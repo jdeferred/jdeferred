@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ package org.jdeferred;
  * @author Ray Tsang
  */
 public interface ExceptionHandler {
-    public static enum CallbackType {
-        DONE_CALLBACK,
-        FAIL_CALLBACK,
-        PROGRESS_CALLBACK,
-        ALWAYS_CALLBACK
-    }
-    void handleException(CallbackType callbackType, Exception e);
+	public static enum CallbackType {
+		DONE_CALLBACK,
+		FAIL_CALLBACK,
+		PROGRESS_CALLBACK,
+		ALWAYS_CALLBACK
+	}
+	void handleException(CallbackType callbackType, Exception e);
 }
