@@ -15,8 +15,20 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.*;
-import org.jdeferred.multiple.*;
+import org.jdeferred.DeferredCallable;
+import org.jdeferred.DeferredFutureTask;
+import org.jdeferred.DeferredManager;
+import org.jdeferred.DeferredRunnable;
+import org.jdeferred.Promise;
+import org.jdeferred.multiple.MasterProgress;
+import org.jdeferred.multiple.MultipleResults;
+import org.jdeferred.multiple.MultipleResults2;
+import org.jdeferred.multiple.MultipleResults3;
+import org.jdeferred.multiple.MultipleResults4;
+import org.jdeferred.multiple.MultipleResults5;
+import org.jdeferred.multiple.MultipleResultsN;
+import org.jdeferred.multiple.OneReject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -536,24 +548,24 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable iterable) {
+	public Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable<?> iterable) {
 	    if (iterable == null) {
 			throw new IllegalArgumentException("Iterable is null");
 		}
 
-		Iterator iterator = iterable.iterator();
+		Iterator<?> iterator = iterable.iterator();
 	    if (!iterator.hasNext()) {
 	    	throw new IllegalArgumentException("Iterable is empty");
 		}
 
-		List<Promise> promises = new ArrayList<Promise>();
+		List<Promise<?, ?, ?>> promises = new ArrayList<Promise<?, ?, ?>>();
 	    while (iterator.hasNext()) {
 	    	promises.add(toPromise(iterator.next()));
 		}
-		return new MasterDeferredObjectUntypedN(promises.toArray(new Promise[]{})).promise();
+		return new MasterDeferredObjectUntypedN(promises.toArray(new Promise<?, ?, ?>[]{})).promise();
 	}
 
-	protected Promise toPromise(Object o) {
+	protected Promise<?, ?, ?> toPromise(Object o) {
 		if (o instanceof DeferredFutureTask) {
 			return when((DeferredFutureTask) o);
 		} else if (o instanceof DeferredRunnable) {

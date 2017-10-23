@@ -370,10 +370,13 @@ public interface DeferredManager {
 		Future<?>... futures);
 
 	/**
-	 * May or may not submit tasks for execution. See implementation documentation.
+	 * Accept an iterable of variety of different object types, and converted into corresponding Promise. E.g.,
+	 * if an item is a {@link Callable}, it'll call {@link #when(Callable)} to convert that into a Promise.
+	 *
+	 * If the item is an unknown type, it'll return a promise that immediately resolves to the object.
 	 *
 	 * @param iterable
 	 * @return
 	 */
-	Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable iterable);
+	Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable<?> iterable);
 }
