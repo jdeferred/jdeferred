@@ -178,7 +178,6 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 				cleanup();
 			}
 		} catch (Throwable t) {
-			t.printStackTrace();
 			// TODO: forward to global ExceptionHandler
 			LOG.warn("Unexpected error when resolving value", t);
 		}
@@ -201,7 +200,6 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 				((CancellationHandler) taskDelegate).onCancel();
 			}
 		} catch (Throwable t) {
-			t.printStackTrace();
 			// TODO: forward to global ExceptionHandler
 			LOG.warn("Unexpected error when cleaning up", t);
 		}
