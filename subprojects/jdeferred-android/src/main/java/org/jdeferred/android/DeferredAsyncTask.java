@@ -17,6 +17,7 @@ package org.jdeferred.android;
 
 import java.util.concurrent.CancellationException;
 
+import org.jdeferred.CancellationHandler;
 import org.jdeferred.Promise;
 import org.jdeferred.DeferredManager.StartPolicy;
 import org.jdeferred.impl.DeferredObject;
@@ -41,32 +42,50 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 	
 	private final DeferredObject<Result, Throwable, Progress> deferred = new DeferredObject<Result, Throwable, Progress>();
 	private final StartPolicy startPolicy;
+	private CancellationHandler cancellationHandler;
 	
 	private Throwable throwable;
 	
 	public DeferredAsyncTask() {
-		this.startPolicy = StartPolicy.DEFAULT;
+		this(StartPolicy.DEFAULT, null);
 	}
 	
 	public DeferredAsyncTask(StartPolicy startPolicy) {
-		this.startPolicy = startPolicy;
+		this(startPolicy, null);
 	}
-	
+
+	public DeferredAsyncTask(CancellationHandler cancellationHandler) {
+		this(StartPolicy.DEFAULT, cancellationHandler);
+	}
+
+	public DeferredAsyncTask(StartPolicy startPolicy, CancellationHandler cancellationHandler) {
+		this.startPolicy = startPolicy;
+		this.cancellationHandler = cancellationHandler;
+	}
+
 	@Override
 	protected final void onCancelled() {
-		deferred.reject(new CancellationException());
+	    doReject(new CancellationException());
 	}
 	
 	protected final void onCancelled(Result result) {
-		deferred.reject(new CancellationException());
-	};
+		doReject(new CancellationException());
+	}
 	
 	@Override
 	protected final void onPostExecute(Result result) {
 		if (throwable != null) {
-			deferred.reject(throwable);
+			doReject(throwable);
 		} else {
 			deferred.resolve(result);
+		}
+	}
+
+	private void doReject(Throwable t) {
+		try {
+			deferred.reject(t);
+		} finally {
+			cleanup();
 		}
 	}
 	
@@ -104,5 +123,23 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 
 	public StartPolicy getStartPolicy() {
 		return startPolicy;
+	}
+
+	/**
+	 * Performs resource cleanup upon interruption or cancellation of the underlying task.
+	 * This method gives precedence to {@code cancellationHandler} it not null, otherwise
+	 * it invokes the underlying task's {@code onCancel()} if it implements the {@code CancellationHandler} interface.
+	 */
+	protected void cleanup() {
+		try {
+			if (cancellationHandler != null) {
+				cancellationHandler.onCancel();
+			} else if (this instanceof CancellationHandler) {
+				((CancellationHandler) this).onCancel();
+			}
+		} catch (Throwable t) {
+			// TODO: forward to global ExceptionHandler
+			log.warn("Unexpected error when cleaning up", t);
+		}
 	}
 }
