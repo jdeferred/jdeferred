@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -558,11 +559,47 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	    	throw new IllegalArgumentException("Iterable is empty");
 		}
 
+		List<Object> items = new LinkedList<Object>();
 		List<Promise<?, ?, ?>> promises = new ArrayList<Promise<?, ?, ?>>();
+
+		// First pass, check each element to make sure it can be converted to a promise
+        // This is done in 2 passes because we don't want to submit tasks but also throw an Exception because some
+		// object was not able to convert. The method should succeed all or nothing.
 	    while (iterator.hasNext()) {
-	    	promises.add(toPromise(iterator.next()));
+	        Object object = iterator.next();
+	        if (!canPromise(object)) {
+	        	throw new IllegalArgumentException("an item of type " + object.getClass().getName() + " cannot be converted to a Promise");
+			}
+			items.add(object);
 		}
+
+		// Second pass, now we know every object can be converted to a Promise, convert them
+		for (Object item : items) {
+			promises.add(toPromise(item));
+		}
+
 		return new MasterDeferredObjectUntypedN(promises.toArray(new Promise<?, ?, ?>[]{})).promise();
+	}
+
+	protected boolean canPromise(Object o) {
+		if (o instanceof DeferredFutureTask) {
+		    return true;
+		} else if (o instanceof DeferredRunnable) {
+			return true;
+		} else if (o instanceof DeferredCallable) {
+			return true;
+		} else if (o instanceof Runnable) {
+			return true;
+		} else if (o instanceof Callable) {
+			return true;
+		} else if (o instanceof Future) {
+			return true;
+		} else if (o instanceof Promise) {
+		    return true;
+		} else {
+		    return false;
+		}
+
 	}
 
 	protected Promise<?, ?, ?> toPromise(Object o) {
@@ -581,9 +618,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 		} else if (o instanceof Promise) {
 			return (Promise) o;
 		} else {
-			DeferredObject deferred = new DeferredObject();
-			deferred.resolve(o);
-			return deferred.promise();
+		    throw new IllegalStateException("unable to convert object to promise. should be guarded by canPromise()");
 		}
 	}
 }

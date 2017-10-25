@@ -388,6 +388,14 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	}
 
 	@Override
+	protected boolean canPromise(Object o) {
+		if (o instanceof DeferredAsyncTask) {
+			return true;
+		}
+		return super.canPromise(o);
+	}
+
+	@Override
 	protected Promise toPromise(Object o) {
 		if (o instanceof DeferredAsyncTask) {
 			return when((DeferredAsyncTask) o);

@@ -390,9 +390,9 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 			}
 		});
 
-		actions.add("r2");
+		actions.add(successCallable("r2", 100));
 
-		actions.add(successCallable("r3", 100));
+		actions.add(new DeferredObject<String, Void, Void>().resolve("r3").promise());
 
 		Promise<MultipleResults, OneReject<?>, MasterProgress> p = deferredManager.when(actions);
 		p.done(new DoneCallback<MultipleResults>() {
@@ -418,6 +418,46 @@ public class MultiplePromisesTest extends AbstractDeferredTest {
 		Assert.assertTrue("r1 is not in result", resultSet.contains("r1"));
 		Assert.assertTrue("r2 is not in result", resultSet.contains("r2"));
 		Assert.assertTrue("r3 is not in result", resultSet.contains("r3"));
+	}
+
+	@Test
+	public void testFailedIterable() {
+	    boolean caughtIAE = false;
+		final AtomicReference<MultipleResults> results = new AtomicReference<MultipleResults>();
+		List actions = new LinkedList();
+		Set<String> resultSet = new LinkedHashSet<String>();
+
+		actions.add(new DeferredCallable<String, Integer>() {
+			@Override
+			public String call() throws Exception {
+			    return "r1";
+			}
+		});
+
+		actions.add("r2");
+
+		actions.add(successCallable("r3", 100));
+
+		try {
+			Promise<MultipleResults, OneReject<?>, MasterProgress> p = deferredManager.when(actions);
+			p.done(new DoneCallback<MultipleResults>() {
+				@Override
+				public void onDone(MultipleResults result) {
+					results.set(result);
+				}
+			});
+
+			try {
+				p.waitSafely();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		} catch (IllegalArgumentException e) {
+		    caughtIAE = true;
+		}
+
+		Assert.assertNull("Expecting no results", results.get());
+		Assert.assertTrue("IllegalArgumentException was not caught", caughtIAE);
 	}
 
 	@Test
