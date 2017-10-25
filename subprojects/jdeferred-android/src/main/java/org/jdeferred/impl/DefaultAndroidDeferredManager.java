@@ -396,7 +396,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	}
 
 	@Override
-	protected Promise toPromise(Object o) {
+	protected Promise<?, ?, ?> toPromise(Object o) {
 		if (o instanceof DeferredAsyncTask) {
 			return when((DeferredAsyncTask) o);
 		}

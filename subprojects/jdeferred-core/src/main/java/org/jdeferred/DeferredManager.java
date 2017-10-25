@@ -363,10 +363,10 @@ public interface DeferredManager {
 	 * Accept an iterable of variety of different object types, and converted into corresponding Promise. E.g.,
 	 * if an item is a {@link Callable}, it'll call {@link #when(Callable)} to convert that into a Promise.
 	 *
-	 * If the item is an unknown type, it'll throw an {@link IllegalAccessException}
+	 * If the item is an unknown type, it'll throw an {@link IllegalArgumentException}
 	 *
 	 * @param iterable
-	 * @throws IllegalAccessException if any item in iterable cannot be converted to a {@link Promise}
+	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
 	 * @return
 	 */
 	Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable<?> iterable);
