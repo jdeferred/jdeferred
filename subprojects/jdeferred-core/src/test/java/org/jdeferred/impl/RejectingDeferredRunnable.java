@@ -17,14 +17,24 @@ package org.jdeferred.impl;
 
 import org.jdeferred.DeferredRunnable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author Andres Almiray
  */
 class RejectingDeferredRunnable extends DeferredRunnable<Void> {
-	private final Runnable runnable;
+	private final RejectingRunnable runnable;
 
 	RejectingDeferredRunnable(int index) {
 		this.runnable = new RejectingRunnable(index);
+	}
+
+	RejectingDeferredRunnable(int index, int delay, AtomicBoolean invoked) {
+		this.runnable = new RejectingRunnable(index, delay, invoked);
+	}
+
+	public AtomicBoolean getInvoked() {
+		return runnable.getInvoked();
 	}
 
 	@Override

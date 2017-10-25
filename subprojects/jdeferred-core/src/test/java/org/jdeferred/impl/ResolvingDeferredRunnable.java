@@ -17,14 +17,24 @@ package org.jdeferred.impl;
 
 import org.jdeferred.DeferredRunnable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author Andres Almiray
  */
 class ResolvingDeferredRunnable extends DeferredRunnable<Void> {
-	private final Runnable runnable;
+	private final ResolvingRunnable runnable;
 
 	ResolvingDeferredRunnable(int index) {
 		this.runnable = new ResolvingRunnable(index);
+	}
+
+	ResolvingDeferredRunnable(int index, int delay, AtomicBoolean invoked) {
+		this.runnable = new ResolvingRunnable(index, delay, invoked);
+	}
+
+	public AtomicBoolean getInvoked() {
+		return runnable.getInvoked();
 	}
 
 	@Override

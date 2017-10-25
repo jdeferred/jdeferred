@@ -17,16 +17,24 @@ package org.jdeferred.impl;
 
 import org.jdeferred.DeferredCallable;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Andres Almiray
  */
 class RejectingDeferredCallable extends DeferredCallable<Integer, Void> {
-	private final Callable<Integer> callable;
+	private final RejectingCallable callable;
 
 	RejectingDeferredCallable(int index) {
 		this.callable = new RejectingCallable(index);
+	}
+
+	RejectingDeferredCallable(int index, int delay, AtomicBoolean invoked) {
+		this.callable = new RejectingCallable(index, delay, invoked);
+	}
+
+	public AtomicBoolean getInvoked() {
+		return callable.getInvoked();
 	}
 
 	@Override

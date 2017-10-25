@@ -15,12 +15,18 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author Andres Almiray
  */
 class RejectingRunnable extends ResolvingRunnable {
 	RejectingRunnable(int index) {
 		super(index);
+	}
+
+	RejectingRunnable(int index, int delay, AtomicBoolean invoked) {
+		super(index, delay, invoked);
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package org.jdeferred.impl;
 
 import java.security.SecureRandom;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Andres Almiray
@@ -24,15 +25,28 @@ import java.util.concurrent.Callable;
 class ResolvingCallable implements Callable<Integer> {
 	protected static final SecureRandom RANDOM = new SecureRandom();
 	protected final int index;
+	protected final int delay;
+	protected final AtomicBoolean invoked;
 
 	ResolvingCallable(int index) {
+		this(index, 200, new AtomicBoolean(false));
+	}
+
+	ResolvingCallable(int index, int delay,AtomicBoolean invoked) {
 		this.index = index;
+		this.delay = delay;
+		this.invoked = invoked;
+	}
+
+	public AtomicBoolean getInvoked() {
+		return invoked;
 	}
 
 	@Override
 	public Integer call() throws Exception {
-		Thread.sleep(500);
+		Thread.sleep(delay);
 		Thread.sleep(RANDOM.nextInt(100));
+		invoked.set(true);
 		return index;
 	}
 }

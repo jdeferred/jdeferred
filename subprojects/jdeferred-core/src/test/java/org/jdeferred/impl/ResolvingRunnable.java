@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import java.security.SecureRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Andres Almiray
@@ -23,16 +24,29 @@ import java.security.SecureRandom;
 class ResolvingRunnable implements Runnable {
 	protected static final SecureRandom RANDOM = new SecureRandom();
 	protected final int index;
+	protected final int delay;
+	protected final AtomicBoolean invoked;
 
 	ResolvingRunnable(int index) {
+		this(index, 200, new AtomicBoolean(false));
+	}
+
+	ResolvingRunnable(int index, int delay, AtomicBoolean invoked) {
 		this.index = index;
+		this.delay = delay;
+		this.invoked = invoked;
+	}
+
+	public AtomicBoolean getInvoked() {
+		return invoked;
 	}
 
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(500);
+			Thread.sleep(delay);
 			Thread.sleep(RANDOM.nextInt(100));
+			invoked.set(true);
 		} catch (InterruptedException e) {
 			throw new IllegalStateException(e);
 		}

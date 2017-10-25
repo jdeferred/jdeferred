@@ -15,6 +15,8 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author Andres Almiray
  */
@@ -23,10 +25,13 @@ class RejectingCallable extends ResolvingCallable {
 		super(index);
 	}
 
+	RejectingCallable(int index, int delay, AtomicBoolean invoked) {
+		super(index, delay, invoked);
+	}
+
 	@Override
 	public Integer call() throws Exception {
-		Thread.sleep(500);
-		Thread.sleep(RANDOM.nextInt(100));
+		super.call();
 		throw new IndexedRuntimeException(index);
 	}
 }
