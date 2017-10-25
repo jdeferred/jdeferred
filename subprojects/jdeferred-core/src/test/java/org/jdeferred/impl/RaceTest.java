@@ -23,8 +23,6 @@ import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
 import org.junit.Test;
 
-import java.security.SecureRandom;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -121,47 +119,6 @@ public class RaceTest extends AbstractDeferredTest {
 			} else {
 				assertTrue("Promise at index " + index.get() + " should be rejected", promise.isRejected());
 			}
-		}
-	}
-
-	private static class ResolvingCallable implements Callable<Integer> {
-		protected static final SecureRandom RANDOM = new SecureRandom();
-		protected final int index;
-
-		public ResolvingCallable(int index) {
-			this.index = index;
-		}
-
-		@Override
-		public Integer call() throws Exception {
-			Thread.sleep(500);
-			Thread.sleep(RANDOM.nextInt(100));
-			return index;
-		}
-	}
-
-	private static class RejectingCallable extends ResolvingCallable {
-		public RejectingCallable(int index) {
-			super(index);
-		}
-
-		@Override
-		public Integer call() throws Exception {
-			Thread.sleep(500);
-			Thread.sleep(RANDOM.nextInt(100));
-			throw new IndexedRuntimeException(index);
-		}
-	}
-
-	private static class IndexedRuntimeException extends RuntimeException {
-		private final int index;
-
-		private IndexedRuntimeException(int index) {
-			this.index = index;
-		}
-
-		public int getIndex() {
-			return index;
 		}
 	}
 }
