@@ -23,7 +23,7 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneReject<F> extends AbstractOneOf<F> {
+public class OneReject<F> extends AbstractOneValue<F> {
 	private final Promise<?, F, ?> promise;
 	private final F reject;
 

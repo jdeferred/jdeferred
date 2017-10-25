@@ -23,7 +23,7 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneResult<D> extends AbstractOneOf<D> {
+public class OneResult<D> extends AbstractOneValue<D> {
 	private final Promise<D, ?, ?> promise;
 	private final D result;
 

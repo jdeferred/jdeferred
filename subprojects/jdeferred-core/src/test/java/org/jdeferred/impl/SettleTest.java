@@ -72,11 +72,11 @@ public class SettleTest extends AbstractDeferredTest {
 			Promise<Integer, Throwable, Void> promise = promises[i];
 			if (i % 2 == 0) {
 				assertTrue("Promise at index " + i + " should be resolved", promise.isResolved());
-				assertTrue("OneOf at index " + i + " should be of type OneResult", values[0].get(i) instanceof OneResult);
+				assertTrue("OneValue at index " + i + " should be of type OneResult", values[0].get(i) instanceof OneResult);
 				assertEquals("Value at index " + i + " should be equal to " + i, i, values[0].get(i).getValue());
 			} else {
 				assertTrue("Promise at index " + i + " should be rejected", promise.isRejected());
-				assertTrue("OneOf at index " + i + " should be of type OneReject", values[0].get(i) instanceof OneReject);
+				assertTrue("OneValue at index " + i + " should be of type OneReject", values[0].get(i) instanceof OneReject);
 				assertTrue("Value at index " + i + " should be of type IndexedRuntimeException", values[0].get(i).getValue() instanceof IndexedRuntimeException);
 			}
 		}
