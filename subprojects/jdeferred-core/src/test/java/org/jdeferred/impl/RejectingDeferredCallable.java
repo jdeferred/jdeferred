@@ -15,24 +15,22 @@
  */
 package org.jdeferred.impl;
 
-import java.security.SecureRandom;
+import org.jdeferred.DeferredCallable;
+
 import java.util.concurrent.Callable;
 
 /**
  * @author Andres Almiray
  */
-class ResolvingCallable implements Callable<Integer> {
-	protected static final SecureRandom RANDOM = new SecureRandom();
-	protected final int index;
+class RejectingDeferredCallable extends DeferredCallable<Integer, Void> {
+	private final Callable<Integer> callable;
 
-	ResolvingCallable(int index) {
-		this.index = index;
+	RejectingDeferredCallable(int index) {
+		this.callable = new RejectingCallable(index);
 	}
 
 	@Override
 	public Integer call() throws Exception {
-		Thread.sleep(500);
-		Thread.sleep(RANDOM.nextInt(100));
-		return index;
+		return callable.call();
 	}
 }

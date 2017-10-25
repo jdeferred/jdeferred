@@ -19,7 +19,7 @@ package org.jdeferred.impl;
  * @author Andres Almiray
  */
 class RejectingCallable extends ResolvingCallable {
-	public RejectingCallable(int index) {
+	RejectingCallable(int index) {
 		super(index);
 	}
 

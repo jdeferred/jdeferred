@@ -481,9 +481,9 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <D, P> Promise<D, Throwable, P> when(DeferredCallable<D, P> runnable) {
-		assertNotNull(runnable, "runnable");
-		return when(new DeferredFutureTask<D, P>(runnable));
+	public <D, P> Promise<D, Throwable, P> when(DeferredCallable<D, P> callable) {
+		assertNotNull(callable, "callable");
+		return when(new DeferredFutureTask<D, P>(callable));
 	}
 
 	@Override
