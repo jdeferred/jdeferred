@@ -24,6 +24,7 @@ import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
 import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.OneResult;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -358,4 +359,93 @@ public interface DeferredManager {
 		Future<V5> futureV5,
 		Future<?> future6,
 		Future<?>... futures);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first runnable does so.
+	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 *
+	 * @param runnableV1 a task to be executed. Must not be null
+	 * @param runnableV2 a task to be executed. Must not be null
+	 * @param runnables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		Runnable runnableV1,
+		Runnable runnableV2,
+		Runnable... runnables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first callable does so.
+	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 *
+	 * @param callableV1 a task to be executed. Must not be null
+	 * @param callableV2 a task to be executed. Must not be null
+	 * @param callables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		Callable<?> callableV1,
+		Callable<?> callableV2,
+		Callable<?>... callables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first runnable does so.
+	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 *
+	 * @param runnableV1 a task to be executed. Must not be null
+	 * @param runnableV2 a task to be executed. Must not be null
+	 * @param runnables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		DeferredRunnable<?> runnableV1,
+		DeferredRunnable<?> runnableV2,
+		DeferredRunnable<?>... runnables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first callable does so.
+	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 *
+	 * @param callableV1 a task to be executed. Must not be null
+	 * @param callableV2 a task to be executed. Must not be null
+	 * @param callables  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		DeferredCallable<?, ?> callableV1,
+		DeferredCallable<?, ?> callableV2,
+		DeferredCallable<?, ?>... callables);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first future does so.
+	 * Wraps each {@code future} with {@code DeferredFutureTask}.
+	 *
+	 * @param futureV1 a task to be executed. Must not be null
+	 * @param futureV2 a task to be executed. Must not be null
+	 * @param futures  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		Future<?> futureV1,
+		Future<?> futureV2,
+		Future<?>... futures);
+
+	/**
+	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first task does so.
+	 *
+	 * @param taskV1 a task to be executed. Must not be null
+	 * @param taskV2 a task to be executed. Must not be null
+	 * @param tasks  additional tasks to be executed. May be null
+	 *
+	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
+		DeferredFutureTask<?, ?> taskV1,
+		DeferredFutureTask<?, ?> taskV2,
+		DeferredFutureTask<?, ?>... tasks);
 }
