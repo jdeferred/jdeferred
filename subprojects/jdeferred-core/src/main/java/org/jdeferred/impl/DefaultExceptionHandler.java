@@ -29,6 +29,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public void handleException(CallbackType callbackType, Exception e) {
-        LOG.error("An uncaught exception occured in " + callbackType, e);
+        LOG.error("An uncaught exception occurred" +
+                " in " + callbackType, e);
     }
 }
