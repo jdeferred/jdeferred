@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 Ray Tsang
+  Copyright 2013-2017 Ray Tsang
   
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -32,8 +32,12 @@ Inspired by [JQuery](https://github.com/jquery/jquery) and [Android Deferred Obj
   * ```.always(…)```
 * Multiple promises
   * ```.when(p1, p2, p3, …).then(…)```
+  * ```.race(p1, p2, p3, …).then(…)```
+  * ```.settle(p1, p2, p3, …).then(…)```
 * Callable and Runnable wrappers
   * ```.when(new Runnable() {…})```
+  * ```.race(new Runnable() {…})```
+  * ```.settle(new Runnable() {…})```
 * Uses Executor Service
 * Java Generics support
   * ```Deferred<Integer, Exception, Double> deferred;```
@@ -244,6 +248,7 @@ try {
   ... 
 }
 ```
+
 <a name="example-lambda"></a>Java 8 Lambda
 -------------
 Now this is pretty cool when used with Java 8 Lambda!
@@ -261,12 +266,111 @@ dm.when(
 );
 ```
 
+<a name="example-race"></a>When
+-------------
+Calls to `when` with multiple arguments results in a `Promise` that signals `fail` on the first rejection or signals
+`done` with all computed values.
+
+#### Success scenario
+```Java
+Callable<Integer> c1 = () -> 1;
+Callable<Integer> c2 = () -> 2;
+Callable<Integer> c3 = () -> 3;
+Promise<MultipleResults3<Integer, Integer, Integer>, OneReject<Throwable>, MasterProgress> p = dm.when(c1, c2, c3);
+p.done(MultipleResults3<Integer, Integer, Integer> r -> {
+	Assert.assertEquals(r.getFirst(), 1);
+	Assert.assertEquals(r.getSecond(), 2);
+	Assert.assertEquals(r.getThird(), 3);
+});
+```
+
+#### Failure scenario
+```Java
+Callable<Integer> c1 = () -> 1;
+Callable<Integer> c2 = () -> 2;
+Callable<Integer> c3 = () -> throw new RuntimeException("boom!");
+Promise<MultipleResults3<Integer, Integer, Integer>, OneReject<Throwable>, MasterProgress> p = dm.when(c1, c2, c3);
+p.done(MultipleResults3<Integer, Integer, Integer> r -> Assert.fail("should not be called"))
+ .fail(OneReject<Throwable> r -> Assert.assertEquals(r.getReject().getMessage(), "boom!"));
+```
+
+Calls to `when` with multiple arguments (up to five) will produce results with typesafe getters.
+
+<a name="example-when"></a>Race
+-------------
+Calls to `race` with multiple arguments results in a `Promise` that signals `fail` on the first rejection or signals
+`done` on the first resolution.
+
+#### Success scenario
+```Java
+Callable<Integer> c1 = () -> { Thread.sleep(200); return 1; };
+Callable<Integer> c2 = () -> { Thread.sleep(100); return 2; };
+Callable<Integer> c3 = () -> { Thread.sleep(200); return 3; };
+Promise<OneResult<?>, OneReject<Throwable>, Void> p = dm.race(c1, c2, c3);
+p.done(OneResult<?> r -> Assert.assertEquals(r.getResult(), 2));
+```
+#### Failure scenario
+```Java
+Callable<Integer> c1 = () -> { Thread.sleep(200); return 1; };
+Callable<Integer> c2 = () -> { Thread.sleep(100); throw new RuntimeException("boom!"); };
+Callable<Integer> c3 = () -> { Thread.sleep(200); return 3; };
+Promise<OneResult<?>, OneReject<Throwable>, Void> p = dm.race(c1, c2, c3);
+p.done(OneResult<?> r -> Assert.fail("should not be called")
+  .fail(OneReject<Throwable> r -> Assert.assertEquals(r.getReject().getMessage(), "boom!"));
+```
+
+<a name="example-settle"></a>Settle
+-------------
+Calls to `settle` with multiple arguments results in a `Promise` that collects all resolutions and rejections.
+
+```Java
+Callable<Integer> c1 = () -> { Thread.sleep(200); return 1; };
+Callable<Integer> c2 = () -> { Thread.sleep(100); throw new RuntimeException("boom!"); };
+Callable<Integer> c3 = () -> { Thread.sleep(200); return 3; };
+Promise<AllValues, Throwable, MasterProgress>, Void> p = dm.race(c1, c2, c3);
+p.done(AllValues r -> {
+  Assert.assertEquals(r.get(0).getValue(), 1);
+  Assert.assertTrue(r.get(1).getValue() instanceof RuntimeException);
+  Assert.assertEquals(r.get(2).getValue(), 3);
+});
+```
+
+<a name="example-cancellation"></a>Cancellation Handler
+-------------
+Sometimes a task may be cancelled while its running and would require ti cleanup any resources it may have allocated. You
+may define a task that implements the `org.jdeferred.CancellationHandler` interface or pass and extra argument to
+`DeferredFutureTask` with such implementation, for example
+
+```Java
+public class DatabaseTask extends Runnable, CancellationHandler {
+	private final DataSource datasource;
+
+	public DatabaseTask(DataSource datasource) {
+		this.datasource = datasource;
+	}
+
+	@Override
+	public void run() {
+		// perform computation
+	}
+
+	@Override
+	public void onCancel() {
+		try {
+		    datasource.close();
+		} catch(Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+}
+```
+
 <a name="example-groovy"></a>Groovy
 -----
 You can also easily use with Groovy!
 
 ```Groovy
-@Grab('org.jdeferred:jdeferred-core:1.2.6')
+@Grab('org.jdeferred:jdeferred-core:2.0.0')
 import org.jdeferred.*
 import org.jdeferred.impl.*
 
