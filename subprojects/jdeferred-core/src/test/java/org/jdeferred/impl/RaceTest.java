@@ -24,7 +24,9 @@ import org.jdeferred.multiple.OneResult;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -88,16 +90,18 @@ public class RaceTest extends AbstractDeferredTest {
 		tasks[2] = new RejectingRunnable(4, 200, invocationWitness[4]);
 
 		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
 
 		deferredManager.race(task1, task2, tasks)
 			.done(new DoneCallback<OneResult<?>>() {
 				public void onDone(OneResult<?> result) {
-					index.set(result.getIndex());
+					fail("Shouldn't be here");
 				}
 			}).fail(new FailCallback<OneReject<Throwable>>() {
 			@Override
 			public void onFail(OneReject<Throwable> result) {
-				fail("Shouldn't be here");
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
 			}
 		});
 
@@ -108,6 +112,7 @@ public class RaceTest extends AbstractDeferredTest {
 		for (int i = 0; i < tasks.length; i++) {
 			if (i == index.get()) {
 				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
@@ -166,16 +171,18 @@ public class RaceTest extends AbstractDeferredTest {
 		tasks[2] = new RejectingCallable(4, 200, invocationWitness[4]);
 
 		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
 
 		deferredManager.race(task1, task2, tasks)
 			.done(new DoneCallback<OneResult<?>>() {
 				public void onDone(OneResult<?> result) {
-					index.set(result.getIndex());
+					fail("Shouldn't be here");
 				}
 			}).fail(new FailCallback<OneReject<Throwable>>() {
 			@Override
 			public void onFail(OneReject<Throwable> result) {
-				fail("Shouldn't be here");
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
 			}
 		});
 
@@ -186,6 +193,7 @@ public class RaceTest extends AbstractDeferredTest {
 		for (int i = 0; i < tasks.length; i++) {
 			if (i == index.get()) {
 				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
@@ -244,16 +252,18 @@ public class RaceTest extends AbstractDeferredTest {
 		tasks[2] = new RejectingDeferredRunnable(4, 200, invocationWitness[4]);
 
 		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
 
 		deferredManager.race(task1, task2, tasks)
 			.done(new DoneCallback<OneResult<?>>() {
 				public void onDone(OneResult<?> result) {
-					index.set(result.getIndex());
+					fail("Shouldn't be here");
 				}
 			}).fail(new FailCallback<OneReject<Throwable>>() {
 			@Override
 			public void onFail(OneReject<Throwable> result) {
-				fail("Shouldn't be here");
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
 			}
 		});
 
@@ -264,6 +274,7 @@ public class RaceTest extends AbstractDeferredTest {
 		for (int i = 0; i < tasks.length; i++) {
 			if (i == index.get()) {
 				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
@@ -322,16 +333,18 @@ public class RaceTest extends AbstractDeferredTest {
 		tasks[2] = new RejectingDeferredCallable(4, 200, invocationWitness[4]);
 
 		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
 
 		deferredManager.race(task1, task2, tasks)
 			.done(new DoneCallback<OneResult<?>>() {
 				public void onDone(OneResult<?> result) {
-					index.set(result.getIndex());
+					fail("Shouldn't be here");
 				}
 			}).fail(new FailCallback<OneReject<Throwable>>() {
 			@Override
 			public void onFail(OneReject<Throwable> result) {
-				fail("Shouldn't be here");
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
 			}
 		});
 
@@ -342,6 +355,7 @@ public class RaceTest extends AbstractDeferredTest {
 		for (int i = 0; i < tasks.length; i++) {
 			if (i == index.get()) {
 				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
@@ -402,16 +416,18 @@ public class RaceTest extends AbstractDeferredTest {
 		tasks[2] = new FutureTask<Integer>(new RejectingCallable(4, 200, invocationWitness[4]));
 
 		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
 
 		deferredManager.race(task1, task2, tasks)
 			.done(new DoneCallback<OneResult<?>>() {
 				public void onDone(OneResult<?> result) {
-					index.set(result.getIndex());
+					fail("Shouldn't be here");
 				}
 			}).fail(new FailCallback<OneReject<Throwable>>() {
 			@Override
 			public void onFail(OneReject<Throwable> result) {
-				fail("Shouldn't be here");
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
 			}
 		});
 
@@ -422,6 +438,7 @@ public class RaceTest extends AbstractDeferredTest {
 		for (int i = 0; i < tasks.length; i++) {
 			if (i == index.get()) {
 				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
@@ -515,6 +532,99 @@ public class RaceTest extends AbstractDeferredTest {
 				assertEquals(i, exception[0].getIndex());
 			} else {
 				assertTrue("Promise at index " + index.get() + " should be rejected", promise.isRejected());
+			}
+		}
+	}
+
+	@Test
+	public void raceIterableAndResolve() {
+		AtomicBoolean[] invocationWitness = new AtomicBoolean[10];
+		Arrays.fill(invocationWitness, new AtomicBoolean());
+
+		int j = 0;
+		List<Object> iterable = new ArrayList<Object>();
+		iterable.add(new ResolvingRunnable(j++, 200, invocationWitness[0]));
+		iterable.add(new ResolvingRunnable(j++, 200, invocationWitness[1]));
+		iterable.add(new ResolvingCallable(j++, 100, invocationWitness[2]));
+		iterable.add(new ResolvingCallable(j++, 200, invocationWitness[3]));
+		iterable.add(new ResolvingDeferredRunnable(j++, 200, invocationWitness[4]));
+		iterable.add(new ResolvingDeferredRunnable(j++, 200, invocationWitness[5]));
+		iterable.add(new ResolvingDeferredCallable(j++, 200, invocationWitness[6]));
+		iterable.add(new ResolvingDeferredCallable(j++, 200, invocationWitness[7]));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new ResolvingCallable(j++, 200, invocationWitness[8])));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new ResolvingCallable(j++, 200, invocationWitness[9])));
+
+		final AtomicInteger index = new AtomicInteger(0);
+
+		deferredManager.race(iterable)
+			.done(new DoneCallback<OneResult<?>>() {
+				public void onDone(OneResult<?> result) {
+					index.set(result.getIndex());
+				}
+			}).fail(new FailCallback<OneReject<Throwable>>() {
+			@Override
+			public void onFail(OneReject<Throwable> result) {
+				fail("Shouldn't be here");
+			}
+		});
+
+		waitForCompletion();
+
+		// promise at index == 2 => invoked
+		// all other promises should not be invoked
+		for (int i = 0; i < iterable.size(); i++) {
+			if (i == index.get()) {
+				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+			} else {
+				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
+			}
+		}
+	}
+
+	@Test
+	public void raceIterableAndReject() {
+		AtomicBoolean[] invocationWitness = new AtomicBoolean[10];
+		Arrays.fill(invocationWitness, new AtomicBoolean());
+
+		int j = 0;
+		List<Object> iterable = new ArrayList<Object>();
+		iterable.add(new RejectingRunnable(j++, 200, invocationWitness[0]));
+		iterable.add(new RejectingRunnable(j++, 200, invocationWitness[1]));
+		iterable.add(new RejectingCallable(j++, 100, invocationWitness[2]));
+		iterable.add(new RejectingCallable(j++, 200, invocationWitness[3]));
+		iterable.add(new RejectingDeferredRunnable(j++, 200, invocationWitness[4]));
+		iterable.add(new RejectingDeferredRunnable(j++, 200, invocationWitness[5]));
+		iterable.add(new RejectingDeferredCallable(j++, 200, invocationWitness[6]));
+		iterable.add(new RejectingDeferredCallable(j++, 200, invocationWitness[7]));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new RejectingCallable(j++, 200, invocationWitness[8])));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new RejectingCallable(j++, 200, invocationWitness[9])));
+
+		final AtomicInteger index = new AtomicInteger(0);
+		final IndexedRuntimeException[] exception = new IndexedRuntimeException[1];
+
+		deferredManager.race(iterable)
+			.done(new DoneCallback<OneResult<?>>() {
+				public void onDone(OneResult<?> result) {
+					fail("Shouldn't be here");
+				}
+			}).fail(new FailCallback<OneReject<Throwable>>() {
+			@Override
+			public void onFail(OneReject<Throwable> result) {
+				index.set(result.getIndex());
+				exception[0] = (IndexedRuntimeException) result.getReject();
+			}
+		});
+
+		waitForCompletion();
+
+		// promise at index == 2 => invoked
+		// all other promises should not be invoked
+		for (int i = 0; i < iterable.size(); i++) {
+			if (i == index.get()) {
+				assertTrue("Promise at index " + index.get() + " should have been invoked", invocationWitness[i].get());
+				assertEquals(i, exception[0].getIndex());
+			} else {
+				assertTrue("Promise at index " + index.get() + " should have not been invoked", invocationWitness[i].get());
 			}
 		}
 	}

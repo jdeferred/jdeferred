@@ -27,6 +27,8 @@ import org.jdeferred.multiple.OneResult;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -267,10 +269,51 @@ public class SettleTest extends AbstractDeferredTest {
 		verifyAllValues(values[0]);
 	}
 
+	@Test
+	public void settleIterableWith3ResolvesAnd3Rejects() {
+		int index = 0;
+		List<Object> iterable = new ArrayList<Object>();
+		iterable.add(new ResolvingRunnable(index++));
+		iterable.add(new RejectingRunnable(index++));
+		iterable.add(new ResolvingDeferredRunnable(index++));
+		iterable.add(new RejectingDeferredRunnable(index++));
+		iterable.add(new ResolvingCallable(index++));
+		iterable.add(new RejectingCallable(index++));
+		iterable.add(new ResolvingDeferredCallable(index++));
+		iterable.add(new RejectingDeferredCallable(index++));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new ResolvingCallable(index++)));
+		iterable.add(new DeferredFutureTask<Integer, Void>(new RejectingCallable(index++)));
+		// iterable.add(new FutureTask<Integer>(new ResolvingCallable(index++)));
+		// iterable.add(new FutureTask<Integer>(new RejectingCallable(index++)));
+
+		final AllValues[] values = new AllValues[1];
+		deferredManager.settle(iterable)
+			.done(new DoneCallback<AllValues>() {
+				@Override
+				public void onDone(AllValues result) {
+					values[0] = result;
+				}
+			}).fail(new FailCallback<Throwable>() {
+			@Override
+			public void onFail(Throwable result) {
+				fail("Shouldn't be here");
+			}
+		});
+
+		waitForCompletion();
+
+		// skip verifying the first 4 values as they are produced by runnables
+		verifyAllValues(values[0], 4);
+	}
+
 	private void verifyAllValues(AllValues allValues) {
+		verifyAllValues(allValues, 0);
+	}
+
+	private void verifyAllValues(AllValues allValues, int offset) {
 		// promise at $index % 2 == 0 => RESOLVED
 		// promise at $index % 2 == 1 => REJECTED
-		for (int i = 0; i < allValues.size(); i++) {
+		for (int i = offset; i < allValues.size(); i++) {
 			if (i % 2 == 0) {
 				assertTrue("OneValue at index " + i + " should be of type OneResult", allValues.get(i) instanceof OneResult);
 				assertEquals("Value at index " + i + " should be equal to " + i, i, allValues.get(i).getValue());
