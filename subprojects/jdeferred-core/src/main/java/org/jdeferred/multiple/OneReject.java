@@ -23,20 +23,19 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneReject<F> {
-	private final int index;
+public class OneReject<F> extends AbstractOneValue<F> {
 	private final Promise<?, F, ?> promise;
 	private final F reject;
 
 	public OneReject(int index, Promise<?, F, ?> promise, F reject) {
-		super();
-		this.index = index;
+		super(index);
 		this.promise = promise;
 		this.reject = reject;
 	}
 
-	public int getIndex() {
-		return index;
+	@Override
+	public F getValue() {
+		return getReject();
 	}
 
 	public Promise<?, F, ?> getPromise() {

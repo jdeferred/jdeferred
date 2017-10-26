@@ -23,24 +23,23 @@ import org.jdeferred.Promise;
  * @author Ray Tsang
  */
 @SuppressWarnings("rawtypes")
-public class OneResult<D> {
-	private final int index;
+public class OneResult<D> extends AbstractOneValue<D> {
 	private final Promise<D, ?, ?> promise;
 	private final D result;
 
 	public OneResult(int index, Promise<D, ?, ?> promise, D result) {
-		super();
-		this.index = index;
+		super(index);
 		this.promise = promise;
 		this.result = result;
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
 	public Promise<D, ?, ?> getPromise() {
 		return promise;
+	}
+
+	@Override
+	public D getValue() {
+		return getResult();
 	}
 
 	public D getResult() {

@@ -27,7 +27,9 @@ import org.jdeferred.multiple.MultipleResults3;
 import org.jdeferred.multiple.MultipleResults4;
 import org.jdeferred.multiple.MultipleResults5;
 import org.jdeferred.multiple.MultipleResultsN;
+import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
+import org.jdeferred.multiple.OneResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -484,9 +486,9 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <D, P> Promise<D, Throwable, P> when(DeferredCallable<D, P> runnable) {
-		assertNotNull(runnable, "runnable");
-		return when(new DeferredFutureTask<D, P>(runnable));
+	public <D, P> Promise<D, Throwable, P> when(DeferredCallable<D, P> callable) {
+		assertNotNull(callable, "callable");
+		return when(new DeferredFutureTask<D, P>(callable));
 	}
 
 	@Override
@@ -513,11 +515,124 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	}
 
 	@Override
-	public <D> Promise<D, Throwable, Void> when(final Future<D> future) {
-		assertNotNull(future, "future");
+	public <D> Promise<D, Throwable, Void> when(Future<D> future) {
 		// make sure the task is automatically started
+		return when(deferredCallableFor(future));
+	}
 
-		return when(new DeferredCallable<D, Void>(StartPolicy.AUTO) {
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(Runnable runnableV1, Runnable runnableV2, Runnable... runnables) {
+		assertNotNull(runnableV1, RUNNABLE_V1);
+		assertNotNull(runnableV2, RUNNABLE_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (runnables != null ? runnables.length : 0)];
+		allTasks[0] = new DeferredFutureTask<Void, Void>(runnableV1);
+		allTasks[1] = new DeferredFutureTask<Void, Void>(runnableV2);
+		if (runnables != null) {
+			for (int i = 0; i < runnables.length; i++) {
+				allTasks[2 + i] = new DeferredFutureTask<Void, Void>(runnables[i]);
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(Callable<?> callableV1, Callable<?> callableV2, Callable<?>... callables) {
+		assertNotNull(callableV1, CALLABLE_V1);
+		assertNotNull(callableV2, CALLABLE_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (callables != null ? callables.length : 0)];
+		allTasks[0] = new DeferredFutureTask<Object, Void>((Callable<Object>) callableV1);
+		allTasks[1] = new DeferredFutureTask<Object, Void>((Callable<Object>) callableV2);
+		if (callables != null) {
+			for (int i = 0; i < callables.length; i++) {
+				allTasks[2 + i] = new DeferredFutureTask<Object, Void>((Callable<Object>) callables[i]);
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(DeferredRunnable<?> runnableV1, DeferredRunnable<?> runnableV2, DeferredRunnable<?>... runnables) {
+		assertNotNull(runnableV1, RUNNABLE_V1);
+		assertNotNull(runnableV2, RUNNABLE_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (runnables != null ? runnables.length : 0)];
+		allTasks[0] = new DeferredFutureTask<Void, Void>(runnableV1);
+		allTasks[1] = new DeferredFutureTask<Void, Void>(runnableV2);
+		if (runnables != null) {
+			for (int i = 0; i < runnables.length; i++) {
+				allTasks[2 + i] = new DeferredFutureTask<Void, Void>(runnables[i]);
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(DeferredCallable<?, ?> callableV1, DeferredCallable<?, ?> callableV2, DeferredCallable<?, ?>... callables) {
+		assertNotNull(callableV1, CALLABLE_V1);
+		assertNotNull(callableV2, CALLABLE_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (callables != null ? callables.length : 0)];
+		allTasks[0] = new DeferredFutureTask<Object, Object>((DeferredCallable<Object, Object>) callableV1);
+		allTasks[1] = new DeferredFutureTask<Object, Object>((DeferredCallable<Object, Object>) callableV2);
+		if (callables != null) {
+			for (int i = 0; i < callables.length; i++) {
+				allTasks[2 + i] = new DeferredFutureTask<Object, Object>((DeferredCallable<Object, Object>) callables[i]);
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(Future<?> futureV1, Future<?> futureV2, Future<?>... futures) {
+		assertNotNull(futureV1, FUTURE_V1);
+		assertNotNull(futureV2, FUTURE_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (futures != null ? futures.length : 0)];
+		allTasks[0] = new DeferredFutureTask<Object, Void>((DeferredCallable<Object, Void>) deferredCallableFor(futureV1));
+		allTasks[1] = new DeferredFutureTask<Object, Void>((DeferredCallable<Object, Void>) deferredCallableFor(futureV2));
+		if (futures != null) {
+			for (int i = 0; i < futures.length; i++) {
+				allTasks[2 + i] = new DeferredFutureTask<Object, Void>((DeferredCallable<Object, Void>) deferredCallableFor(futures[i]));
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	@Override
+	public Promise<OneResult<?>, OneReject<Throwable>, Void> race(DeferredFutureTask<?, ?> taskV1, DeferredFutureTask<?, ?> taskV2, DeferredFutureTask<?, ?>... tasks) {
+		assertNotNull(taskV1, TASK_V1);
+		assertNotNull(taskV2, TASK_V2);
+
+		DeferredFutureTask<?, ?>[] allTasks = new DeferredFutureTask[2 + (tasks != null ? tasks.length : 0)];
+		allTasks[0] = taskV1;
+		allTasks[1] = taskV2;
+		if (tasks != null) {
+			for (int i = 0; i < tasks.length; i++) {
+				allTasks[2 + i] = tasks[i];
+			}
+		}
+
+		return submitForSingle(allTasks);
+	}
+
+	protected Promise<OneResult<?>, OneReject<Throwable>, Void> submitForSingle(DeferredFutureTask<?,?>[] tasks) {
+		for(DeferredFutureTask<?,?> task: tasks) {
+			submit(task);
+		}
+		return new SingleDeferredObject(tasks);
+	}
+
+	protected <D> DeferredCallable<D, Void> deferredCallableFor(final Future<D> future) {
+		assertNotNull(future, "future");
+
+		return new DeferredCallable<D, Void>(StartPolicy.AUTO) {
 			@Override
 			public D call() throws Exception {
 				try {
@@ -532,7 +647,124 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 					}
 				}
 			}
-		});
+		};
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(Runnable runnableV1, Runnable runnableV2, Runnable... runnables) {
+		assertNotNull(runnableV1, RUNNABLE_V1);
+		assertNotNull(runnableV2, RUNNABLE_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (runnables != null ? runnables.length : 0)];
+		promises[0] = when(runnableV1);
+		promises[1] = when(runnableV2);
+		if (runnables != null) {
+			for (int i = 0; i < runnables.length; i++) {
+				promises[2 + i] = when(runnables[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(Callable<?> callableV1, Callable<?> callableV2, Callable<?>... callables) {
+		assertNotNull(callableV1, CALLABLE_V1);
+		assertNotNull(callableV2, CALLABLE_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (callables != null ? callables.length : 0)];
+		promises[0] = when(callableV1);
+		promises[1] = when(callableV2);
+		if (callables != null) {
+			for (int i = 0; i < callables.length; i++) {
+				promises[2 + i] = when(callables[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredRunnable<?> runnableV1, DeferredRunnable<?> runnableV2, DeferredRunnable<?>... runnables) {
+		assertNotNull(runnableV1, RUNNABLE_V1);
+		assertNotNull(runnableV2, RUNNABLE_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (runnables != null ? runnables.length : 0)];
+		promises[0] = when(runnableV1);
+		promises[1] = when(runnableV2);
+		if (runnables != null) {
+			for (int i = 0; i < runnables.length; i++) {
+				promises[2 + i] = when(runnables[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredCallable<?, ?> callableV1, DeferredCallable<?, ?> callableV2, DeferredCallable<?, ?>... callables) {
+		assertNotNull(callableV1, CALLABLE_V1);
+		assertNotNull(callableV2, CALLABLE_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (callables != null ? callables.length : 0)];
+		promises[0] = when(callableV1);
+		promises[1] = when(callableV2);
+		if (callables != null) {
+			for (int i = 0; i < callables.length; i++) {
+				promises[2 + i] = when(callables[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(Future<?> futureV1, Future<?> futureV2, Future<?>... futures) {
+		assertNotNull(futureV1, FUTURE_V1);
+		assertNotNull(futureV2, FUTURE_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (futures != null ? futures.length : 0)];
+		promises[0] = when(futureV1);
+		promises[1] = when(futureV2);
+		if (futures != null) {
+			for (int i = 0; i < futures.length; i++) {
+				promises[2 + i] = when(futures[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(DeferredFutureTask<?, ?> taskV1, DeferredFutureTask<?, ?> taskV2, DeferredFutureTask<?, ?>... tasks) {
+		assertNotNull(taskV1, TASK_V1);
+		assertNotNull(taskV2, TASK_V2);
+
+		Promise<?, ?, ?>[] promises = new Promise[2 + (tasks != null ? tasks.length : 0)];
+		promises[0] = when(taskV1);
+		promises[1] = when(taskV2);
+		if (tasks != null) {
+			for (int i = 0; i < tasks.length; i++) {
+				promises[2 + i] = when(tasks[i]);
+			}
+		}
+
+		return new AllValuesDeferredObject(promises);
+	}
+
+	@Override
+	public Promise<AllValues, Throwable, MasterProgress> settle(Promise<?, ?, ?> promiseV1, Promise<?, ?, ?> promiseV2, Promise<?, ?, ?>... promises) {
+		assertNotNull(promiseV1, "promiseV1");
+		assertNotNull(promiseV2, "promiseV2");
+
+		Promise<?, ?, ?>[] allPromises = new Promise[2 + (promises != null ? promises.length : 0)];
+		allPromises[0] = promiseV1;
+		allPromises[1] = promiseV2;
+		if (promises != null) {
+			System.arraycopy(promises, 0, allPromises, 2, promises.length);
+		}
+
+		return new AllValuesDeferredObject(allPromises);
 	}
 
 	protected void assertNotEmpty(Object[] objects) {

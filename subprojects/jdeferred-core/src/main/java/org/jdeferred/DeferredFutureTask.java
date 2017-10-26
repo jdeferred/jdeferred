@@ -35,7 +35,7 @@ import java.util.concurrent.FutureTask;
  * 
  * When the task is completed successfully, {@link Deferred#resolve(Object)} will be called.
  * When a task is canceled, {@link Deferred#reject(Object)} will be called with an instance of {@link CancellationException}
- * If any Exception occured, {@link Deferred#reject(Object)} will be called with the Exception instance.
+ * If any Exception occurred, {@link Deferred#reject(Object)} will be called with the Exception instance.
  * 
  * @author Ray Tsang
  *
