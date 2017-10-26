@@ -19,7 +19,6 @@ import org.jdeferred.DeferredCallable;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DeferredManager;
 import org.jdeferred.DeferredRunnable;
-import org.jdeferred.ExceptionHandler;
 import org.jdeferred.Promise;
 import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.MultipleResults;
@@ -70,19 +69,9 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 
 	final protected Logger log = LoggerFactory.getLogger(AbstractDeferredManager.class);
 
-	protected ExceptionHandler globalExceptionHandler;
-
 	protected abstract void submit(Runnable runnable);
 
 	protected abstract void submit(Callable callable);
-
-	public AbstractDeferredManager() {
-		this(new DefaultExceptionHandler());
-	}
-
-	public AbstractDeferredManager(ExceptionHandler globalExceptionHandler) {
-		this.globalExceptionHandler = globalExceptionHandler;
-	}
 
 	/**
 	 * Should {@link Runnable} or {@link Callable} be submitted for execution automatically

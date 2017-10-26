@@ -15,22 +15,21 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.ExceptionHandler;
-import org.jdeferred.impl.DefaultExceptionHandler;
+import org.jdeferred.CallbackExceptionHandler;
 
 public final class GlobalConfiguration {
-	private static ExceptionHandler globalExceptionHandler = new DefaultExceptionHandler();
+	private static CallbackExceptionHandler globalCallbackExceptionHandler = new DefaultCallbackExceptionHandler();
 
 	private GlobalConfiguration() {};
 
-	public static void setGlobalExceptionHandler(ExceptionHandler exceptionHandler) {
-		if (exceptionHandler == null) {
-			throw new IllegalArgumentException("exceptionHandler cannot be null");
+	public static void setGlobalCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
+		if (callbackExceptionHandler == null) {
+			throw new IllegalArgumentException("callbackExceptionHandler cannot be null");
 		}
-		globalExceptionHandler = exceptionHandler;
+		globalCallbackExceptionHandler = callbackExceptionHandler;
 	}
 
-	public static ExceptionHandler getGlobalExceptionHandler() {
-		return globalExceptionHandler;
+	public static CallbackExceptionHandler getGlobalCallbackExceptionHandler() {
+		return globalCallbackExceptionHandler;
 	}
 }

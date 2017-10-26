@@ -15,7 +15,7 @@
  */
 package org.jdeferred.impl;
 
-import org.jdeferred.ExceptionHandler;
+import org.jdeferred.CallbackExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ray Tsang
  */
-public class DefaultExceptionHandler implements ExceptionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+public class DefaultCallbackExceptionHandler implements CallbackExceptionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultCallbackExceptionHandler.class);
 
     @Override
     public void handleException(CallbackType callbackType, Exception e) {

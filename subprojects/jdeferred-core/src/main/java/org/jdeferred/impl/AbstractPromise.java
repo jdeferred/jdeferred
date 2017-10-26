@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
-import org.jdeferred.ExceptionHandler;
 import org.jdeferred.FailCallback;
 import org.jdeferred.FailFilter;
 import org.jdeferred.FailPipe;
@@ -104,7 +104,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		try {
 			callback.onDone(resolved);
 		} catch (Exception e) {
-			handleException(ExceptionHandler.CallbackType.DONE_CALLBACK, e);
+			handleException(CallbackExceptionHandler.CallbackType.DONE_CALLBACK, e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		try {
 			callback.onFail(rejected);
 		} catch (Exception e) {
-			handleException(ExceptionHandler.CallbackType.FAIL_CALLBACK, e);
+			handleException(CallbackExceptionHandler.CallbackType.FAIL_CALLBACK, e);
 		}
 	}
 
@@ -133,7 +133,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		try {
 			callback.onProgress(progress);
 		} catch (Exception e) {
-			handleException(ExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
+			handleException(CallbackExceptionHandler.CallbackType.PROGRESS_CALLBACK, e);
 		}
 	}
 
@@ -152,7 +152,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	    try {
 			callback.onAlways(state, resolve, reject);
 		} catch (Exception e) {
-	        handleException(ExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
+	        handleException(CallbackExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
 		}
 	}
 
@@ -267,7 +267,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 	}
 
-	protected void handleException(ExceptionHandler.CallbackType callbackType, Exception e) {
-		GlobalConfiguration.getGlobalExceptionHandler().handleException(callbackType, e);
+	protected void handleException(CallbackExceptionHandler.CallbackType callbackType, Exception e) {
+		GlobalConfiguration.getGlobalCallbackExceptionHandler().handleException(callbackType, e);
 	}
 }

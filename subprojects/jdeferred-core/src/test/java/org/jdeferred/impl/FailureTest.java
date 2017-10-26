@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
-import org.jdeferred.ExceptionHandler;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
@@ -110,10 +110,10 @@ public class FailureTest extends AbstractDeferredTest {
 
 	@Test
 	public void testGlobalExceptionHandler() {
-		final ConcurrentHashMap<ExceptionHandler.CallbackType, Exception> handled =
-				new ConcurrentHashMap<ExceptionHandler.CallbackType, Exception>();
+		final ConcurrentHashMap<CallbackExceptionHandler.CallbackType, Exception> handled =
+				new ConcurrentHashMap<CallbackExceptionHandler.CallbackType, Exception>();
 
-		GlobalConfiguration.setGlobalExceptionHandler(new ExceptionHandler() {
+		GlobalConfiguration.setGlobalCallbackExceptionHandler(new CallbackExceptionHandler() {
 			@Override
 			public void handleException(CallbackType callbackType, Exception e) {
 			    handled.put(callbackType, e);
@@ -129,7 +129,7 @@ public class FailureTest extends AbstractDeferredTest {
 		});
 
 		Assert.assertEquals(1, handled.size());
-		Assert.assertTrue("DONE_CALLBACK is missing", handled.containsKey(ExceptionHandler.CallbackType.DONE_CALLBACK));
+		Assert.assertTrue("DONE_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.DONE_CALLBACK));
 		handled.clear();
 
 		p = new DeferredObject<String, String, String>().reject("no").promise();
@@ -141,7 +141,7 @@ public class FailureTest extends AbstractDeferredTest {
 		});
 
 		Assert.assertEquals(1, handled.size());
-		Assert.assertTrue("FAIL_CALLBACK is missing", handled.containsKey(ExceptionHandler.CallbackType.FAIL_CALLBACK));
+		Assert.assertTrue("FAIL_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.FAIL_CALLBACK));
 		handled.clear();
 
 		p.always(new AlwaysCallback<String, String>() {
@@ -151,7 +151,7 @@ public class FailureTest extends AbstractDeferredTest {
 			}
 		});
 		Assert.assertEquals(1, handled.size());
-		Assert.assertTrue("ALWAYS_CALLBACK is missing", handled.containsKey(ExceptionHandler.CallbackType.ALWAYS_CALLBACK));
+		Assert.assertTrue("ALWAYS_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.ALWAYS_CALLBACK));
 		handled.clear();
 
 		DeferredObject<String, String, String> progressObject = new DeferredObject<String, String, String>();
@@ -166,7 +166,7 @@ public class FailureTest extends AbstractDeferredTest {
 		progressObject.notify("50%");
 
 		Assert.assertEquals(1, handled.size());
-		Assert.assertTrue("PROGRESS_CALLBACK is missing", handled.containsKey(ExceptionHandler.CallbackType.PROGRESS_CALLBACK));
+		Assert.assertTrue("PROGRESS_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.PROGRESS_CALLBACK));
 		handled.clear();
 	}
 }
