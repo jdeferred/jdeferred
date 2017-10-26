@@ -278,9 +278,9 @@ Callable<Integer> c2 = () -> 2;
 Callable<Integer> c3 = () -> 3;
 Promise<MultipleResults3<Integer, Integer, Integer>, OneReject<Throwable>, MasterProgress> p = dm.when(c1, c2, c3);
 p.done(MultipleResults3<Integer, Integer, Integer> r -> {
-	Assert.assertEquals(r.getFirst(), 1);
-	Assert.assertEquals(r.getSecond(), 2);
-	Assert.assertEquals(r.getThird(), 3);
+  Assert.assertEquals(r.getFirst(), 1);
+  Assert.assertEquals(r.getSecond(), 2);
+  Assert.assertEquals(r.getThird(), 3);
 });
 ```
 
@@ -343,25 +343,25 @@ may define a task that implements the `org.jdeferred.CancellationHandler` interf
 
 ```Java
 public class DatabaseTask extends Runnable, CancellationHandler {
-	private final DataSource datasource;
+  private final DataSource datasource;
 
-	public DatabaseTask(DataSource datasource) {
-		this.datasource = datasource;
-	}
+  public DatabaseTask(DataSource datasource) {
+    this.datasource = datasource;
+  }
 
-	@Override
-	public void run() {
-		// perform computation
-	}
+  @Override
+  public void run() {
+    // perform computation
+  }
 
-	@Override
-	public void onCancel() {
-		try {
-		    datasource.close();
-		} catch(Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
+  @Override
+  public void onCancel() {
+    try {
+      datasource.close();
+    } catch(Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
 }
 ```
 
