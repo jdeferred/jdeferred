@@ -386,4 +386,20 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4, promiseV5, promise6, promises);
 		return new AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p, scope).promise();
 	}
+
+	@Override
+	protected boolean canPromise(Object o) {
+		if (o instanceof DeferredAsyncTask) {
+			return true;
+		}
+		return super.canPromise(o);
+	}
+
+	@Override
+	protected Promise<?, ?, ?> toPromise(Object o) {
+		if (o instanceof DeferredAsyncTask) {
+			return when((DeferredAsyncTask) o);
+		}
+		return super.toPromise(o);
+	}
 }

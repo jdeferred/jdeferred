@@ -30,9 +30,14 @@ import org.jdeferred.multiple.MultipleResultsN;
 import org.jdeferred.multiple.AllValues;
 import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -772,6 +777,80 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	protected void assertNotNull(Object object, String name) {
 		if (object == null) {
 			throw new IllegalArgumentException("Argument '" + name + "' must not be null");
+		}
+	}
+
+	@Override
+	public Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable<?> iterable) {
+	    if (iterable == null) {
+			throw new IllegalArgumentException("Iterable is null");
+		}
+
+		Iterator<?> iterator = iterable.iterator();
+	    if (!iterator.hasNext()) {
+	    	throw new IllegalArgumentException("Iterable is empty");
+		}
+
+		List<Object> items = new LinkedList<Object>();
+		List<Promise<?, ?, ?>> promises = new ArrayList<Promise<?, ?, ?>>();
+
+		// First pass, check each element to make sure it can be converted to a promise
+        // This is done in 2 passes because we don't want to submit tasks but also throw an Exception because some
+		// object was not able to convert. The method should succeed all or nothing.
+	    while (iterator.hasNext()) {
+	        Object object = iterator.next();
+	        if (!canPromise(object)) {
+	        	throw new IllegalArgumentException("an item of type " + object.getClass().getName() + " cannot be converted to a Promise");
+			}
+			items.add(object);
+		}
+
+		// Second pass, now we know every object can be converted to a Promise, convert them
+		for (Object item : items) {
+			promises.add(toPromise(item));
+		}
+
+		return new MasterDeferredObjectUntypedN(promises.toArray(new Promise<?, ?, ?>[]{})).promise();
+	}
+
+	protected boolean canPromise(Object o) {
+		if (o instanceof DeferredFutureTask) {
+		    return true;
+		} else if (o instanceof DeferredRunnable) {
+			return true;
+		} else if (o instanceof DeferredCallable) {
+			return true;
+		} else if (o instanceof Runnable) {
+			return true;
+		} else if (o instanceof Callable) {
+			return true;
+		} else if (o instanceof Future) {
+			return true;
+		} else if (o instanceof Promise) {
+		    return true;
+		} else {
+		    return false;
+		}
+
+	}
+
+	protected Promise<?, ?, ?> toPromise(Object o) {
+		if (o instanceof DeferredFutureTask) {
+			return when((DeferredFutureTask) o);
+		} else if (o instanceof DeferredRunnable) {
+			return when((DeferredRunnable) o);
+		} else if (o instanceof DeferredCallable) {
+			return when((DeferredCallable) o);
+		} else if (o instanceof Runnable) {
+			return when((Runnable) o);
+		} else if (o instanceof Callable) {
+			return when((Callable) o);
+		} else if (o instanceof Future) {
+			return when((Future) o);
+		} else if (o instanceof Promise) {
+			return (Promise) o;
+		} else {
+		    throw new IllegalStateException("unable to convert object to promise. should be guarded by canPromise()");
 		}
 	}
 }
