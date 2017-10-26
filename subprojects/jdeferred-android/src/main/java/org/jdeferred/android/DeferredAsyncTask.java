@@ -65,23 +65,23 @@ public abstract class DeferredAsyncTask<Params, Progress, Result> extends AsyncT
 
 	@Override
 	protected final void onCancelled() {
-	    doReject(new CancellationException());
+		doRejectAndCleanup(new CancellationException());
 	}
 	
 	protected final void onCancelled(Result result) {
-		doReject(new CancellationException());
+		doRejectAndCleanup(new CancellationException());
 	}
 	
 	@Override
 	protected final void onPostExecute(Result result) {
 		if (throwable != null) {
-			doReject(throwable);
+			deferred.reject(throwable);
 		} else {
 			deferred.resolve(result);
 		}
 	}
 
-	private void doReject(Throwable t) {
+	private void doRejectAndCleanup(Throwable t) {
 		try {
 			deferred.reject(t);
 		} finally {
