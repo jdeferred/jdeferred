@@ -342,16 +342,11 @@ may define a task that implements the `org.jdeferred.CancellationHandler` interf
 `DeferredFutureTask` with such implementation, for example
 
 ```Java
-public class DatabaseTask extends Runnable, CancellationHandler {
-  private final DataSource datasource;
-
-  public DatabaseTask(DataSource datasource) {
-    this.datasource = datasource;
-  }
-
+final DataSource datasource = ...;
+class DatabaseTask extends Runnable, CancellationHandler {
   @Override
   public void run() {
-    // perform computation
+    // perform computation with datasource
   }
 
   @Override
@@ -363,6 +358,35 @@ public class DatabaseTask extends Runnable, CancellationHandler {
     }
   }
 }
+
+DeferredFutureTask<X> task = new DeferredFutureTask(new DatabaseTask());
+dm.when(task).done(...)
+```
+
+You may also pass the `CancellationHandler` as an additional argument, for example
+
+```Java
+final DataSource datasource = ...;
+class DatabaseTask extends Runnable {
+  @Override
+  public void run() {
+    // perform computation with datasource
+  }
+}
+
+class DatabaseCancellationHandler implements CancellationHandler {
+  @Override
+  public void onCancel() {
+    try {
+      datasource.close();
+    } catch(Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+}
+
+DeferredFutureTask<X> task = new DeferredFutureTask(new DatabaseTask(), new DatabaseCancellationHandler());
+dm.when(task).done(...)
 ```
 
 <a name="example-groovy"></a>Groovy
@@ -390,10 +414,17 @@ deferred.resolve("done")
 
 <a name="example-android"></a>Android Support
 ---------------
+> Since 2.0.0
+
+```DeferredManager``` has the followin new capabilities
+ * type safe submission of up to 5 tasks/promises
+ * ```race()``` resolves/rejects on the first promise to do so, other tasks are immediately cancelled.
+ * ```settle()``` resolves/rejects all tasks/promises.
+
 > Since 1.1.0-Beta1
 
 ```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
-It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
+It also uses Android Maven pugin and builds apklib file. If you use Android Maven plugin, you can include
 dependency:
 
 APKLIB:
