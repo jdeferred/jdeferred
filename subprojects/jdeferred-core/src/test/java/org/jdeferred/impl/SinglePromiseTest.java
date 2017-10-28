@@ -305,4 +305,30 @@ public class SinglePromiseTest extends AbstractDeferredTest {
 		holder.assertEquals(100);
 		Assert.assertEquals(0, failCount.get());
 	}
+
+	@Test
+	public void testPromisesResolve() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
+		deferredManager.resolve("hello").done(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				holder.set(result);
+			}
+		});
+
+		holder.assertEquals("hello");
+	}
+
+	@Test
+	public void testPromisesReject() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
+		deferredManager.reject("oops").fail(new FailCallback<String>() {
+			@Override
+			public void onFail(String result) {
+			    holder.set(result);
+			}
+		});
+
+		holder.assertEquals("oops");
+	}
 }

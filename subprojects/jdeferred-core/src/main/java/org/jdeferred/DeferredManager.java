@@ -596,4 +596,23 @@ public interface DeferredManager {
 	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(Iterable<?> iterable);
+
+	/**
+	 * A convenience method create a {@link Promise} that immediately resolves to a value.
+	 *
+	 * @since 2.0
+	 * @param resolve value to resolve to
+	 * @return a Promise that resolves to value
+	 */
+	<D, F, P> Promise<D, F, P> resolve(D resolve);
+
+	/**
+	 * A convenience method to create a {@link Promise} that immediately fails with a reason.
+	 *
+	 * @since 2.0
+	 * @param reject reason to reject
+	 * @return a {@link Promise} that rejects with reason
+	 */
+	<D, F, P> Promise<D, F, P> reject(F reject);
+
 }
