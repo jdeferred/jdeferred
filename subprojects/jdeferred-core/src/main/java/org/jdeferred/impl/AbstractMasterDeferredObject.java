@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
@@ -36,12 +37,14 @@ class AbstractMasterDeferredObject extends DeferredObject<MultipleResults, OneRe
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
 
-	AbstractMasterDeferredObject(MutableMultipleResults results) {
+	AbstractMasterDeferredObject(MutableMultipleResults results, CallbackExceptionHandler callbackExceptionHandler) {
 		this.results = results;
 		this.numberOfPromises = results.size();
+		setCallbackExceptionHandler(callbackExceptionHandler);
 	}
 
 	protected <D, F, P> void configurePromise(final int index, final Promise<D, F, P> promise) {
+		promise.setCallbackExceptionHandler(callbackExceptionHandler);
 		promise.fail(new FailCallback<F>() {
 			public void onFail(F result) {
 				synchronized (AbstractMasterDeferredObject.this) {

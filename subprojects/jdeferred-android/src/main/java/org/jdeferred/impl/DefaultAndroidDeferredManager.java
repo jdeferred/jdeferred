@@ -3,6 +3,7 @@ package org.jdeferred.impl;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Build;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DeferredManager;
 import org.jdeferred.Promise;
@@ -55,7 +56,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		DeferredAsyncTask<Void, ?, V2> taskV2) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
-		return new MasterDeferredObject2(when(taskV1), when(taskV2));
+		return new MasterDeferredObject2(callbackExceptionHandler, when(taskV1), when(taskV2));
 	}
 
 	public <V1, V2, V3> Promise<MultipleResults3, OneReject<?>, MasterProgress> when(
@@ -65,7 +66,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
-		return new MasterDeferredObject3(when(taskV1), when(taskV2), when(taskV3));
+		return new MasterDeferredObject3(callbackExceptionHandler, when(taskV1), when(taskV2), when(taskV3));
 	}
 
 	public <V1, V2, V3, V4> Promise<MultipleResults4, OneReject<?>, MasterProgress> when(
@@ -77,7 +78,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
 		assertNotNull(taskV4, TASK_V4);
-		return new MasterDeferredObject4(when(taskV1), when(taskV2), when(taskV3), when(taskV4));
+		return new MasterDeferredObject4(callbackExceptionHandler, when(taskV1), when(taskV2), when(taskV3), when(taskV4));
 	}
 
 	public <V1, V2, V3, V4, V5> Promise<MultipleResults5, OneReject<?>, MasterProgress> when(
@@ -91,7 +92,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV3, TASK_V3);
 		assertNotNull(taskV4, TASK_V4);
 		assertNotNull(taskV5, TASK_V5);
-		return new MasterDeferredObject5(when(taskV1), when(taskV2), when(taskV3), when(taskV4), when(taskV5));
+		return new MasterDeferredObject5(callbackExceptionHandler, when(taskV1), when(taskV2), when(taskV3), when(taskV4), when(taskV5));
 	}
 
 	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN, OneReject<?>, MasterProgress> when(
@@ -120,7 +121,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		for (int i = 0; i < tasks.length; i++) {
 			promiseN[i] = when(tasks[i]);
 		}
-		return new MasterDeferredObjectN(promise1, promise2, promise3, promise4, promise5, promise6, promiseN);
+		return new MasterDeferredObjectN(callbackExceptionHandler, promise1, promise2, promise3, promise4, promise5, promise6, promiseN);
 	}
 
 	public <V1, V2> Promise<MultipleResults2, OneReject<?>, MasterProgress> when(
@@ -129,7 +130,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		DeferredAsyncTask<Void, ?, V2> taskV2) {
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
-		return new MasterDeferredObject2(when(taskV1, scope), when(taskV2, scope));
+		return new MasterDeferredObject2(callbackExceptionHandler, when(taskV1, scope), when(taskV2, scope));
 	}
 
 	public <V1, V2, V3> Promise<MultipleResults3, OneReject<?>, MasterProgress> when(
@@ -140,7 +141,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV1, TASK_V1);
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
-		return new MasterDeferredObject3(when(taskV1, scope), when(taskV2, scope), when(taskV3, scope));
+		return new MasterDeferredObject3(callbackExceptionHandler, when(taskV1, scope), when(taskV2, scope), when(taskV3, scope));
 	}
 
 	public <V1, V2, V3, V4> Promise<MultipleResults4, OneReject<?>, MasterProgress> when(
@@ -153,7 +154,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV2, TASK_V2);
 		assertNotNull(taskV3, TASK_V3);
 		assertNotNull(taskV4, TASK_V4);
-		return new MasterDeferredObject4(when(taskV1, scope), when(taskV2, scope), when(taskV3, scope), when(taskV4, scope));
+		return new MasterDeferredObject4(callbackExceptionHandler, when(taskV1, scope), when(taskV2, scope), when(taskV3, scope), when(taskV4, scope));
 	}
 
 	public <V1, V2, V3, V4, V5> Promise<MultipleResults5, OneReject<?>, MasterProgress> when(
@@ -168,7 +169,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		assertNotNull(taskV3, TASK_V3);
 		assertNotNull(taskV4, TASK_V4);
 		assertNotNull(taskV5, TASK_V5);
-		return new MasterDeferredObject5(when(taskV1, scope), when(taskV2, scope), when(taskV3, scope), when(taskV4, scope), when(taskV5, scope));
+		return new MasterDeferredObject5(callbackExceptionHandler, when(taskV1, scope), when(taskV2, scope), when(taskV3, scope), when(taskV4, scope), when(taskV5, scope));
 	}
 
 	public <V1, V2, V3, V4, V5> Promise<MultipleResultsN, OneReject<?>, MasterProgress> when(
@@ -198,7 +199,7 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		for (int i = 0; i < tasks.length; i++) {
 			promiseN[i] = when(tasks[i], scope);
 		}
-		return new MasterDeferredObjectN(promise1, promise2, promise3, promise4, promise5, promise6, promiseN);
+		return new MasterDeferredObjectN(callbackExceptionHandler, promise1, promise2, promise3, promise4, promise5, promise6, promiseN);
 	}
 
 	/**
@@ -238,12 +239,14 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 			}
 		}
 
-		return task.promise();
+		Promise<Result, Throwable, Progress> promise = task.promise();
+		promise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return promise;
 	}
 
 	public <Progress, Result> Promise<Result, Throwable, Progress> when(
 		DeferredAsyncTask<Void, Progress, Result> task, AndroidExecutionScope scope) {
-		return when(when(task.promise()), scope);
+		return when(task.promise(), scope);
 	}
 
 	/**
@@ -251,7 +254,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	@Override
 	public <D, P> Promise<D, Throwable, P> when(DeferredFutureTask<D, P> task) {
-		return new AndroidDeferredObject<D, Throwable, P>(super.when(task)).promise();
+		AndroidDeferredObject<D, Throwable, P> deferredObject = new AndroidDeferredObject<D, Throwable, P>(super.when(task));
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<D, Throwable, P>) deferredObject).promise();
 	}
 
 	/**
@@ -263,7 +268,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		if (promise instanceof AndroidDeferredObject) {
 			return promise;
 		}
-		return new AndroidDeferredObject<D, F, P>(promise).promise();
+		AndroidDeferredObject<D, F, P> deferredObject = new AndroidDeferredObject<D, F, P>(promise);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<D, F, P>) deferredObject).promise();
 	}
 
 	/**
@@ -279,7 +286,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 		if (promise instanceof AndroidDeferredObject) {
 			return promise;
 		}
-		return new AndroidDeferredObject<D, F, P>(promise, scope).promise();
+		AndroidDeferredObject<D, F, P> deferredObject = new AndroidDeferredObject<D, F, P>(promise, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<D, F, P>) deferredObject).promise();
 	}
 
 	/**
@@ -289,7 +298,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	@Override
 	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2) {
 		Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2);
-		return new AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>(p).promise();
+		AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>(p);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -299,7 +310,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	@Override
 	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3) {
 		Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3);
-		return new AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>(p).promise();
+		AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>(p);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -309,7 +322,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	@Override
 	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4) {
 		Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4);
-		return new AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>(p).promise();
+		AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>(p);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -319,7 +334,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	@Override
 	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4, Promise<V5, ?, ?> promiseV5) {
 		Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4, promiseV5);
-		return new AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p).promise();
+		AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -329,7 +346,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	@Override
 	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4, Promise<V5, ?, ?> promiseV5, Promise<?, ?, ?> promise6, Promise<?, ?, ?>... promises) {
 		Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4, promiseV5, promise6, promises);
-		return new AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p).promise();
+		AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -340,7 +359,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	public <R, V1, V2> Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> when(AndroidExecutionScope scope, Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2) {
 		Promise<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2);
-		return new AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>(p, scope).promise();
+		AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>(p, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults2<V1, V2>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -351,7 +372,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	public <R, V1, V2, V3> Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> when(AndroidExecutionScope scope, Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3) {
 		Promise<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3);
-		return new AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>(p, scope).promise();
+		AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>(p, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults3<V1, V2, V3>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -362,7 +385,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	public <R, V1, V2, V3, V4> Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> when(AndroidExecutionScope scope, Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4) {
 		Promise<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4);
-		return new AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>(p, scope).promise();
+		AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>(p, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults4<V1, V2, V3, V4>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -373,7 +398,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	public <R, V1, V2, V3, V4, V5> Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(AndroidExecutionScope scope, Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4, Promise<V5, ?, ?> promiseV5) {
 		Promise<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4, promiseV5);
-		return new AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p, scope).promise();
+		AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResults5<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	/**
@@ -384,7 +411,9 @@ public abstract class DefaultAndroidDeferredManager extends DefaultDeferredManag
 	 */
 	public <R, V1, V2, V3, V4, V5> Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> when(AndroidExecutionScope scope, Promise<V1, ?, ?> promiseV1, Promise<V2, ?, ?> promiseV2, Promise<V3, ?, ?> promiseV3, Promise<V4, ?, ?> promiseV4, Promise<V5, ?, ?> promiseV5, Promise<?, ?, ?> promise6, Promise<?, ?, ?>... promises) {
 		Promise<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> p = super.when(promiseV1, promiseV2, promiseV3, promiseV4, promiseV5, promise6, promises);
-		return new AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p, scope).promise();
+		AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress> deferredObject = new AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>(p, scope);
+		deferredObject.setCallbackExceptionHandler(callbackExceptionHandler);
+		return ((AndroidDeferredObject<MultipleResultsN<V1, V2, V3, V4, V5>, OneReject<R>, MasterProgress>) deferredObject).promise();
 	}
 
 	@Override

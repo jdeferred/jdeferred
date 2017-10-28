@@ -18,18 +18,28 @@ package org.jdeferred.impl;
 import org.jdeferred.CallbackExceptionHandler;
 
 public final class GlobalConfiguration {
+	private static final CallbackExceptionHandler NOOP_CALLBACK_EXCEPTION_HANDLER = new NoopCallbackExceptionHandler();
 	private static CallbackExceptionHandler globalCallbackExceptionHandler = new DefaultCallbackExceptionHandler();
 
-	private GlobalConfiguration() {};
+	private GlobalConfiguration() {
+	}
 
 	public static void setGlobalCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
 		if (callbackExceptionHandler == null) {
-			throw new IllegalArgumentException("callbackExceptionHandler cannot be null");
+			globalCallbackExceptionHandler = NOOP_CALLBACK_EXCEPTION_HANDLER;
+		} else {
+			globalCallbackExceptionHandler = callbackExceptionHandler;
 		}
-		globalCallbackExceptionHandler = callbackExceptionHandler;
 	}
 
 	public static CallbackExceptionHandler getGlobalCallbackExceptionHandler() {
 		return globalCallbackExceptionHandler;
+	}
+
+	public static final class NoopCallbackExceptionHandler implements CallbackExceptionHandler {
+		@Override
+		public void handleException(CallbackType callbackType, Exception e) {
+			// empty
+		}
 	}
 }

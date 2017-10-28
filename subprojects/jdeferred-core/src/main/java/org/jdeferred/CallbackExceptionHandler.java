@@ -21,7 +21,7 @@ package org.jdeferred;
  * @author Ray Tsang
  */
 public interface CallbackExceptionHandler {
-	public static enum CallbackType {
+	enum CallbackType {
 		DONE_CALLBACK,
 		FAIL_CALLBACK,
 		PROGRESS_CALLBACK,

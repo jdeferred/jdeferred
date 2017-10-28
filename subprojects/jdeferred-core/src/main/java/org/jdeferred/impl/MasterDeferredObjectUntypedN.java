@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.Promise;
 
 /***
@@ -22,8 +23,8 @@ import org.jdeferred.Promise;
  * @author Andres Almiray
  */
 class MasterDeferredObjectUntypedN extends AbstractMasterDeferredObject {
-	MasterDeferredObjectUntypedN(Promise<?, ?, ?>... promises) {
-		super(new MutableMultipleResultsUntypedN(promises.length));
+	MasterDeferredObjectUntypedN(CallbackExceptionHandler callbackExceptionHandler, Promise<?, ?, ?>... promises) {
+		super(new MutableMultipleResultsUntypedN(promises.length), callbackExceptionHandler);
 		for (int i = 0; i < promises.length; i++) {
 			configurePromise(i, promises[i]);
 		}

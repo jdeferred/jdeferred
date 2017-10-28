@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -45,6 +46,17 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
             throw new NullPointerException("Argument 'delegate' must not be null");
         }
         this.delegate = delegate;
+    }
+
+    @Override
+    public Promise<D, F, P> setCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
+        getDelegate().setCallbackExceptionHandler(callbackExceptionHandler);
+        return this;
+    }
+
+    @Override
+    public CallbackExceptionHandler getCallbackExceptionHandler() {
+        return getDelegate().getCallbackExceptionHandler();
     }
 
     /**

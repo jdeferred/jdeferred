@@ -15,9 +15,6 @@
  */
 package org.jdeferred.impl;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.jdeferred.AlwaysCallback;
 import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
@@ -30,18 +27,15 @@ import org.jdeferred.ProgressCallback;
 import org.jdeferred.ProgressFilter;
 import org.jdeferred.ProgressPipe;
 import org.jdeferred.Promise;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
- * @see Promise
  * @author Ray Tsang
- *
+ * @see Promise
  */
 public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
-	final protected Logger log = LoggerFactory.getLogger(AbstractPromise.class);
-
 	protected volatile State state = State.PENDING;
 
 	protected final List<DoneCallback<D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<D>>();
@@ -51,6 +45,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	protected D resolveResult;
 	protected F rejectResult;
+	protected CallbackExceptionHandler callbackExceptionHandler;
 
 	@Override
 	public State state() {
@@ -60,9 +55,9 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> done(DoneCallback<D> callback) {
 		synchronized (this) {
-			if (isResolved()){
+			if (isResolved()) {
 				triggerDone(callback, resolveResult);
-			}else{
+			} else {
 				doneCallbacks.add(callback);
 			}
 		}
@@ -72,9 +67,9 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> fail(FailCallback<F> callback) {
 		synchronized (this) {
-			if(isRejected()){
+			if (isRejected()) {
 				triggerFail(callback, rejectResult);
-			}else{
+			} else {
 				failCallbacks.add(callback);
 			}
 		}
@@ -84,9 +79,9 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	@Override
 	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
 		synchronized (this) {
-			if(isPending()){
+			if (isPending()) {
 				alwaysCallbacks.add(callback);
-			}else{
+			} else {
 				triggerAlways(callback, state, resolveResult, rejectResult);
 			}
 		}
@@ -149,10 +144,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
-	    try {
+		try {
 			callback.onAlways(state, resolve, reject);
 		} catch (Exception e) {
-	        handleException(CallbackExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
+			handleException(CallbackExceptionHandler.CallbackType.ALWAYS_CALLBACK, e);
 		}
 	}
 
@@ -176,7 +171,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	@Override
 	public Promise<D, F, P> then(DoneCallback<D> doneCallback, FailCallback<F> failCallback,
-			ProgressCallback<P> progressCallback) {
+	                             ProgressCallback<P> progressCallback) {
 		done(doneCallback);
 		fail(failCallback);
 		progress(progressCallback);
@@ -185,42 +180,54 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
+		DoneFilter<D, D_OUT> doneFilter) {
+		FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> filteredPromise = new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
+		filteredPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return filteredPromise;
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
+		DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
+		FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> filteredPromise = new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
+		filteredPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return filteredPromise;
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
-			ProgressFilter<P, P_OUT> progressFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+		DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
+		ProgressFilter<P, P_OUT> progressFilter) {
+		FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> filteredPromise = new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+		filteredPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return filteredPromise;
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
+		DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter) {
+		PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> pipedPromise = new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, null, null);
+		pipedPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return pipedPromise;
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
-			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
+		DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+		FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter) {
+		PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> pipedPromise = new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, null);
+		pipedPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return pipedPromise;
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
-			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
-			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+		DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
+		FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
+		ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
+		PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> pipedPromise = new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+		pipedPromise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return pipedPromise;
 	}
 
 	@Override
@@ -241,6 +248,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	public void waitSafely() throws InterruptedException {
 		waitSafely(-1);
 	}
+
 	public void waitSafely(long timeout) throws InterruptedException {
 		final long startTime = System.currentTimeMillis();
 		synchronized (this) {
@@ -250,7 +258,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 						wait();
 					} else {
 						final long elapsed = (System.currentTimeMillis() - startTime);
-					    final long waitTime = timeout - elapsed;
+						final long waitTime = timeout - elapsed;
 						wait(waitTime);
 					}
 				} catch (InterruptedException e) {
@@ -267,7 +275,21 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 	}
 
+	@Override
+	public CallbackExceptionHandler getCallbackExceptionHandler() {
+		return callbackExceptionHandler;
+	}
+
+	public Promise<D, F, P> setCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
+		this.callbackExceptionHandler = callbackExceptionHandler;
+		return this;
+	}
+
 	protected void handleException(CallbackExceptionHandler.CallbackType callbackType, Exception e) {
-		GlobalConfiguration.getGlobalCallbackExceptionHandler().handleException(callbackType, e);
+		if (callbackExceptionHandler != null) {
+			callbackExceptionHandler.handleException(callbackType, e);
+		} else {
+			GlobalConfiguration.getGlobalCallbackExceptionHandler().handleException(callbackType, e);
+		}
 	}
 }

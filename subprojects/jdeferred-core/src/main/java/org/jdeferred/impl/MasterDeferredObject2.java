@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.Promise;
 
 /***
@@ -22,9 +23,10 @@ import org.jdeferred.Promise;
  * @author Andres Almiray
  */
 class MasterDeferredObject2<V1, V2> extends AbstractMasterDeferredObject {
-	MasterDeferredObject2(Promise<V1, ?, ?> promiseV1,
+	MasterDeferredObject2(CallbackExceptionHandler callbackExceptionHandler,
+	                      Promise<V1, ?, ?> promiseV1,
 	                      Promise<V2, ?, ?> promiseV2) {
-		super(new MutableMultipleResults2<V1, V2>());
+		super(new MutableMultipleResults2<V1, V2>(), callbackExceptionHandler);
 		configurePromise(0, promiseV1);
 		configurePromise(1, promiseV2);
 	}

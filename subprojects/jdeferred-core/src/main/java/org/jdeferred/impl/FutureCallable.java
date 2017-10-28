@@ -38,5 +38,4 @@ public class FutureCallable<V> implements Callable<V> {
 			else throw e;
 		}
 	}
-
 }
