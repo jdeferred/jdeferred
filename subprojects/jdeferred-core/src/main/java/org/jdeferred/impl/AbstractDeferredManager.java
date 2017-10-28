@@ -882,6 +882,16 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 		return new AllValuesDeferredObject(promises.toArray(new Promise[promises.size()]));
 	}
 
+	@Override
+	public <D, F, P> Promise<D, F, P> resolve(D resolve) {
+		return new DeferredObject<D, F, P>().resolve(resolve).promise();
+	}
+
+	@Override
+	public <D, F, P> Promise<D, F, P> reject(F reject) {
+		return new DeferredObject<D, F, P>().reject(reject).promise();
+	}
+
 	protected boolean canPromise(Object o) {
 		if (o instanceof DeferredFutureTask) {
 			return true;
