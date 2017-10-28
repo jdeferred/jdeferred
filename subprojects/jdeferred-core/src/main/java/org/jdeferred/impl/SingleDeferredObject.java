@@ -15,6 +15,7 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DeferredFutureTask;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
@@ -28,7 +29,8 @@ import org.jdeferred.multiple.OneResult;
 final class SingleDeferredObject extends DeferredObject<OneResult<?>, OneReject<Throwable>, Void> implements Promise<OneResult<?>, OneReject<Throwable>, Void> {
 	private int resolvedOrRejectedTaskIndex;
 
-	SingleDeferredObject(final DeferredFutureTask<?, ?>[] tasks) {
+	SingleDeferredObject(CallbackExceptionHandler callbackExceptionHandler, final DeferredFutureTask<?, ?>[] tasks) {
+		setCallbackExceptionHandler(callbackExceptionHandler);
 		for (int index = 0; index < tasks.length; index++) {
 			configureTask(index, tasks[index]);
 		}
@@ -58,13 +60,15 @@ final class SingleDeferredObject extends DeferredObject<OneResult<?>, OneReject<
 	}
 
 	private <D, P> void configureTask(final int index, final DeferredFutureTask<D, P> task) {
-		task.promise().fail(new FailCallback<Throwable>() {
+		final Promise<D, Throwable, P> promise = task.promise();
+		promise.setCallbackExceptionHandler(callbackExceptionHandler);
+		promise.fail(new FailCallback<Throwable>() {
 			public void onFail(Throwable reject) {
 				synchronized (SingleDeferredObject.this) {
 					if (SingleDeferredObject.this.isPending()) {
 						// task $index is rejected
 						resolvedOrRejectedTaskIndex = index;
-						SingleDeferredObject.this.reject(new OneReject<Throwable>(index, task.promise(), reject));
+						SingleDeferredObject.this.reject(new OneReject<Throwable>(index, promise, reject));
 					}
 				}
 			}
@@ -74,7 +78,7 @@ final class SingleDeferredObject extends DeferredObject<OneResult<?>, OneReject<
 					if (SingleDeferredObject.this.isPending()) {
 						// task $index is resolved
 						resolvedOrRejectedTaskIndex = index;
-						SingleDeferredObject.this.resolve(new OneResult<D>(index, task.promise(), result));
+						SingleDeferredObject.this.resolve(new OneResult<D>(index, promise, result));
 					}
 				}
 			}

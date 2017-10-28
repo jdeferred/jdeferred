@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
@@ -31,13 +32,26 @@ import org.jdeferred.Promise;
 public class DeferredPromise<D, F, P> implements Promise<D, F, P> {
 	private final Promise<D, F, P> promise;
 	protected final Deferred<D, F, P> deferred;
+	private CallbackExceptionHandler callbackExceptionHandler;
 	
 	public DeferredPromise(Deferred<D, F, P> deferred) {
 		this.deferred = deferred;
 		this.promise = deferred.promise();
 	}
-	
-	public org.jdeferred.Promise.State state() {
+
+	@Override
+	public CallbackExceptionHandler getCallbackExceptionHandler() {
+		return callbackExceptionHandler;
+	}
+
+	@Override
+	public Promise<D, F, P> setCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
+		this.callbackExceptionHandler = callbackExceptionHandler;
+		this.promise.setCallbackExceptionHandler(callbackExceptionHandler);
+		return this;
+	}
+
+	public Promise.State state() {
 		return promise.state();
 	}
 

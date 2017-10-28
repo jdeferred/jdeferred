@@ -338,4 +338,8 @@ public interface Promise<D, F, P> {
 	 * @throws InterruptedException
 	 */
 	void waitSafely(long timeout) throws InterruptedException;
+
+	Promise<D, F, P> setCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler);
+
+	CallbackExceptionHandler getCallbackExceptionHandler();
 }

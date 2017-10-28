@@ -596,4 +596,8 @@ public interface DeferredManager {
 	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(Iterable<?> iterable);
+
+	void setCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler);
+
+	CallbackExceptionHandler getCallbackExceptionHandler();
 }

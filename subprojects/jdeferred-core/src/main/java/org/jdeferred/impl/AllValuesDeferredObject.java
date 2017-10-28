@@ -15,12 +15,13 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.ProgressCallback;
 import org.jdeferred.Promise;
-import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.AllValues;
+import org.jdeferred.multiple.MasterProgress;
 import org.jdeferred.multiple.OneProgress;
 import org.jdeferred.multiple.OneReject;
 import org.jdeferred.multiple.OneResult;
@@ -36,7 +37,8 @@ class AllValuesDeferredObject extends DeferredObject<AllValues, Throwable, Maste
 	private final AtomicInteger doneCount = new AtomicInteger();
 	private final AtomicInteger failCount = new AtomicInteger();
 
-	AllValuesDeferredObject(Promise<?, ?, ?>[] promises) {
+	AllValuesDeferredObject(CallbackExceptionHandler callbackExceptionHandler, Promise<?, ?, ?>[] promises) {
+		setCallbackExceptionHandler(callbackExceptionHandler);
 		this.numberOfPromises = promises.length;
 		this.values = new DefaultMutableAllValues(promises.length);
 
@@ -46,6 +48,7 @@ class AllValuesDeferredObject extends DeferredObject<AllValues, Throwable, Maste
 	}
 
 	protected <D, F, P> void configurePromise(final int index, final Promise<D, F, P> promise) {
+		promise.setCallbackExceptionHandler(callbackExceptionHandler);
 		promise.fail(new FailCallback<F>() {
 			public void onFail(F result) {
 				synchronized (AllValuesDeferredObject.this) {
