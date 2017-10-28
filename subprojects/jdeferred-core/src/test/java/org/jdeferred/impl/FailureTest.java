@@ -15,13 +15,17 @@
  */
 package org.jdeferred.impl;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
+import org.jdeferred.ProgressCallback;
+import org.jdeferred.Promise;
 import org.jdeferred.Promise.State;
 import org.junit.Assert;
 import org.junit.Test;
@@ -102,5 +106,67 @@ public class FailureTest extends AbstractDeferredTest {
 		
 		waitForCompletion();
 		Assert.assertTrue(exceptionCaught.get());
+	}
+
+	@Test
+	public void testGlobalExceptionHandler() {
+		final ConcurrentHashMap<CallbackExceptionHandler.CallbackType, Exception> handled =
+				new ConcurrentHashMap<CallbackExceptionHandler.CallbackType, Exception>();
+
+		GlobalConfiguration.setGlobalCallbackExceptionHandler(new CallbackExceptionHandler() {
+			@Override
+			public void handleException(CallbackType callbackType, Exception e) {
+			    handled.put(callbackType, e);
+			}
+		});
+
+		Promise<String, String, String> p = new DeferredObject<String, String, String>().resolve("ok").promise();
+		p.done(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+			    throw new RuntimeException("oops");
+			}
+		});
+
+		Assert.assertEquals(1, handled.size());
+		Assert.assertTrue("DONE_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.DONE_CALLBACK));
+		handled.clear();
+
+		p = new DeferredObject<String, String, String>().reject("no").promise();
+		p.fail(new FailCallback<String>() {
+			@Override
+			public void onFail(String result) {
+				throw new RuntimeException("oops");
+			}
+		});
+
+		Assert.assertEquals(1, handled.size());
+		Assert.assertTrue("FAIL_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.FAIL_CALLBACK));
+		handled.clear();
+
+		p.always(new AlwaysCallback<String, String>() {
+			@Override
+			public void onAlways(State state, String resolved, String rejected) {
+			    throw new RuntimeException("oops");
+			}
+		});
+		Assert.assertEquals(1, handled.size());
+		Assert.assertTrue("ALWAYS_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.ALWAYS_CALLBACK));
+		handled.clear();
+
+		DeferredObject<String, String, String> progressObject = new DeferredObject<String, String, String>();
+		p = progressObject.promise();
+		p.progress(new ProgressCallback<String>() {
+			@Override
+			public void onProgress(String progress) {
+			    throw new RuntimeException("oops");
+			}
+		});
+
+		progressObject.notify("50%");
+
+		Assert.assertEquals(1, handled.size());
+		Assert.assertTrue("PROGRESS_CALLBACK is missing", handled.containsKey(CallbackExceptionHandler.CallbackType.PROGRESS_CALLBACK));
+		handled.clear();
 	}
 }
