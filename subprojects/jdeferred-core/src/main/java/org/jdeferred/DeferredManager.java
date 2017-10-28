@@ -362,14 +362,14 @@ public interface DeferredManager {
 		Future<?>... futures);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first runnable does so.
-	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first runnable does so.
+	 * Wraps each {@code runnable} with {@link DeferredFutureTask}.
 	 *
 	 * @param runnableV1 a task to be executed. Must not be null
 	 * @param runnableV2 a task to be executed. Must not be null
 	 * @param runnables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		Runnable runnableV1,
@@ -377,14 +377,14 @@ public interface DeferredManager {
 		Runnable... runnables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first callable does so.
-	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first callable does so.
+	 * Wraps each {@code callable} with {@link DeferredFutureTask}.
 	 *
 	 * @param callableV1 a task to be executed. Must not be null
 	 * @param callableV2 a task to be executed. Must not be null
 	 * @param callables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		Callable<?> callableV1,
@@ -392,14 +392,14 @@ public interface DeferredManager {
 		Callable<?>... callables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first runnable does so.
-	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first runnable does so.
+	 * Wraps each {@code runnable} with {@link DeferredFutureTask}.
 	 *
 	 * @param runnableV1 a task to be executed. Must not be null
 	 * @param runnableV2 a task to be executed. Must not be null
 	 * @param runnables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		DeferredRunnable<?> runnableV1,
@@ -407,14 +407,14 @@ public interface DeferredManager {
 		DeferredRunnable<?>... runnables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first callable does so.
-	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first callable does so.
+	 * Wraps each {@code callable} with {@link DeferredFutureTask}.
 	 *
 	 * @param callableV1 a task to be executed. Must not be null
 	 * @param callableV2 a task to be executed. Must not be null
 	 * @param callables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		DeferredCallable<?, ?> callableV1,
@@ -422,14 +422,14 @@ public interface DeferredManager {
 		DeferredCallable<?, ?>... callables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first future does so.
-	 * Wraps each {@code future} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first future does so.
+	 * Wraps each {@code future} with {@link DeferredFutureTask}.
 	 *
 	 * @param futureV1 a task to be executed. Must not be null
 	 * @param futureV2 a task to be executed. Must not be null
 	 * @param futures  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		Future<?> futureV1,
@@ -437,13 +437,13 @@ public interface DeferredManager {
 		Future<?>... futures);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when the first task does so.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first task does so.
 	 *
 	 * @param taskV1 a task to be executed. Must not be null
 	 * @param taskV2 a task to be executed. Must not be null
 	 * @param tasks  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
 	 */
 	Promise<OneResult<?>, OneReject<Throwable>, Void> race(
 		DeferredFutureTask<?, ?> taskV1,
@@ -451,14 +451,14 @@ public interface DeferredManager {
 		DeferredFutureTask<?, ?>... tasks);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each runnable does so.
-	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each runnable does so.
+	 * Wraps each {@code runnable} with {@link DeferredFutureTask}.
 	 *
 	 * @param runnableV1 a task to be executed. Must not be null
 	 * @param runnableV2 a task to be executed. Must not be null
 	 * @param runnables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		Runnable runnableV1,
@@ -466,14 +466,14 @@ public interface DeferredManager {
 		Runnable... runnables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each callable does so.
-	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each callable does so.
+	 * Wraps each {@code callable} with {@link DeferredFutureTask}.
 	 *
 	 * @param callableV1 a task to be executed. Must not be null
 	 * @param callableV2 a task to be executed. Must not be null
 	 * @param callables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		Callable<?> callableV1,
@@ -481,14 +481,14 @@ public interface DeferredManager {
 		Callable<?>... callables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each runnable does so.
-	 * Wraps each {@code runnable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each runnable does so.
+	 * Wraps each {@code runnable} with {@link DeferredFutureTask}.
 	 *
 	 * @param runnableV1 a task to be executed. Must not be null
 	 * @param runnableV2 a task to be executed. Must not be null
 	 * @param runnables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredRunnable<?> runnableV1,
@@ -496,14 +496,14 @@ public interface DeferredManager {
 		DeferredRunnable<?>... runnables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each callable does so.
-	 * Wraps each {@code callable} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each callable does so.
+	 * Wraps each {@code callable} with {@link DeferredFutureTask}.
 	 *
 	 * @param callableV1 a task to be executed. Must not be null
 	 * @param callableV2 a task to be executed. Must not be null
 	 * @param callables  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredCallable<?, ?> callableV1,
@@ -511,14 +511,14 @@ public interface DeferredManager {
 		DeferredCallable<?, ?>... callables);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each future does so.
-	 * Wraps each {@code future} with {@code DeferredFutureTask}.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each future does so.
+	 * Wraps each {@code future} with {@link DeferredFutureTask}.
 	 *
 	 * @param futureV1 a task to be executed. Must not be null
 	 * @param futureV2 a task to be executed. Must not be null
 	 * @param futures  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		Future<?> futureV1,
@@ -526,13 +526,13 @@ public interface DeferredManager {
 		Future<?>... futures);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each task does so.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each task does so.
 	 *
 	 * @param taskV1 a task to be executed. Must not be null
 	 * @param taskV2 a task to be executed. Must not be null
 	 * @param tasks  additional tasks to be executed. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all tasks.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all tasks.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		DeferredFutureTask<?, ?> taskV1,
@@ -540,13 +540,13 @@ public interface DeferredManager {
 		DeferredFutureTask<?, ?>... tasks);
 
 	/**
-	 * Creates a {@code Promise} that signals {@code done} or {@code reject} when each promise does so.
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each promise does so.
 	 *
 	 * @param promiseV1 a promise. Must not be null
 	 * @param promiseV2 a promise. Must not be null
 	 * @param promises  additional promises. May be null
 	 *
-	 * @return a composite {@code Promise} that collects resolve/reject values from all promises.
+	 * @return a composite {@link Promise} that collects resolve/reject values from all promises.
 	 */
 	Promise<AllValues, Throwable, MasterProgress> settle(
 		Promise<?, ?, ?> promiseV1,
@@ -554,14 +554,46 @@ public interface DeferredManager {
 		Promise<?, ?, ?>... promises);
 
 	/**
-	 * Accept an iterable of variety of different object types, and converted into corresponding Promise. E.g.,
+	 * Accept an iterable of a variety of different object types, and convert it into corresponding Promise. E.g.,
 	 * if an item is a {@link Callable}, it'll call {@link #when(Callable)} to convert that into a Promise.
+	 * <p>
+	 * If the item is of an unknown type, it'll throw an {@link IllegalArgumentException}.
 	 *
-	 * If the item is an unknown type, it'll throw an {@link IllegalArgumentException}
+	 * @param iterable the source of tasks. Must be non-null and not empty. Every item must be convertible to {@link Promise}
 	 *
-	 * @param iterable
+	 * @return a composite {@link Promise} that rejects as soon as the first of the submitted tasks is rejected or contains
+	 * the resolution of all given tasks.
+	 *
 	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
-	 * @return
 	 */
 	Promise<MultipleResults, OneReject<?>, MasterProgress> when(Iterable<?> iterable);
+
+	/**
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when the first task does so.
+	 * If an item is a {@link Callable}, it'll call {@link #when(Callable)} to convert that into a Promise.
+	 * <p>
+	 * If the item is of an unknown type, it'll throw an {@link IllegalArgumentException}.
+	 * <strong>WARNING: </strong>does not accept items of type {@code Promise}.
+	 *
+	 * @param iterable the source of tasks. Must be non-null and not empty. Every item must be convertible to {@link Promise}
+	 *
+	 * @return a composite {@link Promise} that resolves/rejects as soon as the first of the submitted tasks is resolved/rejected.
+	 *
+	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
+	 */
+	Promise<OneResult<?>, OneReject<Throwable>, Void> race(Iterable<?> iterable);
+
+	/**
+	 * Creates a {@link Promise} that signals {@code done} or {@code reject} when each task does so.
+	 * If an item is a {@link Callable}, it'll call {@link #when(Callable)} to convert that into a Promise.
+	 * <p>
+	 * If the item is of an unknown type, it'll throw an {@link IllegalArgumentException}.
+	 *
+	 * @param iterable the source of tasks. Must be non-null and not empty. Every item must be convertible to {@link Promise}
+	 *
+	 * @return a composite {@link Promise} that collects resolve/reject values from all promises.
+	 *
+	 * @throws IllegalArgumentException if any item in iterable cannot be converted to a {@link Promise}
+	 */
+	Promise<AllValues, Throwable, MasterProgress> settle(Iterable<?> iterable);
 }
