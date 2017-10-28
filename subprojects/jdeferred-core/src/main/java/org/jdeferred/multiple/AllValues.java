@@ -20,6 +20,7 @@ package org.jdeferred.multiple;
  *
  * @author Ray Tsang
  * @author Andres Almiray
+ * @since 2.0
  */
 public interface AllValues extends Iterable<OneValue<?>> {
 	OneValue<?> get(int index);

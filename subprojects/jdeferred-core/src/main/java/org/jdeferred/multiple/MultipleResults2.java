@@ -21,6 +21,7 @@ package org.jdeferred.multiple;
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Domen
+ * @since 2.0
  */
 public interface MultipleResults2<V1, V2> extends MultipleResults {
 	OneResult<V1> getFirst();

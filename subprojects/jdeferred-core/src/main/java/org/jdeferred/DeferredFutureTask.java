@@ -28,19 +28,19 @@ import java.util.concurrent.FutureTask;
 /**
  * FutureTask can wrap around {@link Callable} and {@link Runnable}.
  * In these two cases, a new {@link Deferred} object will be created.
- * This class will override {@link FutureTask#done} to trigger the 
+ * This class will override {@link FutureTask#done} to trigger the
  * appropriate {@link Deferred} actions.
- * 
+ * <p>
  * Note, type used for {@link Deferred#reject(Object)} is always {@link Throwable}.
- * 
+ * <p>
  * When the task is completed successfully, {@link Deferred#resolve(Object)} will be called.
  * When a task is canceled, {@link Deferred#reject(Object)} will be called with an instance of {@link CancellationException}
  * If any Exception occurred, {@link Deferred#reject(Object)} will be called with the Exception instance.
- * 
- * @author Ray Tsang
  *
  * @param <D> Type used for {@link Deferred#resolve(Object)}
  * @param <P> Type used for {@link Deferred#notify(Object)}
+ *
+ * @author Ray Tsang
  */
 public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	private static final Logger LOG = LoggerFactory.getLogger(DeferredFutureTask.class);
@@ -96,6 +96,8 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 *
 	 * @param task                the task to be executed. Must not be null.
 	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 *
+	 * @since 2.0
 	 */
 	public DeferredFutureTask(Callable<D> task, CancellationHandler cancellationHandler) {
 		super(task);
@@ -111,6 +113,8 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 *
 	 * @param task                the task to be executed. Must not be null.
 	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 *
+	 * @since 2.0
 	 */
 	public DeferredFutureTask(Runnable task, CancellationHandler cancellationHandler) {
 		super(task, null);
@@ -126,6 +130,8 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 *
 	 * @param task                the task to be executed. Must not be null.
 	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 *
+	 * @since 2.0
 	 */
 	public DeferredFutureTask(DeferredCallable<D, P> task, CancellationHandler cancellationHandler) {
 		super(task);
@@ -141,6 +147,8 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 *
 	 * @param task                the task to be executed. Must not be null.
 	 * @param cancellationHandler the {@code CancellationHandler} to invoke during onCancel. May be null.
+	 *
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
 	public DeferredFutureTask(DeferredRunnable<P> task, CancellationHandler cancellationHandler) {
@@ -191,6 +199,8 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 	 * Performs resource cleanup upon interruption or cancellation of the underlying task.
 	 * This method gives precedence to {@code cancellationHandler} it not null, otherwise
 	 * it invokes the underlying task's {@code onCancel()} if it implements the {@code CancellationHandler} interface.
+	 *
+	 * @since 2.0
 	 */
 	protected void cleanup() {
 		try {

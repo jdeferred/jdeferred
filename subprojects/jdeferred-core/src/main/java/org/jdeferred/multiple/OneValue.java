@@ -17,6 +17,7 @@ package org.jdeferred.multiple;
 
 /**
  * @author Andres Almiray
+ * @since 2.0
  */
 public interface OneValue<T> {
 	int getIndex();

@@ -21,6 +21,7 @@ package org.jdeferred;
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Stephan Classen
+ * @since 2.0
  */
 public interface CancellationHandler {
 	/**

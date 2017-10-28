@@ -17,10 +17,15 @@ package org.jdeferred.impl;
 
 import org.jdeferred.CallbackExceptionHandler;
 
+/**
+ * @author Ray Tsang
+ * @since 2.0
+ */
 public final class GlobalConfiguration {
 	private static CallbackExceptionHandler globalCallbackExceptionHandler = new DefaultCallbackExceptionHandler();
 
-	private GlobalConfiguration() {};
+	private GlobalConfiguration() {
+	}
 
 	public static void setGlobalCallbackExceptionHandler(CallbackExceptionHandler callbackExceptionHandler) {
 		if (callbackExceptionHandler == null) {
