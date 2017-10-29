@@ -293,11 +293,14 @@ Promise<MultipleResults3<Integer, Integer, Integer>, OneReject<Throwable>, Maste
 p.done(MultipleResults3<Integer, Integer, Integer> r -> Assert.fail("should not be called"))
  .fail(OneReject<Throwable> r -> Assert.assertEquals(r.getReject().getMessage(), "boom!"));
 ```
+> Since 2.0.0
 
 Calls to `when` with multiple arguments (up to five) will produce results with typesafe getters.
 
 <a name="example-when"></a>Race
 -------------
+> Since 2.0.0
+
 Calls to `race` with multiple arguments results in a `Promise` that signals `fail` on the first rejection or signals
 `done` on the first resolution.
 
@@ -321,6 +324,8 @@ p.done(OneResult<?> r -> Assert.fail("should not be called")
 
 <a name="example-settle"></a>Settle
 -------------
+> Since 2.0.0
+
 Calls to `settle` with multiple arguments results in a `Promise` that collects all resolutions and rejections.
 
 ```Java
@@ -337,6 +342,8 @@ p.done(AllValues r -> {
 
 <a name="example-cancellation"></a>Cancellation Handler
 -------------
+> Since 2.0.0
+
 Sometimes a task may be cancelled while its running and would require ti cleanup any resources it may have allocated. You
 may define a task that implements the `org.jdeferred.CancellationHandler` interface or pass and extra argument to
 `DeferredFutureTask` with such implementation, for example
@@ -414,13 +421,6 @@ deferred.resolve("done")
 
 <a name="example-android"></a>Android Support
 ---------------
-> Since 2.0.0
-
-```DeferredManager``` has the followin new capabilities
- * type safe submission of up to 5 tasks/promises
- * ```race()``` resolves/rejects on the first promise to do so, other tasks are immediately cancelled.
- * ```settle()``` resolves/rejects all tasks/promises.
-
 > Since 1.1.0-Beta1
 
 ```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
