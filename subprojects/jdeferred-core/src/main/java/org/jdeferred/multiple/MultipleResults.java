@@ -21,6 +21,7 @@ package org.jdeferred.multiple;
  * @author Ray Tsang
  * @author Andres Almiray
  * @author Domen
+ * @since 2.0
  */
 public interface MultipleResults extends Iterable<OneResult<?>> {
 	void set(int index, OneResult<?> result);

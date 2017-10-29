@@ -19,13 +19,15 @@ package org.jdeferred;
  * Handles global exceptions that are uncaught by the callbacks.
  *
  * @author Ray Tsang
+ * @since 2.0
  */
 public interface CallbackExceptionHandler {
-	public static enum CallbackType {
+	enum CallbackType {
 		DONE_CALLBACK,
 		FAIL_CALLBACK,
 		PROGRESS_CALLBACK,
 		ALWAYS_CALLBACK
 	}
+
 	void handleException(CallbackType callbackType, Exception e);
 }

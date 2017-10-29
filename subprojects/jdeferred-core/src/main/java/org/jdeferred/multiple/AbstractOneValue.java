@@ -17,6 +17,7 @@ package org.jdeferred.multiple;
 
 /**
  * @author Andres Almiray
+ * @since 2.0
  */
 abstract class AbstractOneValue<T> implements OneValue<T> {
 	protected final int index;
