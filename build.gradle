@@ -25,8 +25,9 @@ buildscript {
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
-        classpath 'net.nemerosa:versioning:2.6.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'net.nemerosa:versioning:2.6.1'
+        classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.4'
     }
 }
 
@@ -51,6 +52,7 @@ ext {
     buildRevision = versioning.info.commit
     buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
     projectsWithCoverage = []
+    projectsWithClirr = []
 }
 
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
@@ -72,6 +74,18 @@ allprojects {
 
 evaluationDependsOnChildren()
 
+subprojects { subproj ->
+    subproj.clirr {
+        failOnErrors = false
+        enabled      = true
+        baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+    }
+
+    projectsWithClirr << subproj
+
+    subproj.tasks.findByName('clirr').dependsOn subproj.tasks.findByName('assemble')
+}
+
 coveralls {
     sourceDirs = files(projectsWithCoverage.sourceSets.main.allSource.srcDirs).files.absolutePath
 }
@@ -91,4 +105,9 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
         html.destination = "${buildDir}/reports/jacoco/test/html"
         xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
+}
+
+task compatibilityReport(type: org.kordamp.gradle.clirr.ClirrReportTask) {
+    dependsOn = projectsWithClirr.tasks.clirr
+    reports = files(projectsWithClirr.findAll{ it.extensions.clirr.enabled }.tasks.clirr.xmlReport)
 }
