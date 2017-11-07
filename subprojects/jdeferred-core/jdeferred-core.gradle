@@ -64,7 +64,8 @@ jar {
             'Implementation-Title':   project.name,
             'Implementation-Version': project.version,
             'Bundle-DocURL':          'http://jdeferred.org/',
-            'Export-Package':         "${project.group}.*;version=${project.version};-split-package:=error".toString()
+            'Export-Package':         "${project.group}.*;version=${project.version};-split-package:=error".toString(),
+            'Automatic-Module-Name':  'org.jdeferred'
         )
     }
     metaInf {
