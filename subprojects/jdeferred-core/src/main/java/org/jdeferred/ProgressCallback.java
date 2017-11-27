@@ -16,7 +16,7 @@
 package org.jdeferred;
 
 /**
- * A callback invoked when the {@code Promise} publishes intermediate results while it is still in the state
+ * A callback invoked when the {@code Promise} publishes intermediate results while its state is still
  * {@link Promise.State#PENDING}.
  *
  * @param <P> Type used for {@link Deferred#notify(Object)}
