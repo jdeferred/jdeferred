@@ -17,8 +17,8 @@ package org.jdeferred;
 
 /**
  * @param <P>     Type of the progress input
- * @param <D_OUT> Type of the output of this pipe
- * @param <F_OUT> Type of the failure output of this pipe
+ * @param <D_OUT> Type of the output from this pipe
+ * @param <F_OUT> Type of the failure output from this pipe
  * @param <P_OUT> Type of the progress output from this pipe
  *
  * @author Ray Tsang

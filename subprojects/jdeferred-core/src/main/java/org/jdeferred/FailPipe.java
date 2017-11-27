@@ -16,13 +16,14 @@
 package org.jdeferred;
 
 /**
- * @param <F>     Type of the fail input
+ * @param <F>     Type of the failure input
  * @param <D_OUT> Type of the output from this pipe
- * @param <F_OUT> Type of the fail output from this pipe
+ * @param <F_OUT> Type of the failure output from this pipe
  * @param <P_OUT> Type of the progress output from this pipe
  *
  * @author Ray Tsang
  * @see Promise#then(DonePipe, FailPipe)
+ * @see Promise#then(DonePipe, FailPipe, ProgressPipe)
  */
 public interface FailPipe<F, D_OUT, F_OUT, P_OUT> {
 	Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);

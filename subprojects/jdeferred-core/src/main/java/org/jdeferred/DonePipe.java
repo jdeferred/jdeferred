@@ -16,11 +16,15 @@
 package org.jdeferred;
 
 /**
- * @param <P>     Type of the input
- * @param <P_OUT> Type of the output from this filter
+ * @param <D>     Type of the input
+ * @param <D_OUT> Type of the output from this pipe
+ * @param <F_OUT> Type of the failure output from this pipe
+ * @param <P_OUT> Type of the progress output from this pipe
  *
  * @author Ray Tsang
+ * @see Promise#then(DonePipe)
  * @see Promise#then(DonePipe, FailPipe)
+ * @see Promise#then(DonePipe, FailPipe, ProgressPipe)
  */
 public interface DonePipe<D, D_OUT, F_OUT, P_OUT> {
 	Promise<D_OUT, F_OUT, P_OUT> pipeDone(final D result);
