@@ -16,6 +16,10 @@
 package org.jdeferred;
 
 /**
+ * A filter invoked when the {@code Promise}'s state becomes {@link Promise.State#RESOLVED}.
+ * Filters allow to convert a value into a new value. This has to happen synchronous.
+ * For asynchronous calls see {@link DonePipe}.
+ *
  * @param <D>     Type of the input
  * @param <D_OUT> Type of the output from this filter
  *

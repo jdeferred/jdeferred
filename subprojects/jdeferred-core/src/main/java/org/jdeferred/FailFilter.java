@@ -16,6 +16,10 @@
 package org.jdeferred;
 
 /**
+ * A filter invoked when the {@code Promise}'s state becomes {@link Promise.State#REJECTED}.
+ * Filters allow to convert a value into a new value. This has to happen synchronous.
+ * For asynchronous calls see {@link FailPipe}.
+ *
  * @param <F>     Type of the failure input
  * @param <F_OUT> Type of the failure output from this filter
  *

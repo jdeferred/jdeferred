@@ -16,6 +16,11 @@
 package org.jdeferred;
 
 /**
+ * A filter invoked when the {@code Promise} publishes intermediate results while it is still in the state
+ + * {@link Promise.State#PENDING}.
+ * Filters allow to convert a value into a new value. This has to happen synchronous.
+ * For asynchronous calls see {@link ProgressPipe}.
+ *
  * @param <P>     Type of the progress input
  * @param <P_OUT> Type of the progress output from this filter
  *
