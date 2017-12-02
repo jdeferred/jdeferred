@@ -16,9 +16,15 @@
 package org.jdeferred;
 
 /**
+ * A pipe invoked when the {@code Promise} publishes intermediate results while it is still in the state
+ * {@link Promise.State#PENDING}.
+ * Pipes allow to start a new {@link Deferred} and any state change or update invoked on the new {@code Deferred} is
+ * piped to the outer {@code Promise}.  This allows to chain asynchronous calls or convert a rejection into resolve
+ * or vice versa.
+ *
  * @param <P>     Type of the progress input
- * @param <D_OUT> Type of the output of this pipe
- * @param <F_OUT> Type of the failure output of this pipe
+ * @param <D_OUT> Type of the output from this pipe
+ * @param <F_OUT> Type of the failure output from this pipe
  * @param <P_OUT> Type of the progress output from this pipe
  *
  * @author Ray Tsang

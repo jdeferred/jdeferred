@@ -16,11 +16,16 @@
 package org.jdeferred;
 
 /**
- * @param <F>     Type of the fail input
- * @param <F_OUT> Type of the faol output from this filter
+ * A filter invoked when the {@code Promise}'s state becomes {@link Promise.State#REJECTED}.
+ * Filters allow to convert a value into a new value. This has to happen synchronous.
+ * For asynchronous calls see {@link FailPipe}.
+ *
+ * @param <F>     Type of the failure input
+ * @param <F_OUT> Type of the failure output from this filter
  *
  * @author Ray Tsang
  * @see Promise#then(DoneFilter, FailFilter)
+ * @see Promise#then(DoneFilter, FailFilter, ProgressFilter)
  */
 public interface FailFilter<F, F_OUT> {
 	F_OUT filterFail(final F result);
