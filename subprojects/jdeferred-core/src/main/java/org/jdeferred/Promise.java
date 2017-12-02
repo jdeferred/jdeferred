@@ -43,12 +43,9 @@ package org.jdeferred;
  *
  * @author Ray Tsang
  *
- * @param <D>
- *            Type used for {@link #done(DoneCallback)}
- * @param <F>
- *            Type used for {@link #fail(FailCallback)}
- * @param <P>
- *            Type used for {@link #progress(ProgressCallback)}
+ * @param <D> Type used for {@link #done(DoneCallback)}
+ * @param <F> Type used for {@link #fail(FailCallback)}
+ * @param <P> Type used for {@link #progress(ProgressCallback)}
  */
 public interface Promise<D, F, P> {
 	enum State {
@@ -68,74 +65,106 @@ public interface Promise<D, F, P> {
 
 		/**
 		 * The Promise has finished running successfully.
-		 * Thus the Promise is resolved.
+		 * Thus, the Promise is resolved.
 		 *
 		 * @see Deferred#resolve(Object)
 		 */
 		RESOLVED
 	}
 
+	/**
+	 * @return the state of this promise.
+	 */
 	State state();
 
 	/**
+	 * Queries the state of this promise, returning {@code true} iff it is {@code State.PENDING}.
+	 * 
 	 * @see State#PENDING
+	 * @return {@code true} if the current state of this promise is {@code State.PENDING}, {@code false} otherwise.
 	 */
 	boolean isPending();
 
 	/**
+	 * Queries the state of this promise, returning {@code true} iff it is {@code State.RESOLVED}.
+	 *
 	 * @see State#RESOLVED
+	 * @return {@code true} if the current state of this promise is {@code State.RESOLVED}, {@code false} otherwise.
 	 */
 	boolean isResolved();
 
 	/**
+	 * Queries the state of this promise, returning {@code true} iff it is {@code State.REJECTED}.
+	 *
 	 * @see State#REJECTED
+	 * @return {@code true} if the current state of this promise is {@code State.REJECTED}, {@code false} otherwise.
 	 */
 	boolean isRejected();
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}
 	 *
-	 * @param doneCallback {@link #done(DoneCallback)}
+	 * @param doneCallback see {@link #done(DoneCallback)}
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> then(DoneCallback<D> doneCallback);
 
 	/**
-	 * Equivalent to {@link #done(DoneCallback)} and then {@link FailCallback}
-	 * @param doneCallback {@link #done(DoneCallback)}
-	 * @param failCallback {@link #fail(FailCallback)}
+	 * Equivalent to {@link #done(DoneCallback)}.{@link #fail(FailCallback)}
+	 * 
+	 * @param doneCallback see {@link #done(DoneCallback)}
+	 * @param failCallback see {@link #fail(FailCallback)}
+	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> then(DoneCallback<D> doneCallback,
-			FailCallback<F> failCallback);
+	Promise<D, F, P> then(DoneCallback<D> doneCallback, FailCallback<F> failCallback);
 
 	/**
-	 * Equivalent to {@link #done(DoneCallback)}, then {@link #fail(FailCallback)}, then {@link #progress(ProgressCallback)}
+	 * Equivalent to {@link #done(DoneCallback)}.{@link #fail(FailCallback)}.{@link #progress(ProgressCallback)}
 	 *
-	 * @param doneCallback {@link #done(DoneCallback)}
-	 * @param failCallback {@link #fail(FailCallback)}
-	 * @param progressCallback {@link #progress(ProgressCallback)}
+	 * @param doneCallback see {@link #done(DoneCallback)}
+	 * @param failCallback see {@link #fail(FailCallback)}
+	 * @param progressCallback see {@link #progress(ProgressCallback)}
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> then(DoneCallback<D> doneCallback,
 			FailCallback<F> failCallback, ProgressCallback<P> progressCallback);
 
 	/**
-	 * Equivalent to then(doneFilter, null, null)
+	 * Equivalent to {@code then(doneFilter, null, null)}
 	 *
 	 * @see #then(DoneFilter, FailFilter, ProgressFilter)
+	 * @param doneFilter the filter to execute when a result is available
+	 * @return a new promise for the filtered result
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter);
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<D, D_OUT> doneFilter);
 
 	/**
-	 * Equivalent to then(doneFilter, failFilter, null)
+	 * Equivalent to {@code then(doneFilter, failFilter, null)}
 	 *
 	 * @see #then(DoneFilter, FailFilter, ProgressFilter)
+	 * @param doneFilter the filter to execute when a result is available
+	 * @param failFilter the filter to execute when a failure is available
+	 * @return a new promise for the filtered result and failure.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter);
 
 	/**
-	 * If any of the filter is not specified, a default No Op filter would be used.
-	 * This is also known as "piping", or "chaining" of callbacks and being able to modify the return value.
+	 * This method will register filters such that when a Deferred object is either
+	 * resolved ({@link Deferred#resolve(Object)}), rejected ({@link Deferred#reject(Object)}) or
+	 * is notified of progress ({@link Deferred#notify(Object)}), the corresponding filter
+	 * will be invoked.  The result of the filter will be used to invoke the same action on the
+	 * returned promise.
+	 *
+	 * {@link DoneFilter} and {@link FailFilter} will be triggered at the time the Deferred object is
+	 * resolved or rejected.  If the Deferred object is already resolved or rejected the filter is
+	 * triggered immediately.
+	 *
+	 * Filters allow to transform the outcome of a promise into something else.  This concept is equivalent
+	 * to the map() method of the java stream API.
+	 *
+	 * If any of the filter is not specified ({@code null}), a default No Op filter is used.
+	 * If your filter is returning a {@link Promise} consider using {@link #then(DonePipe, FailPipe, ProgressPipe)}.
 	 *
 	 * <pre>
 	 * <code>
@@ -157,34 +186,56 @@ public interface Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 *
-	 * @param doneFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpDoneFilter}
-	 * @param failFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpFailFilter}
-	 * @param progressFilter if null, use {@link org.jdeferred.impl.FilteredPromise.NoOpProgressFilter}
+	 * @param doneFilter the filter to execute when a result is available.
+	 *                      If {@code null}, use {@link org.jdeferred.impl.FilteredPromise.NoOpDoneFilter}
+	 * @param failFilter the filter to execute when a failure is available.
+	 *                      If {@code null}, use {@link org.jdeferred.impl.FilteredPromise.NoOpFailFilter}
+	 * @param progressFilter the filter to execute when progress info is available.
+	 *                          If {@code null}, use {@link org.jdeferred.impl.FilteredPromise.NoOpProgressFilter}
+	 * @return a new promise for the filtered result, failure and progress.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
 			ProgressFilter<P, P_OUT> progressFilter);
 
 	/**
-	 * Equivalent to then(DonePipe, null, null)
+	 * Equivalent to {#code then(DonePipe, null, null)}
 	 *
 	 * @see #then(DonePipe, FailPipe, ProgressPipe)
+	 * @param donePipe the pipe to invoke when a result is available
+	 * @return a new promise for the piped result.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
 
 	/**
-	 * Equivalent to then(DonePipe, FailPipe, null)
+	 * Equivalent to {@code then(DonePipe, FailPipe, null)}
 	 *
 	 * @see #then(DonePipe, FailPipe, ProgressPipe)
+	 * @param donePipe the pipe to invoke when a result is available
+	 * @param failPipe the pipe to invoke when a failure is available
+	 * @return a new promise for the piped result and failure.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
 
 	/**
+	 * This method will register pipes such that when a Deferred object is either
+	 * resolved ({@link Deferred#resolve(Object)}), rejected ({@link Deferred#reject(Object)}) or
+	 * is notified of progress ({@link Deferred#notify(Object)}), the corresponding pipe
+	 * will be invoked.
+	 *
+	 * {@link DonePipe} and {@link FailPipe} will be triggered at the time the Deferred object is
+	 * resolved or rejected.  If the Deferred object is already resolved or rejected the filter is
+	 * triggered immediately.
+	 *
 	 * This method is similar to JQuery's pipe() method, where a new {@link Promise} is returned
 	 * by the the pipe filter instead of the original.  This is useful to handle return values
 	 * and then rewiring it to different callbacks.
+	 *
+	 * Pipes start a new {@link Deferred} object.  This allows to chain asynchronous calls.
+	 *
+	 * If your pipe does not do any asynchronous work consider using {@link #then(DoneFilter, FailFilter, ProgressFilter)}
 	 *
 	 * <pre>
 	 * <code>
@@ -203,9 +254,13 @@ public interface Promise<D, F, P> {
 	 * </code>
 	 * </pre>
 	 *
-	 * @param donePipe if null, result is not piped
-	 * @param failPipe if null, failure is not piped
-	 * @param progressPipe if null, progress is not piped
+	 * @param donePipe the pipe to invoke when a result is available.
+	 *                    If {@code null}, result is piped unchanged
+	 * @param failPipe the pipe to invoke when a failure is available.
+	 *                    If {@code null}, failure is piped unchanged
+	 * @param progressPipe the pipe to execute when progress info is available.
+	 *                        If {@code null}, progress is piped unchanged
+	 * @return a new promise for the piped result, failure and progress.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
@@ -214,14 +269,15 @@ public interface Promise<D, F, P> {
 	/**
 	 * This method will register {@link DoneCallback} so that when a Deferred object
 	 * is resolved ({@link Deferred#resolve(Object)}), {@link DoneCallback} will be triggered.
+	 * If the Deferred object is already resolved then the {@link DoneCallback} is triggered immediately.
 	 *
 	 * You can register multiple {@link DoneCallback} by calling the method multiple times.
-	 * The order of callback trigger is based on the order you call this method.
+	 * The order of callback trigger is based on the order they have been registered.
 	 *
 	 * <pre>
 	 * <code>
 	 * promise.progress(new DoneCallback(){
-	 *   void onDone(Object done) {
+	 *   public void onDone(Object done) {
 	 *     ...
 	 *   }
 	 * });
@@ -230,20 +286,22 @@ public interface Promise<D, F, P> {
 	 *
 	 * @see Deferred#resolve(Object)
 	 * @param callback the callback to be triggered
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> done(DoneCallback<D> callback);
 
 	/**
 	 * This method will register {@link FailCallback} so that when a Deferred object
 	 * is rejected ({@link Deferred#reject(Object)}), {@link FailCallback} will be triggered.
+	 * If the Deferred object is already rejected then the {@link FailCallback} is triggered immediately.
 	 *
 	 * You can register multiple {@link FailCallback} by calling the method multiple times.
-	 * The order of callback trigger is based on the order you call this method.
+	 * The order of callback trigger is based on the order they have been registered.
 	 *
 	 * <pre>
 	 * <code>
-	 * promise.fail(new FaillCallback(){
-	 *   void onFail(Object rejection) {
+	 * promise.fail(new FailCallback(){
+	 *   public void onFail(Object rejection) {
 	 *     ...
 	 *   }
 	 * });
@@ -252,24 +310,31 @@ public interface Promise<D, F, P> {
 	 *
 	 * @see Deferred#reject(Object)
 	 * @param callback the callback to be triggered
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> fail(FailCallback<F> callback);
 
 	/**
-	 * This method will register {@link AlwaysCallback} so that when it's always triggered
-	 * regardless of whether the corresponding Deferred object was resolved or rejected.
+	 * This method will register {@link AlwaysCallback} so that when a Deferred object is either
+	 * resolved ({@link Deferred#resolve(Object)}) or rejected ({@link Deferred#reject(Object)}),
+	 * {@link AlwaysCallback} will be triggered.
+	 * If the Deferred object is already resolved or rejected then the {@link AlwaysCallback} is
+	 * triggered immediately.
 	 *
 	 * You can register multiple {@link AlwaysCallback} by calling the method multiple times.
-	 * The order of callback trigger is based on the order you call this method.
+	 * The order of callback trigger is based on the order they have been registered.
+	 *
+	 * {@link AlwaysCallback}s are triggered after any {@link DoneCallback} or {@link FailCallback}
+	 * respectively.
 	 *
 	 * <pre>
 	 * <code>
 	 * promise.always(new AlwaysCallback(){
-	 *   void onAlways(State state, Object result, Object rejection) {
+	 *   public void onAlways(State state, Object result, Object rejection) {
 	 *     if (state == State.RESOLVED) {
-	 *       // do something w/ result
+	 *       // do something with result
 	 *     } else {
-	 *       // do something w/ rejection
+	 *       // do something with rejection
 	 *     }
 	 *   }
 	 * });
@@ -279,6 +344,7 @@ public interface Promise<D, F, P> {
 	 * @see Deferred#resolve(Object)
 	 * @see Deferred#reject(Object)
 	 * @param callback the callback to be triggered
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> always(AlwaysCallback<D, F> callback);
 
@@ -287,12 +353,12 @@ public interface Promise<D, F, P> {
 	 * is notified of progress ({@link Deferred#notify(Object)}), {@link ProgressCallback} will be triggered.
 	 *
 	 * You can register multiple {@link ProgressCallback} by calling the method multiple times.
-	 * The order of callback trigger is based on the order you call this method.
+	 * The order of callback trigger is based on the order they have been registered.
 	 *
 	 * <pre>
 	 * <code>
 	 * promise.progress(new ProgressCallback(){
-	 *   void onProgress(Object progress) {
+	 *   public void onProgress(Object progress) {
 	 *     // e.g., update progress in the GUI while the background task is still running.
 	 *   }
 	 * });
@@ -301,11 +367,12 @@ public interface Promise<D, F, P> {
 	 *
 	 * @see Deferred#notify(Object)
 	 * @param callback the callback to be triggered
+	 * @return {@code this} for chaining more calls
 	 */
 	Promise<D, F, P> progress(ProgressCallback<P> callback);
 
 	/**
-	 * This method will wait as long as the State is Pending.  This method will fail fast
+	 * This method will wait as long as the State is Pending.  This method will return fast
 	 * when State is not Pending.
 	 *
 	 * @throws InterruptedException if thread is interrupted while waiting
@@ -314,7 +381,7 @@ public interface Promise<D, F, P> {
 
 	/**
 	 * This method will wait when the State is Pending, and return when timeout has reached.
-	 * This method will fail fast when State is not Pending.
+	 * This method will return fast when State is not Pending.
 	 *
 	 * @param timeout the maximum time to wait in milliseconds
 	 * @throws InterruptedException if thread is interrupted while waiting
