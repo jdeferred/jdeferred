@@ -17,6 +17,7 @@ package org.jdeferred.impl;
 
 import java.util.concurrent.Callable;
 
+import org.jdeferred.AlwaysPipe;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DonePipe;
 import org.jdeferred.FailCallback;
@@ -83,6 +84,64 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 		postRewireValue.assertEquals("ouch");
 	}
 	
+	@Test
+	public void testAlwaysRewireFilterResolve() {
+		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
+		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
+
+		Callable<String> task = new Callable<String>() {
+			public String call() {
+				return "done";
+			}
+		};
+
+		deferredManager.when(task).always(new AlwaysPipe<String, Throwable, Object, String, Void>() {
+			@Override
+			public Promise<Object, String, Void> pipeAlways(Promise.State state, String resolved, Throwable rejected) {
+				preRewireValue.set(resolved);
+				return new DeferredObject<Object, String, Void>().reject("ouch");
+			}
+		}).fail(new FailCallback<String>() {
+			@Override
+			public void onFail(String result) {
+				postRewireValue.set(result);
+			}
+		});
+
+		waitForCompletion();
+		preRewireValue.assertEquals("done");
+		postRewireValue.assertEquals("ouch");
+	}
+
+	@Test
+	public void testAlwaysRewireFilterFail() {
+		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
+		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
+
+		Callable<Integer> task = new Callable<Integer>() {
+			public Integer call() {
+				throw new RuntimeException("oops");
+			}
+		};
+
+		deferredManager.when(task).always(new AlwaysPipe<Integer, Throwable, String, Object, Void>() {
+			@Override
+			public Promise<String, Object, Void> pipeAlways(Promise.State state, Integer resolved, Throwable rejected) {
+				preRewireValue.set(rejected.getMessage());
+				return new DeferredObject<String, Object, Void>().resolve("done");
+			}
+		}).done(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				postRewireValue.set(result);
+			}
+		});
+
+		waitForCompletion();
+		preRewireValue.assertEquals("oops");
+		postRewireValue.assertEquals("done");
+	}
+
 	@Test
 	public void testNullDoneRewireFilter() {
 		final ValueHolder<Boolean> failed = new ValueHolder<Boolean>(false);

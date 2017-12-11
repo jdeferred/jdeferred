@@ -16,6 +16,7 @@
 package org.jdeferred.impl;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.AlwaysPipe;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
 import org.jdeferred.DonePipe;
@@ -119,6 +120,11 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
     @Override
     public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe, ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe) {
         return getDelegate().then(donePipe, failPipe, progressPipe);
+    }
+
+    @Override
+    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<D, F, D_OUT, F_OUT, P> alwaysPipe) {
+        return getDelegate().always(alwaysPipe);
     }
 
     @Override

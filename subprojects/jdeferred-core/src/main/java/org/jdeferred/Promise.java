@@ -42,6 +42,7 @@ package org.jdeferred;
  * @see Deferred#notify(Object)
  *
  * @author Ray Tsang
+ * @author Stephan Classen
  *
  * @param <D> Type used for {@link #done(DoneCallback)}
  * @param <F> Type used for {@link #fail(FailCallback)}
@@ -265,6 +266,43 @@ public interface Promise<D, F, P> {
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
 			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
 			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe);
+
+	/**
+	 * This method will register a pipe such that when a Deferred object is either
+	 * resolved ({@link Deferred#resolve(Object)}) or rejected ({@link Deferred#reject(Object)})
+	 * the pipe will be invoked.
+	 *
+	 * {@link AlwaysPipe} will be triggered at the time the Deferred object is
+	 * resolved or rejected.  If the Deferred object is already resolved or rejected the filter is
+	 * triggered immediately.
+	 *
+	 * This method is similar to JQuery's pipe() method, where a new {@link Promise} is returned
+	 * by the the pipe filter instead of the original.  This is useful to handle return values
+	 * and then rewiring it to different callbacks.
+	 *
+	 * Pipes start a new {@link Deferred} object.  This allows to chain asynchronous calls.
+	 *
+	 * <pre>
+	 * <code>
+	 * promise.always(new AlwaysPipe<Integer, Integer, String, String, Void>() {
+	 *   {@literal @}Override
+	 *   Promise<Integer, Void, Void> pipeAlways(State state, Integer resolved, Integer rejected) {
+	 *     if (state == State.RESOLVED) {
+	 *       return new DeferredObject<String, String, Void>().resolve("Success");
+	 *     } else {
+	 *       return new DeferredObject<String, String, Void>().reject("Failed");
+	 *     }
+	 *   }
+	 * }).done(...)
+	 * .fail(...);
+	 * </code>
+	 * </pre>
+	 *
+	 * @since 2.0
+	 * @param alwaysPipe the pipe to invoke when a result or failure is available.
+	 * @return a new promise for the piped result or failure.
+	 */
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<D, F, D_OUT, F_OUT, P> alwaysPipe);
 
 	/**
 	 * This method will register {@link DoneCallback} so that when a Deferred object
