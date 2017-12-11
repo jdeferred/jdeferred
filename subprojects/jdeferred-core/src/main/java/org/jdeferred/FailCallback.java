@@ -16,7 +16,7 @@
 package org.jdeferred;
 
 /**
- * A callback invoked when the {@code Promise}'s state is {@code Promise.State.REJECTED}.
+ * A callback invoked when the {@code Promise}'s state becomes {@link Promise.State#REJECTED}.
  *
  * @param <F> Type used for {@link Deferred#reject(Object)}
  *

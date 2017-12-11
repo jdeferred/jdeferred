@@ -16,7 +16,7 @@
 package org.jdeferred;
 
 /**
- * A cllback invoked when the {@code Promise} has been resolved.
+ * A callback invoked when the {@code Promise}'s state becomes {@link Promise.State#RESOLVED}.
  *
  * @param <D> Type used for {@link Deferred#resolve(Object)}
  *
