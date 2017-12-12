@@ -27,13 +27,13 @@ import org.jdeferred.Promise.State;
  * @param <F>     Type of the failure input
  * @param <D_OUT> Type of the output from this pipe
  * @param <F_OUT> Type of the failure output from this pipe
- * @param <P_OUT> Type of the progress output from this pipe
+ * @param <P>     Type of the progress output from this pipe
  *
  * @author Stephan Classen
  * @since 2.0
  * @see Promise#always(AlwaysPipe)
  */
-public interface AlwaysPipe<D, F, D_OUT, F_OUT, P_OUT> {
+public interface AlwaysPipe<D, F, D_OUT, F_OUT, P> {
 
 	/**
 	 * Invoked when the {@code Promise} resolves or rejects a value.
@@ -42,5 +42,5 @@ public interface AlwaysPipe<D, F, D_OUT, F_OUT, P_OUT> {
 	 * @param resolved the resolved value (if any) of the {@code Promise}
 	 * @param rejected the rejected value (if any) of the {@code Promise}
 	 */
-	Promise<D_OUT, F_OUT, P_OUT> pipeAlways(final State state, final D resolved, final F rejected);
+	Promise<D_OUT, F_OUT, P> pipeAlways(final State state, final D resolved, final F rejected);
 }
