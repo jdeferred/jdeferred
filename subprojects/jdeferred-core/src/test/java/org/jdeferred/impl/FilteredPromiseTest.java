@@ -56,7 +56,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				return "DONE2";
 			}
 		})
-		.<String, Throwable, Void>then(null, new FilteredPromise.NoOpFailFilter<Throwable>())
+		.then((DoneFilter<String, String>) null, new FilteredPromise.NoOpFailFilter<Throwable>())
 		.done(new DoneCallback<String>() {
 			@Override
 			public void onDone(String result) {

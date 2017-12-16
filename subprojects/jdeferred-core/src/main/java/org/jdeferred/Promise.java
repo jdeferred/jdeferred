@@ -137,7 +137,7 @@ public interface Promise<D, F, P> {
 	 * @param doneFilter the filter to execute when a result is available
 	 * @return a new promise for the filtered result
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<D, D_OUT> doneFilter);
+	<D_OUT> Promise<D_OUT, F, P> then(DoneFilter<D, D_OUT> doneFilter);
 
 	/**
 	 * Equivalent to {@code then(doneFilter, failFilter, null)}
@@ -147,7 +147,7 @@ public interface Promise<D, F, P> {
 	 * @param failFilter the filter to execute when a failure is available
 	 * @return a new promise for the filtered result and failure.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
 			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter);
 
 	/**
@@ -206,8 +206,7 @@ public interface Promise<D, F, P> {
 	 * @param donePipe the pipe to invoke when a result is available
 	 * @return a new promise for the piped result.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
+	<D_OUT> Promise<D_OUT, F, P> then(DonePipe<D, D_OUT, F, P> donePipe);
 
 	/**
 	 * Equivalent to {@code then(DonePipe, FailPipe, null)}
@@ -217,8 +216,8 @@ public interface Promise<D, F, P> {
 	 * @param failPipe the pipe to invoke when a failure is available
 	 * @return a new promise for the piped result and failure.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
+			DonePipe<D, D_OUT, F_OUT, P> donePipe, FailPipe<F, D_OUT, F_OUT, P> failPipe);
 
 	/**
 	 * This method will register pipes such that when a Deferred object is either

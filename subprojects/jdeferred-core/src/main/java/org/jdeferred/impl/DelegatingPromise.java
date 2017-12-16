@@ -93,12 +93,12 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
     }
 
     @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<D, D_OUT> doneFilter) {
+    public <D_OUT> Promise<D_OUT, F, P> then(DoneFilter<D, D_OUT> doneFilter) {
         return getDelegate().then(doneFilter);
     }
 
     @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
+    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
         return getDelegate().then(doneFilter, failFilter);
     }
 
@@ -108,12 +108,12 @@ public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
     }
 
     @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe) {
+    public <D_OUT> Promise<D_OUT, F, P> then(DonePipe<D, D_OUT, F, P> donePipe) {
         return getDelegate().then(donePipe);
     }
 
     @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe) {
+    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(DonePipe<D, D_OUT, F_OUT, P> donePipe, FailPipe<F, D_OUT, F_OUT, P> failPipe) {
         return getDelegate().then(donePipe, failPipe);
     }
 
