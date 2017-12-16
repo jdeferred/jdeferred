@@ -52,7 +52,7 @@ Maven
 -----
 ```xml
 <dependency>
-    <groupId>org.jdeferred</groupId>
+    <groupId>org.jdeferred2</groupId>
     <artifactId>jdeferred-core</artifactId>
     <version>${version}</version>
 </dependency>
@@ -61,9 +61,9 @@ Maven
 Gradle
 -----
 ```
-compile 'org.jdeferred:jdeferred-android-aar:${version}'
+compile 'org.jdeferred2:jdeferred-android-aar:${version}'
 // or
-compile 'org.jdeferred:jdeferred-android-aar:${version}@aar'
+compile 'org.jdeferred2:jdeferred-android-aar:${version}@aar'
 ```
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
@@ -345,7 +345,7 @@ p.done(AllValues r -> {
 > Since 2.0.0
 
 Sometimes a task may be cancelled while its running and would require ti cleanup any resources it may have allocated. You
-may define a task that implements the `org.jdeferred.CancellationHandler` interface or pass and extra argument to
+may define a task that implements the `org.jdeferred2.CancellationHandler` interface or pass and extra argument to
 `DeferredFutureTask` with such implementation, for example
 
 ```Java
@@ -401,9 +401,9 @@ dm.when(task).done(...)
 You can also easily use with Groovy!
 
 ```Groovy
-@Grab('org.jdeferred:jdeferred-core:2.0.0')
-import org.jdeferred.*
-import org.jdeferred.impl.*
+@Grab('org.jdeferred2:jdeferred-core:2.0.0')
+import org.jdeferred2.*
+import org.jdeferred2.impl.*
 
 def deferred = new DeferredObject()
 def promise = deferred.promise()
@@ -424,13 +424,13 @@ deferred.resolve("done")
 > Since 1.1.0-Beta1
 
 ```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
-It also uses Android Maven pugin and builds apklib file. If you use Android Maven plugin, you can include
+It also uses Android Maven plugin and builds apklib file. If you use Android Maven plugin, you can include
 dependency:
 
 APKLIB:
 ```xml
 <dependency>
-  <groupId>org.jdeferred</groupId>
+  <groupId>org.jdeferred2</groupId>
   <artifactId>jdeferred-android</artifactId>
   <version>...</version>
   <type>apklib</type>
@@ -442,7 +442,7 @@ AAR:
 
 ```xml
 <dependency>
-  <groupId>org.jdeferred</groupId>
+  <groupId>org.jdeferred2</groupId>
   <artifactId>jdeferred-android-aar</artifactId>
   <version>...</version>
   <type>aar</type>

@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.jdeferred.android"
+    package="org.jdeferred2.android"
     android:versionCode="1"
     android:versionName="1.2.0" >
     

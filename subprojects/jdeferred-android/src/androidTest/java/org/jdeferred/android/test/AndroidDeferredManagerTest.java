@@ -1,10 +1,10 @@
-package org.jdeferred.android.test;
+package org.jdeferred2.android.test;
 
 import junit.framework.Assert;
 
-import org.jdeferred.DoneCallback;
-import org.jdeferred.android.AndroidDeferredManager;
-import org.jdeferred.android.DeferredAsyncTask;
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.android.AndroidDeferredManager;
+import org.jdeferred2.android.DeferredAsyncTask;
 
 import android.test.AndroidTestCase;
 
