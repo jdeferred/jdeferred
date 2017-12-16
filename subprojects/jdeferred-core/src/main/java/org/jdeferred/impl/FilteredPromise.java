@@ -33,7 +33,10 @@ public class FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObjec
 	private final FailFilter<F, F_OUT> failFilter;
 	private final ProgressFilter<P, P_OUT> progressFilter;
 	
-	public FilteredPromise(final Promise<D, F, P> promise, final DoneFilter<D, D_OUT> doneFilter, final FailFilter<F, F_OUT> failFilter, final ProgressFilter<P, P_OUT> progressFilter) {
+	public FilteredPromise(final Promise<D, F, P> promise,
+						   final DoneFilter<? super D, ? extends D_OUT> doneFilter,
+						   final FailFilter<? super F, ? extends F_OUT> failFilter,
+						   final ProgressFilter<? super P, ? extends P_OUT> progressFilter) {
 		this.doneFilter = doneFilter == null ? NO_OP_DONE_FILTER : doneFilter;
 		this.failFilter = failFilter == null ? NO_OP_FAIL_FILTER : failFilter;
 		this.progressFilter = progressFilter == null ? NO_OP_PROGRESS_FILTER : progressFilter;

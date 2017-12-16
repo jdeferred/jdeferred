@@ -27,7 +27,10 @@ import org.jdeferred.ProgressPipe;
 import org.jdeferred.Promise;
 
 public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D_OUT, F_OUT, P_OUT> implements Promise<D_OUT, F_OUT, P_OUT>{
-	public PipedPromise(final Promise<D, F, P> promise, final DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter, final FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter, final ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
+	public PipedPromise(final Promise<D, F, P> promise,
+						final DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> doneFilter,
+						final FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failFilter,
+						final ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressFilter) {
 		promise.done(new DoneCallback<D>() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -53,7 +56,8 @@ public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D
 		});
 	}
 	
-	public PipedPromise(final Promise<D, F, P_OUT> promise, final AlwaysPipe<D, F, D_OUT, F_OUT, P_OUT> alwaysFilter) {
+	public PipedPromise(final Promise<D, F, P_OUT> promise,
+						final AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> alwaysFilter) {
 		promise.always(new AlwaysCallback<D, F>() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -68,7 +72,8 @@ public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D
 		});
 	}
 
-	protected Promise<D_OUT, F_OUT, P_OUT> pipe(Promise<D_OUT, F_OUT, P_OUT> promise) {
+	protected Promise<? extends D_OUT, ? extends F_OUT, ? extends P_OUT> pipe(
+			Promise<? extends D_OUT, ? extends F_OUT, ? extends P_OUT> promise) {
 		promise.done(new DoneCallback<D_OUT>() {
 			@Override
 			public void onDone(D_OUT result) {

@@ -45,10 +45,10 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	protected volatile State state = State.PENDING;
 
-	protected final List<DoneCallback<D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<D>>();
-	protected final List<FailCallback<F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<F>>();
-	protected final List<ProgressCallback<P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<P>>();
-	protected final List<AlwaysCallback<D, F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<D, F>>();
+	protected final List<DoneCallback<? super D>> doneCallbacks = new CopyOnWriteArrayList<DoneCallback<? super D>>();
+	protected final List<FailCallback<? super F>> failCallbacks = new CopyOnWriteArrayList<FailCallback<? super F>>();
+	protected final List<ProgressCallback<? super P>> progressCallbacks = new CopyOnWriteArrayList<ProgressCallback<? super P>>();
+	protected final List<AlwaysCallback<? super D, ? super F>> alwaysCallbacks = new CopyOnWriteArrayList<AlwaysCallback<? super D, ? super F>>();
 
 	protected D resolveResult;
 	protected F rejectResult;
@@ -59,7 +59,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public Promise<D, F, P> done(DoneCallback<D> callback) {
+	public Promise<D, F, P> done(DoneCallback<? super D> callback) {
 		synchronized (this) {
 			if (isResolved()){
 				triggerDone(callback, resolveResult);
@@ -71,7 +71,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public Promise<D, F, P> fail(FailCallback<F> callback) {
+	public Promise<D, F, P> fail(FailCallback<? super F> callback) {
 		synchronized (this) {
 			if(isRejected()){
 				triggerFail(callback, rejectResult);
@@ -83,7 +83,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public Promise<D, F, P> always(AlwaysCallback<D, F> callback) {
+	public Promise<D, F, P> always(AlwaysCallback<? super D, ? super F> callback) {
 		synchronized (this) {
 			if(isPending()){
 				alwaysCallbacks.add(callback);
@@ -95,13 +95,13 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerDone(D resolved) {
-		for (DoneCallback<D> callback : doneCallbacks) {
+		for (DoneCallback<? super D> callback : doneCallbacks) {
 			triggerDone(callback, resolved);
 		}
 		doneCallbacks.clear();
 	}
 
-	protected void triggerDone(DoneCallback<D> callback, D resolved) {
+	protected void triggerDone(DoneCallback<? super D> callback, D resolved) {
 		try {
 			callback.onDone(resolved);
 		} catch (Exception e) {
@@ -110,13 +110,13 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerFail(F rejected) {
-		for (FailCallback<F> callback : failCallbacks) {
+		for (FailCallback<? super F> callback : failCallbacks) {
 			triggerFail(callback, rejected);
 		}
 		failCallbacks.clear();
 	}
 
-	protected void triggerFail(FailCallback<F> callback, F rejected) {
+	protected void triggerFail(FailCallback<? super F> callback, F rejected) {
 		try {
 			callback.onFail(rejected);
 		} catch (Exception e) {
@@ -125,12 +125,12 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerProgress(P progress) {
-		for (ProgressCallback<P> callback : progressCallbacks) {
+		for (ProgressCallback<? super P> callback : progressCallbacks) {
 			triggerProgress(callback, progress);
 		}
 	}
 
-	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
+	protected void triggerProgress(ProgressCallback<? super P> callback, P progress) {
 		try {
 			callback.onProgress(progress);
 		} catch (Exception e) {
@@ -139,7 +139,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	protected void triggerAlways(State state, D resolve, F reject) {
-		for (AlwaysCallback<D, F> callback : alwaysCallbacks) {
+		for (AlwaysCallback<? super D, ? super F> callback : alwaysCallbacks) {
 			triggerAlways(callback, state, resolve, reject);
 		}
 		alwaysCallbacks.clear();
@@ -149,7 +149,7 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 		}
 	}
 
-	protected void triggerAlways(AlwaysCallback<D, F> callback, State state, D resolve, F reject) {
+	protected void triggerAlways(AlwaysCallback<? super D, ? super F> callback, State state, D resolve, F reject) {
 	    try {
 			callback.onAlways(state, resolve, reject);
 		} catch (Exception e) {
@@ -158,26 +158,26 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public Promise<D, F, P> progress(ProgressCallback<P> callback) {
+	public Promise<D, F, P> progress(ProgressCallback<? super P> callback) {
 		progressCallbacks.add(callback);
 		return this;
 	}
 
 	@Override
-	public Promise<D, F, P> then(DoneCallback<D> callback) {
+	public Promise<D, F, P> then(DoneCallback<? super D> callback) {
 		return done(callback);
 	}
 
 	@Override
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback, FailCallback<F> failCallback) {
+	public Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback) {
 		done(doneCallback);
 		fail(failCallback);
 		return this;
 	}
 
 	@Override
-	public Promise<D, F, P> then(DoneCallback<D> doneCallback, FailCallback<F> failCallback,
-			ProgressCallback<P> progressCallback) {
+	public Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback,
+			ProgressCallback<? super P> progressCallback) {
 		done(doneCallback);
 		fail(failCallback);
 		progress(progressCallback);
@@ -186,46 +186,46 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 
 	@Override
 	public <D_OUT> Promise<D_OUT, F, P> then(
-			DoneFilter<D, D_OUT> doneFilter) {
+			DoneFilter<? super D, ? extends D_OUT> doneFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter) {
+			DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P>(this, doneFilter, failFilter, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
-			ProgressFilter<P, P_OUT> progressFilter) {
+			DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter,
+			ProgressFilter<? super P, ? extends P_OUT> progressFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
 	}
 
 	@Override
 	public <D_OUT> Promise<D_OUT, F, P> then(
-			DonePipe<D, D_OUT, F, P> doneFilter) {
+			DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> doneFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DonePipe<D, D_OUT, F_OUT, P> doneFilter,
-			FailPipe<F, D_OUT, F_OUT, P> failFilter) {
+			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> doneFilter,
+			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, doneFilter, failFilter, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> doneFilter,
-			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
-			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
+			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> doneFilter,
+			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failFilter,
+			ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
 	}
 
 	@Override
-	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<D, F, D_OUT, F_OUT, P> alwaysFilter) {
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, alwaysFilter);
 	}
 
