@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred;
+package org.jdeferred2;
 
-import org.jdeferred.Promise.State;
+import org.jdeferred2.Promise.State;
 
 /**
  * A pipe invoked when the {@code Promise}'s state becomes {@link Promise.State#RESOLVED} or {@link Promise.State#REJECTED}.
