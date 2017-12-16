@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdeferred.AlwaysCallback;
+import org.jdeferred.AlwaysPipe;
 import org.jdeferred.CallbackExceptionHandler;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DoneFilter;
@@ -221,6 +222,11 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 			FailPipe<F, D_OUT, F_OUT, P_OUT> failFilter,
 			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressFilter) {
 		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+	}
+
+	@Override
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<D, F, D_OUT, F_OUT, P> alwaysFilter) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, alwaysFilter);
 	}
 
 	@Override

@@ -15,6 +15,8 @@
  */
 package org.jdeferred.impl;
 
+import org.jdeferred.AlwaysCallback;
+import org.jdeferred.AlwaysPipe;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.DonePipe;
@@ -51,6 +53,21 @@ public class PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT> extends DeferredObject<D
 		});
 	}
 	
+	public PipedPromise(final Promise<D, F, P_OUT> promise, final AlwaysPipe<D, F, D_OUT, F_OUT, P_OUT> alwaysFilter) {
+		promise.always(new AlwaysCallback<D, F>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onAlways(State state, D resolved, F rejected) {
+				pipe(alwaysFilter.pipeAlways(state, resolved, rejected));
+			}
+		}).progress(new ProgressCallback<P_OUT>() {
+			@Override
+			public void onProgress(P_OUT progress) {
+				PipedPromise.this.notify(progress);
+			}
+		});
+	}
+
 	protected Promise<D_OUT, F_OUT, P_OUT> pipe(Promise<D_OUT, F_OUT, P_OUT> promise) {
 		promise.done(new DoneCallback<D_OUT>() {
 			@Override
