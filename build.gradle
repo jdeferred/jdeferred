@@ -78,7 +78,8 @@ subprojects { subproj ->
     subproj.clirr {
         failOnErrors = false
         enabled      = true
-        baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+        // baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+        baseline     = "org.jdeferred:${project.name}:${project.previousVersion}"
     }
 
     projectsWithClirr << subproj
