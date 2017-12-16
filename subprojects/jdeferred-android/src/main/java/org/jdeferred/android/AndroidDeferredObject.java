@@ -102,7 +102,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		}
 	}
 
-	protected void triggerDone(DoneCallback<D> callback, D resolved) {
+	protected void triggerDone(DoneCallback<? super D> callback, D resolved) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
 			executeInUiThread(MESSAGE_POST_DONE, callback, State.RESOLVED,
 					resolved, null, null);
@@ -111,7 +111,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		}
 	};
 
-	protected void triggerFail(FailCallback<F> callback, F rejected) {
+	protected void triggerFail(FailCallback<? super F> callback, F rejected) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
 			executeInUiThread(MESSAGE_POST_FAIL, callback, State.REJECTED,
 					null, rejected, null);
@@ -120,7 +120,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		}
 	};
 
-	protected void triggerProgress(ProgressCallback<P> callback, P progress) {
+	protected void triggerProgress(ProgressCallback<? super P> callback, P progress) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
 			executeInUiThread(MESSAGE_POST_PROGRESS, callback, State.PENDING,
 					null, null, progress);
@@ -129,7 +129,7 @@ public class AndroidDeferredObject<D, F, P> extends DeferredObject<D, F, P> {
 		}
 	};
 
-	protected void triggerAlways(AlwaysCallback<D, F> callback, State state,
+	protected void triggerAlways(AlwaysCallback<? super D, ? super F> callback, State state,
 			D resolve, F reject) {
 		if (determineAndroidExecutionScope(callback) == AndroidExecutionScope.UI) {
 			executeInUiThread(MESSAGE_POST_ALWAYS, callback, state, resolve,
