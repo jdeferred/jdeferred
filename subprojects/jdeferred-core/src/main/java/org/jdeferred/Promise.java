@@ -108,7 +108,7 @@ public interface Promise<D, F, P> {
 	 * @param doneCallback see {@link #done(DoneCallback)}
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> then(DoneCallback<D> doneCallback);
+	Promise<D, F, P> then(DoneCallback<? super D> doneCallback);
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}.{@link #fail(FailCallback)}
@@ -117,7 +117,7 @@ public interface Promise<D, F, P> {
 	 * @param failCallback see {@link #fail(FailCallback)}
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> then(DoneCallback<D> doneCallback, FailCallback<F> failCallback);
+	Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback);
 
 	/**
 	 * Equivalent to {@link #done(DoneCallback)}.{@link #fail(FailCallback)}.{@link #progress(ProgressCallback)}
@@ -127,8 +127,8 @@ public interface Promise<D, F, P> {
 	 * @param progressCallback see {@link #progress(ProgressCallback)}
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> then(DoneCallback<D> doneCallback,
-			FailCallback<F> failCallback, ProgressCallback<P> progressCallback);
+	Promise<D, F, P> then(DoneCallback<? super D> doneCallback,
+			FailCallback<? super F> failCallback, ProgressCallback<? super P> progressCallback);
 
 	/**
 	 * Equivalent to {@code then(doneFilter, null, null)}
@@ -137,7 +137,7 @@ public interface Promise<D, F, P> {
 	 * @param doneFilter the filter to execute when a result is available
 	 * @return a new promise for the filtered result
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<D, D_OUT> doneFilter);
+	<D_OUT> Promise<D_OUT, F, P> then(DoneFilter<? super D, ? extends D_OUT> doneFilter);
 
 	/**
 	 * Equivalent to {@code then(doneFilter, failFilter, null)}
@@ -147,8 +147,9 @@ public interface Promise<D, F, P> {
 	 * @param failFilter the filter to execute when a failure is available
 	 * @return a new promise for the filtered result and failure.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
+			DoneFilter<? super D, ? extends D_OUT> doneFilter,
+			FailFilter<? super F, ? extends F_OUT> failFilter);
 
 	/**
 	 * This method will register filters such that when a Deferred object is either
@@ -196,8 +197,9 @@ public interface Promise<D, F, P> {
 	 * @return a new promise for the filtered result, failure and progress.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<D, D_OUT> doneFilter, FailFilter<F, F_OUT> failFilter,
-			ProgressFilter<P, P_OUT> progressFilter);
+			DoneFilter<? super D, ? extends D_OUT> doneFilter,
+			FailFilter<? super F, ? extends F_OUT> failFilter,
+			ProgressFilter<? super P, ? extends P_OUT> progressFilter);
 
 	/**
 	 * Equivalent to {#code then(DonePipe, null, null)}
@@ -206,8 +208,7 @@ public interface Promise<D, F, P> {
 	 * @param donePipe the pipe to invoke when a result is available
 	 * @return a new promise for the piped result.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe);
+	<D_OUT> Promise<D_OUT, F, P> then(DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe);
 
 	/**
 	 * Equivalent to {@code then(DonePipe, FailPipe, null)}
@@ -217,8 +218,9 @@ public interface Promise<D, F, P> {
 	 * @param failPipe the pipe to invoke when a failure is available
 	 * @return a new promise for the piped result and failure.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
+			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe,
+			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe);
 
 	/**
 	 * This method will register pipes such that when a Deferred object is either
@@ -264,8 +266,9 @@ public interface Promise<D, F, P> {
 	 * @return a new promise for the piped result, failure and progress.
 	 */
 	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<D, D_OUT, F_OUT, P_OUT> donePipe, FailPipe<F, D_OUT, F_OUT, P_OUT> failPipe,
-			ProgressPipe<P, D_OUT, F_OUT, P_OUT> progressPipe);
+			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe,
+			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe,
+			ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe);
 
 	/**
 	 * This method will register a pipe such that when a Deferred object is either
@@ -302,7 +305,8 @@ public interface Promise<D, F, P> {
 	 * @param alwaysPipe the pipe to invoke when a result or failure is available.
 	 * @return a new promise for the piped result or failure.
 	 */
-	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<D, F, D_OUT, F_OUT, P> alwaysPipe);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(
+			AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe);
 
 	/**
 	 * This method will register {@link DoneCallback} so that when a Deferred object
@@ -326,7 +330,7 @@ public interface Promise<D, F, P> {
 	 * @param callback the callback to be triggered
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> done(DoneCallback<D> callback);
+	Promise<D, F, P> done(DoneCallback<? super D> callback);
 
 	/**
 	 * This method will register {@link FailCallback} so that when a Deferred object
@@ -350,7 +354,7 @@ public interface Promise<D, F, P> {
 	 * @param callback the callback to be triggered
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> fail(FailCallback<F> callback);
+	Promise<D, F, P> fail(FailCallback<? super F> callback);
 
 	/**
 	 * This method will register {@link AlwaysCallback} so that when a Deferred object is either
@@ -384,7 +388,7 @@ public interface Promise<D, F, P> {
 	 * @param callback the callback to be triggered
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> always(AlwaysCallback<D, F> callback);
+	Promise<D, F, P> always(AlwaysCallback<? super D, ? super F> callback);
 
 	/**
 	 * This method will register {@link ProgressCallback} so that when a Deferred object
@@ -407,7 +411,7 @@ public interface Promise<D, F, P> {
 	 * @param callback the callback to be triggered
 	 * @return {@code this} for chaining more calls
 	 */
-	Promise<D, F, P> progress(ProgressCallback<P> callback);
+	Promise<D, F, P> progress(ProgressCallback<? super P> callback);
 
 	/**
 	 * This method will wait as long as the State is Pending.  This method will return fast
