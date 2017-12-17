@@ -287,7 +287,7 @@ deferred.resolve("done")
 > Since 1.1.0-Beta1
 
 ```jdeferred-android``` is now available, and it can be included just like any other Android libraries!
-It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
+It also uses Android Maven plugin and builds apklib file.  If you use Android Maven plugin, you can include
 dependency:
 
 APKLIB with Maven:
