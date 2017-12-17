@@ -57,9 +57,7 @@ Maven
 Gradle
 -----
 ```
-compile 'org.jdeferred:jdeferred-android-aar:${version}'
-// or
-compile 'org.jdeferred:jdeferred-android-aar:${version}@aar'
+compile 'org.jdeferred:jdeferred-core:{version}'
 ```
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
@@ -292,27 +290,37 @@ deferred.resolve("done")
 It also uses Android Maven pugin and builts apklib file.  If you use Android Maven plugin, you can include
 dependency:
 
-APKLIB:
+APKLIB with Maven:
 ```xml
 <dependency>
   <groupId>org.jdeferred</groupId>
   <artifactId>jdeferred-android</artifactId>
-  <version>...</version>
+  <version>${version}</version>
   <type>apklib</type>
 </dependency>
 ```
 
-AAR:
+
+AAR with Maven:
 > Since 1.2.0-Beta1
 
 ```xml
 <dependency>
   <groupId>org.jdeferred</groupId>
   <artifactId>jdeferred-android-aar</artifactId>
-  <version>...</version>
+  <version>${version}</version>
   <type>aar</type>
 </dependency>
 ```
+
+AAR with Gradle:
+```
+compile 'org.jdeferred:jdeferred-android-aar:${version}'
+// or
+compile 'org.jdeferred:jdeferred-android-aar:${version}@aar'
+```
+
+Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
 
 ```jdeferred-android``` introduces a new ```DeferredManager``` implementation called ```AndroidDeferredManager```.
 ```AndroidDeferredManager``` makes sure that callbacks are executed in UI Thread rather than background Thread
