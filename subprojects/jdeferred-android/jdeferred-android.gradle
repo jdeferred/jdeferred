@@ -32,6 +32,8 @@ apply plugin: 'org.kordamp.gradle.clirr'
 dependencies {
     compile project(':jdeferred-core')
 
+    provided "com.google.code.findbugs:annotations:$findbugsVersion"
+    provided "com.google.code.findbugs:jsr305:$findbugsVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
     testCompile "com.google.android:android:$androidVersion"
