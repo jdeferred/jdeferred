@@ -27,6 +27,8 @@ tasks.withType(JavaCompile) {
 
 dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compileOnly "com.google.code.findbugs:annotations:$findbugsVersion"
+    compileOnly "com.google.code.findbugs:jsr305:$findbugsVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
     testCompile "org.awaitility:awaitility:$awaitilityVersion"

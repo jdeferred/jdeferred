@@ -43,6 +43,7 @@ buildScan {
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'net.nemerosa.versioning'
+apply plugin: 'findbugs'
 
 Date buildTimeAndDate = new Date()
 ext {
