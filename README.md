@@ -57,7 +57,7 @@ Maven
 Gradle
 -----
 ```
-compile 'org.jdeferred:jdeferred-core:{version}'
+compile 'org.jdeferred:jdeferred-core:${version}'
 ```
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
