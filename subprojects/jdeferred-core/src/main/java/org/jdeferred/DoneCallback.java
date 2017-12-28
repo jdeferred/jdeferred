@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <D>
  */
 public interface DoneCallback<D> {
-	public void onDone(final D result);
+	void onDone(final D result);
 }

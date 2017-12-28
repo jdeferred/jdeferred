@@ -49,7 +49,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * <li>{@link #when(DeferredRunnable)}</li>
 	 * <li>{@link #when(DeferredFutureTask))}</li>
 	 * </ul>
-	 * @return
 	 */
 	public abstract boolean isAutoSubmit();
 	
@@ -172,7 +171,7 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 	 * 	<li>{@link #when(Callable)}</li>
 	 *  <li>{@link #when(Callable...)}</li>
 	 *  <li>{@link #when(Runnable)}</li>
-	 *  <li>{@link #when(Runnable..)}</li>
+	 *  <li>{@link #when(Runnable...)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future)}</li>
 	 *  <li>{@link #when(java.util.concurrent.Future...)}</li>
 	 *  <li>{@link #when(org.jdeferred.DeferredRunnable...)}</li>
@@ -201,8 +200,6 @@ public abstract class AbstractDeferredManager implements DeferredManager {
 			public D call() throws Exception {
 				try {
 					return future.get();
-				} catch (InterruptedException e) {
-					throw e;
 				} catch (ExecutionException e) {
 					if (e.getCause() instanceof Exception)
 						throw (Exception) e.getCause();

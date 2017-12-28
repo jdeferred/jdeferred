@@ -82,7 +82,7 @@ public class DeferredFutureTask<D, P> extends FutureTask<D> {
 			}
 			D result = get();
 			deferred.resolve(result);
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignored) {
 		} catch (ExecutionException e) {
 			deferred.reject(e.getCause());
 		}

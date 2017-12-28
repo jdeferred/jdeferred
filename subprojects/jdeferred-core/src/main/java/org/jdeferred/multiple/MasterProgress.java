@@ -17,15 +17,15 @@ package org.jdeferred.multiple;
 
 /**
  * Progress indicating how many promises need to finish ({@link #total}),
- * and how many had already finish ({@link #fulfilled}).
- * @author Ray Tsang
+ * and how many have already finished successfully ({@link #done}) or failed ({@link #fail}).
  *
+ * @author Ray Tsang
  */
 public class MasterProgress {
 	private final int done;
 	private final int fail;
 	private final int total;
-	
+
 	public MasterProgress(int done, int fail, int total) {
 		super();
 		this.done = done;

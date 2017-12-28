@@ -259,8 +259,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 				
 				if (timeout > 0 && ((System.currentTimeMillis() - startTime) >= timeout)) {
 					return;
-				} else {
-					continue; // keep looping
 				}
 			}
 		}

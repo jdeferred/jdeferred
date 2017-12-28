@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <P_OUT> Type of the output from this filter
  */
 public interface ProgressFilter<P, P_OUT> {
-	public P_OUT filterProgress(final P progress);
+	P_OUT filterProgress(final P progress);
 }

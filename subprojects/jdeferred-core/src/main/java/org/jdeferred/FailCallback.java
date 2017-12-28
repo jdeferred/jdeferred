@@ -23,5 +23,5 @@ package org.jdeferred;
  * @param <F>
  */
 public interface FailCallback<F> {
-	public void onFail(final F result);
+	void onFail(final F result);
 }
