@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jdeferred.android.test;
+package org.jdeferred2.android.test;
 
 import junit.framework.Assert;
 

@@ -1,4 +1,4 @@
-package org.jdeferred.android.test;
+package org.jdeferred2.android.test;
 
 import android.os.Bundle;
 import android.app.Activity;

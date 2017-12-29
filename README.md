@@ -52,7 +52,7 @@ Maven
 -----
 ```xml
 <dependency>
-    <groupId>org.jdeferred</groupId>
+    <groupId>org.jdeferred2</groupId>
     <artifactId>jdeferred-core</artifactId>
     <version>${version}</version>
 </dependency>
@@ -343,7 +343,7 @@ p.done(AllValues r -> {
 > Since 2.0.0
 
 Sometimes a task may be cancelled while its running and would require ti cleanup any resources it may have allocated. You
-may define a task that implements the `org.jdeferred.CancellationHandler` interface or pass and extra argument to
+may define a task that implements the `org.jdeferred2.CancellationHandler` interface or pass and extra argument to
 `DeferredFutureTask` with such implementation, for example
 
 ```Java
@@ -399,9 +399,9 @@ dm.when(task).done(...)
 You can also easily use with Groovy!
 
 ```Groovy
-@Grab('org.jdeferred:jdeferred-core:2.0.0')
-import org.jdeferred.*
-import org.jdeferred.impl.*
+@Grab('org.jdeferred2:jdeferred-core:2.0.0')
+import org.jdeferred2.*
+import org.jdeferred2.impl.*
 
 def deferred = new DeferredObject()
 def promise = deferred.promise()
@@ -428,7 +428,7 @@ dependency:
 APKLIB with Maven:
 ```xml
 <dependency>
-  <groupId>org.jdeferred</groupId>
+  <groupId>org.jdeferred2</groupId>
   <artifactId>jdeferred-android</artifactId>
   <version>${version}</version>
   <type>apklib</type>
@@ -441,7 +441,7 @@ AAR with Maven:
 
 ```xml
 <dependency>
-  <groupId>org.jdeferred</groupId>
+  <groupId>org.jdeferred2</groupId>
   <artifactId>jdeferred-android-aar</artifactId>
   <version>${version}</version>
   <type>aar</type>

@@ -22,17 +22,17 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
         classpath 'net.nemerosa:versioning:2.6.1'
         classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.4'
     }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.0'
+    id 'com.gradle.build-scan' version '1.11'
 }
 
 buildScan {
@@ -78,7 +78,8 @@ subprojects { subproj ->
     subproj.clirr {
         failOnErrors = false
         enabled      = true
-        baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+        // baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+        baseline     = "org.jdeferred:${project.name}:${project.previousVersion}"
     }
 
     projectsWithClirr << subproj

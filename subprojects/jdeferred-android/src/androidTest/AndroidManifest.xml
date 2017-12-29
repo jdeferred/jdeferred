@@ -15,13 +15,13 @@
   limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.jdeferred.android.test"
+    package="org.jdeferred2.android.test"
     android:versionCode="1"
     android:versionName="1.1.0-SNAPSHOT" >
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="org.jdeferred.android.test" />
+        android:targetPackage="org.jdeferred2.android.test" />
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -33,7 +33,7 @@
         <uses-library android:name="android.test.runner" />
 
         <activity
-            android:name="org.jdeferred.android.test.MainActivity"
+            android:name="org.jdeferred2.android.test.MainActivity"
             android:label="@string/title_activity_main" >
         </activity>
     </application>
