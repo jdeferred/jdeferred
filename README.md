@@ -68,6 +68,11 @@ compile 'org.jdeferred.v2:jdeferred-core:${version}'
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred.v2%22%20AND%20a%3A%22jdeferred-core%22).
 
+<a name="compatibility"></a>Compatibility
+==============
+Compatibility reports between versions:
+- [1.2.6 to 2.0.0](http://jdeferred.org/compatibility-report-2.0.0.html)
+
 <a name="examples"></a>Quick Examples
 ==============
 
