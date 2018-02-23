@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,17 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.2'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'net.nemerosa:versioning:2.5.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+        classpath 'net.nemerosa:versioning:2.6.1'
+        classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.4'
     }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.0'
+    id 'com.gradle.build-scan' version '1.11'
 }
 
 buildScan {
@@ -51,6 +52,7 @@ ext {
     buildRevision = versioning.info.commit
     buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
     projectsWithCoverage = []
+    projectsWithClirr = []
 }
 
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
@@ -72,6 +74,19 @@ allprojects {
 
 evaluationDependsOnChildren()
 
+subprojects { subproj ->
+    subproj.clirr {
+        failOnErrors = false
+        enabled      = true
+        // baseline     = "${project.group}:${project.name}:${project.previousVersion}"
+        baseline     = "org.jdeferred:${project.name}:${project.previousVersion}"
+    }
+
+    projectsWithClirr << subproj
+
+    subproj.tasks.findByName('clirr').dependsOn subproj.tasks.findByName('assemble')
+}
+
 coveralls {
     sourceDirs = files(projectsWithCoverage.sourceSets.main.allSource.srcDirs).files.absolutePath
 }
@@ -91,4 +106,9 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
         html.destination = "${buildDir}/reports/jacoco/test/html"
         xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
+}
+
+task compatibilityReport(type: org.kordamp.gradle.clirr.ClirrReportTask) {
+    dependsOn = projectsWithClirr.tasks.clirr
+    reports = files(projectsWithClirr.findAll{ it.extensions.clirr.enabled }.tasks.clirr.xmlReport)
 }

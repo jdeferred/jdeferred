@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Ray Tsang
+ * Copyright 2013-2017 Ray Tsang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'org.kordamp.gradle.clirr'
 
 dependencies {
     compile project(':jdeferred-core')
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.slf4j:slf4j-jdk14:$slf4jVersion"
-    testCompile "org.awaitility:awaitility:$awaitilityVersion"
     testCompile "com.google.android:android:$androidVersion"
 }
 
@@ -89,6 +89,11 @@ android.libraryVariants.all { variant ->
         group 'Build'
         description "An archive of the ${variant.name} compiled code"
         from variant.javaCompile.destinationDir
+    }
+
+    if (capitalizedVariantName == 'Release') {
+        project.tasks.findByName('clirr').newFiles  = files(project.tasks.findByName('packageReleaseJar').outputs)
+        project.tasks.findByName('clirr').dependsOn project.tasks.findByName('packageReleaseJar')
     }
 
     task("package${capitalizedVariantName}SourcesJar", type: Jar) {
