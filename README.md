@@ -61,10 +61,10 @@ Maven
 Gradle
 -----
 ```
-compile 'org.jdeferred:jdeferred-core:${version}'
+compile 'org.jdeferred2:jdeferred-core:${version}'
 ```
 
-Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
+Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred2%22%20AND%20a%3A%22jdeferred-core%22).
 
 <a name="examples"></a>Quick Examples
 ==============
@@ -450,12 +450,12 @@ AAR with Maven:
 
 AAR with Gradle:
 ```
-compile 'org.jdeferred:jdeferred-android-aar:${version}'
+compile 'org.jdeferred2:jdeferred-android-aar:${version}'
 // or
-compile 'org.jdeferred:jdeferred-android-aar:${version}@aar'
+compile 'org.jdeferred2:jdeferred-android-aar:${version}@aar'
 ```
 
-Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred%22%20AND%20a%3A%22jdeferred-core%22).
+Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.jdeferred2%22%20AND%20a%3A%22jdeferred-core%22).
 
 ```jdeferred-android``` introduces a new ```DeferredManager``` implementation called ```AndroidDeferredManager```.
 ```AndroidDeferredManager``` makes sure that callbacks are executed in UI Thread rather than background Thread
