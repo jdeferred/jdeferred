@@ -112,6 +112,16 @@ bintray {
         issueTrackerUrl       = project.project_issues
         vcsUrl                = project.project_scm
         publicDownloadNumbers = true
+        githubRepo = 'jdeferred/jdeferred'
+        version {
+            name = project.version
+            vcsTag = project.version
+            mavenCentralSync {
+                sync = true
+                user = project.mavenUsername
+                password = project.mavenPassword
+            }
+        }
     }
 }
 
