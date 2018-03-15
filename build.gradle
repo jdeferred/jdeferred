@@ -27,12 +27,12 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
         classpath 'net.nemerosa:versioning:2.6.1'
-        classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.4'
+        classpath 'org.kordamp.gradle:clirr-gradle-plugin:0.2.5'
     }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.11'
+    id 'com.gradle.build-scan' version '1.12.1'
 }
 
 buildScan {
@@ -57,6 +57,8 @@ ext {
 
 if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
+if (!project.hasProperty('mavenUsername')) ext.mavenUsername = ''
+if (!project.hasProperty('mavenPassword')) ext.mavenPassword = ''
 
 jacoco {
     toolVersion = jacocoVersion
