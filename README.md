@@ -28,10 +28,13 @@ If you are using JDeferred 1.x, see [JDeferred 1.x Documentation](http://jdeferr
 * Deferred object and Promise
 * Promise callbacks
   * ```.then(…)```
+  * ```.filter(…)```
+  * ```.pipe(…)```
   * ```.done(…)```
   * ```.fail(…)```
   * ```.progress(…)```
   * ```.always(…)```
+  * ```.pipeAlways(…)```
 * Multiple promises
   * ```.when(p1, p2, p3, …).then(…)```
   * ```.race(p1, p2, p3, …).then(…)```
@@ -113,7 +116,7 @@ deferred.notify("100%");
 ```java
 Deferred d = …;
 Promise p = d.promise();
-Promise filtered = p.then(new DoneFilter<Integer, Integer>() {
+Promise filtered = p.filter(new DoneFilter<Integer, Integer>() {
   public Integer filterDone(Integer result)
     return result * 10;
   }
@@ -137,7 +140,7 @@ d.resolve(3) -> 30.
 Deferred d = ...;
 Promise p = d.promise();
 
-p.then(new DonePipe<Integer, Integer, Exception, Void>() {
+p.pipe(new DonePipe<Integer, Integer, Exception, Void>() {
   public Deferred<Integer, Exception, Void> pipeDone(Integer result) {
     if (result < 100) {
       return new DeferredObject<Integer, Void, Void>().resolve(result);

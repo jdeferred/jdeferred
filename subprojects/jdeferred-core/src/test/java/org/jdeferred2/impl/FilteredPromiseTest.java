@@ -32,7 +32,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 	public void testNoOpFilter() {
 		final AtomicInteger doneCount = new AtomicInteger();
 		final AtomicInteger failCount = new AtomicInteger();
-		
+
 		deferredManager.when(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
@@ -47,9 +47,8 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				doneCount.incrementAndGet();
 			}
 		});
-		
-		
-		
+
+
 		deferredManager.when(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
@@ -64,7 +63,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				doneCount.incrementAndGet();
 			}
 		});
-		
+
 		deferredManager.when(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
@@ -79,9 +78,9 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				failCount.incrementAndGet();
 			}
 		});
-		
+
 		final AtomicInteger progressCount = new AtomicInteger();
-		
+
 		deferredManager.when(new DeferredRunnable<String>() {
 			@Override
 			public void run() {
@@ -100,26 +99,26 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 			public void onProgress(String progress) {
 				Assert.assertEquals("HI", progress);
 				progressCount.incrementAndGet();
-				
+
 			}
 		});
-		
+
 		waitForCompletion();
 		Assert.assertEquals(2, doneCount.get());
 		Assert.assertEquals(1, failCount.get());
 		Assert.assertEquals(10, progressCount.get());
 	}
-	
+
 	@Test
 	public void testDoneFilter() {
 		final ValueHolder<String> holder = new ValueHolder<String>();
-		
+
 		Callable<Integer> task = new Callable<Integer>() {
 			public Integer call() {
 				return 100;
 			}
 		};
-		
+
 		deferredManager.when(task).then(new DoneFilter<Integer, String>() {
 			@Override
 			public String filterDone(Integer result) {
@@ -131,11 +130,11 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				holder.set(result);
 			}
 		});
-		
+
 		waitForCompletion();
 		holder.assertEquals("TEST-100");
 	}
-	
+
 	@Test
 	public void testFailFilter() {
 		final ValueHolder<String> holder = new ValueHolder<String>();
@@ -144,7 +143,7 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				throw new RuntimeException("TEST");
 			}
 		};
-		
+
 		deferredManager.when(task).then(null, new FailFilter<Throwable, String>() {
 			@Override
 			public String filterFail(Throwable result) {
@@ -156,7 +155,139 @@ public class FilteredPromiseTest extends AbstractDeferredTest {
 				holder.set(result);
 			}
 		});
-		
+
+		waitForCompletion();
+		holder.assertEquals("TEST");
+	}
+
+	@Test
+	public void testNoOpFilter_withFilterMethod() {
+		final AtomicInteger doneCount = new AtomicInteger();
+		final AtomicInteger failCount = new AtomicInteger();
+
+		deferredManager.when(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return "DONE";
+			}
+		})
+			.filter(new FilteredPromise.NoOpDoneFilter<String>())
+			.done(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.assertEquals("DONE", result);
+					doneCount.incrementAndGet();
+				}
+			});
+
+
+		deferredManager.when(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return "DONE2";
+			}
+		})
+			.filter((DoneFilter<String, String>) null, new FilteredPromise.NoOpFailFilter<Throwable>())
+			.done(new DoneCallback<String>() {
+				@Override
+				public void onDone(String result) {
+					Assert.assertEquals("DONE2", result);
+					doneCount.incrementAndGet();
+				}
+			});
+
+		deferredManager.when(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				throw new RuntimeException("FAIL");
+			}
+		})
+			.<String, Throwable, Void>filter(null, null, new FilteredPromise.NoOpProgressFilter<Void>())
+			.fail(new FailCallback<Throwable>() {
+				@Override
+				public void onFail(Throwable result) {
+					Assert.assertEquals("FAIL", result.getMessage());
+					failCount.incrementAndGet();
+				}
+			});
+
+		final AtomicInteger progressCount = new AtomicInteger();
+
+		deferredManager.when(new DeferredRunnable<String>() {
+			@Override
+			public void run() {
+				for (int i = 0; i < 10; i++) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+					}
+					notify("HI");
+				}
+			}
+		})
+			.filter(null, null, new FilteredPromise.NoOpProgressFilter<String>())
+			.progress(new ProgressCallback<String>() {
+				@Override
+				public void onProgress(String progress) {
+					Assert.assertEquals("HI", progress);
+					progressCount.incrementAndGet();
+
+				}
+			});
+
+		waitForCompletion();
+		Assert.assertEquals(2, doneCount.get());
+		Assert.assertEquals(1, failCount.get());
+		Assert.assertEquals(10, progressCount.get());
+	}
+
+	@Test
+	public void testDoneFilter_withFilterMethod() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
+
+		Callable<Integer> task = new Callable<Integer>() {
+			public Integer call() {
+				return 100;
+			}
+		};
+
+		deferredManager.when(task).filter(new DoneFilter<Integer, String>() {
+			@Override
+			public String filterDone(Integer result) {
+				return "TEST-" + result.toString();
+			}
+		}).done(new DoneCallback<String>() {
+			@Override
+			public void onDone(String result) {
+				holder.set(result);
+			}
+		});
+
+		waitForCompletion();
+		holder.assertEquals("TEST-100");
+	}
+
+	@Test
+	public void testFailFilter_withFilterMethod() {
+		final ValueHolder<String> holder = new ValueHolder<String>();
+		Callable<Integer> task = new Callable<Integer>() {
+			public Integer call() {
+				throw new RuntimeException("TEST");
+			}
+		};
+
+		deferredManager.when(task).filter(null, new FailFilter<Throwable, String>() {
+			@Override
+			public String filterFail(Throwable result) {
+				return result.getMessage();
+			}
+		}).fail(new FailCallback<String>() {
+			@Override
+			public void onFail(String result) {
+				holder.set(result);
+			}
+		});
+
 		waitForCompletion();
 		holder.assertEquals("TEST");
 	}
