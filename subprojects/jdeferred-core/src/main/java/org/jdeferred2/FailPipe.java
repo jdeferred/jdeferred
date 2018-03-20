@@ -27,8 +27,8 @@ package org.jdeferred2;
  * @param <P_OUT> Type of the progress output from this pipe
  *
  * @author Ray Tsang
- * @see Promise#then(DonePipe, FailPipe)
- * @see Promise#then(DonePipe, FailPipe, ProgressPipe)
+ * @see Promise#pipe(DonePipe, FailPipe)
+ * @see Promise#pipe(DonePipe, FailPipe, ProgressPipe)
  */
 public interface FailPipe<F, D_OUT, F_OUT, P_OUT> {
 	Promise<D_OUT, F_OUT, P_OUT> pipeFail(final F result);

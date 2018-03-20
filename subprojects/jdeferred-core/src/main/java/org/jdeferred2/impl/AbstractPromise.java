@@ -185,25 +185,6 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public <D_OUT> Promise<D_OUT, F, P> then(
-			DoneFilter<? super D, ? extends D_OUT> doneFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
-	}
-
-	@Override
-	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P>(this, doneFilter, failFilter, null);
-	}
-
-	@Override
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter,
-			ProgressFilter<? super P, ? extends P_OUT> progressFilter) {
-		return new FilteredPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
-	}
-
-	@Override
 	public <D_OUT> Promise<D_OUT, F, P> filter(
 		DoneFilter<? super D, ? extends D_OUT> doneFilter) {
 		return new FilteredPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
@@ -223,55 +204,29 @@ public abstract class AbstractPromise<D, F, P> implements Promise<D, F, P> {
 	}
 
 	@Override
-	public <D_OUT> Promise<D_OUT, F, P> then(
-			DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> doneFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
-	}
-
-	@Override
-	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> doneFilter,
-			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, doneFilter, failFilter, null);
-	}
-
-	@Override
-	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> doneFilter,
-			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failFilter,
-			ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
-	}
-
-	@Override
 	public <D_OUT> Promise<D_OUT, F, P> pipe(
-		DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> doneFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F, P>(this, doneFilter, null, null);
+		DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe) {
+		return new PipedPromise<D, F, P, D_OUT, F, P>(this, donePipe, null, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipe(
-		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> doneFilter,
-		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, doneFilter, failFilter, null);
+		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe,
+		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, donePipe, failPipe, null);
 	}
 
 	@Override
 	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> pipe(
-		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> doneFilter,
-		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failFilter,
-		ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, doneFilter, failFilter, progressFilter);
+		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe,
+		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe,
+		ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P_OUT>(this, donePipe, failPipe, progressPipe);
 	}
 
 	@Override
-	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, alwaysFilter);
-	}
-
-	@Override
-	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipeAlways(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysFilter) {
-		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, alwaysFilter);
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipeAlways(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe) {
+		return new PipedPromise<D, F, P, D_OUT, F_OUT, P>(this, alwaysPipe);
 	}
 
 	@Override

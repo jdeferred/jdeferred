@@ -25,7 +25,7 @@ package org.jdeferred2;
  * @param <P_OUT> Type of the progress output from this filter
  *
  * @author Ray Tsang
- * @see Deferred#then(DoneFilter, FailFilter, ProgressFilter)
+ * @see Deferred#filter(DoneFilter, FailFilter, ProgressFilter)
  */
 public interface ProgressFilter<P, P_OUT> {
 	P_OUT filterProgress(final P progress);

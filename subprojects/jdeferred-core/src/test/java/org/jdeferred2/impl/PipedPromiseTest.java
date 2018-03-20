@@ -30,193 +30,6 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	public void testDoneRewirePipe() {
 		final ValueHolder<Integer> preRewireValue = new ValueHolder<Integer>();
 		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
-		
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				return 100;
-			}
-		};
-		
-		deferredManager.when(task).then(new DonePipe<Integer, Integer, Throwable, Void>() {
-			@Override
-			public Promise<Integer, Throwable, Void> pipeDone(Integer result) {
-				preRewireValue.set(result);
-				return new DeferredObject<Integer, Throwable, Void>().resolve(1000);
-			}
-		}).done(new DoneCallback<Integer>() {
-			@Override
-			public void onDone(Integer value) {
-				postRewireValue.set(value);
-			}
-		});
-		
-		waitForCompletion();
-		preRewireValue.assertEquals(100);
-		postRewireValue.assertEquals(1000);
-	}
-	
-	@Test
-	public void testFailRewirePipe() {
-		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
-		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
-		
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				throw new RuntimeException("oops");
-			}
-		};
-		
-		deferredManager.when(task).then(null, new FailPipe<Throwable, Integer, String, Void>() {
-			@Override
-			public Promise<Integer, String, Void> pipeFail(Throwable result) {
-				preRewireValue.set(result.getMessage());
-				return new DeferredObject<Integer, String, Void>().reject("ouch");
-			}
-		}).fail(new FailCallback<String>() {
-			@Override
-			public void onFail(String result) {
-				postRewireValue.set(result);
-			}
-		});
-		
-		waitForCompletion();
-		preRewireValue.assertEquals("oops");
-		postRewireValue.assertEquals("ouch");
-	}
-	
-	@Test
-	public void testAlwaysRewirePipeResolve() {
-		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
-		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
-
-		Callable<String> task = new Callable<String>() {
-			public String call() {
-				return "done";
-			}
-		};
-
-		deferredManager.when(task).always(new AlwaysPipe<String, Throwable, Object, String, Void>() {
-			@Override
-			public Promise<Object, String, Void> pipeAlways(Promise.State state, String resolved, Throwable rejected) {
-				preRewireValue.set(resolved);
-				return new DeferredObject<Object, String, Void>().reject("ouch");
-			}
-		}).fail(new FailCallback<String>() {
-			@Override
-			public void onFail(String result) {
-				postRewireValue.set(result);
-			}
-		});
-
-		waitForCompletion();
-		preRewireValue.assertEquals("done");
-		postRewireValue.assertEquals("ouch");
-	}
-
-	@Test
-	public void testAlwaysRewirePipeFail() {
-		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
-		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
-
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				throw new RuntimeException("oops");
-			}
-		};
-
-		deferredManager.when(task).always(new AlwaysPipe<Integer, Throwable, String, Object, Void>() {
-			@Override
-			public Promise<String, Object, Void> pipeAlways(Promise.State state, Integer resolved, Throwable rejected) {
-				preRewireValue.set(rejected.getMessage());
-				return new DeferredObject<String, Object, Void>().resolve("done");
-			}
-		}).done(new DoneCallback<String>() {
-			@Override
-			public void onDone(String result) {
-				postRewireValue.set(result);
-			}
-		});
-
-		waitForCompletion();
-		preRewireValue.assertEquals("oops");
-		postRewireValue.assertEquals("done");
-	}
-
-	@Test
-	public void testNullDoneRewirePipe() {
-		final ValueHolder<Boolean> failed = new ValueHolder<Boolean>(false);
-		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
-		
-		Callable<Integer> task = new Callable<Integer>() {
-			public Integer call() {
-				return 100;
-			}
-		};
-		
-		deferredManager.when(task).then(null, new FailPipe<Throwable, Integer, String, Void>() {
-			@Override
-			public Promise<Integer, String, Void> pipeFail(Throwable result) {
-				return new DeferredObject<Integer, String, Void>().reject("ouch");
-			}
-		}).done(new DoneCallback<Integer>() {
-			@Override
-			public void onDone(Integer result) {
-				postRewireValue.set(result);
-			}
-		}).fail(new FailCallback<String>() {
-			@Override
-			public void onFail(String result) {
-				failed.set(true);
-			}
-		});
-		
-		waitForCompletion();
-		failed.assertEquals(false);
-		postRewireValue.assertEquals(100);
-	}
-	
-	@Test
-	public void testDoneRewireToFail() {
-		final ValueHolder<Integer> preRewireValue = new ValueHolder<Integer>();
-		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
-		final ValueHolder<String> failed = new ValueHolder<String>();
-		
-		deferredManager.when(new Callable<Integer>() {
-			public Integer call() {
-				return 10;
-			}
-		}).then(new DonePipe<Integer, Integer, Throwable, Void>() {
-			@Override
-			public Promise<Integer, Throwable, Void> pipeDone(Integer result) {
-				preRewireValue.set(result);
-				if (result < 100) {
-					return new DeferredObject<Integer, Throwable, Void>().reject(new Exception("less than 100"));
-				} else {
-					return new DeferredObject<Integer, Throwable, Void>().resolve(result);
-				}
-			}
-		}).done(new DoneCallback<Integer>() {
-			@Override
-			public void onDone(Integer result) {
-				postRewireValue.set(result);
-			}
-		}).fail(new FailCallback<Throwable>() {
-			@Override
-			public void onFail(Throwable result) {
-				failed.set(result.getMessage());
-			}
-		});
-		
-		waitForCompletion();
-		preRewireValue.assertEquals(10);
-		postRewireValue.assertEquals(null);
-		failed.assertEquals("less than 100");
-	}
-
-	@Test
-	public void testDoneRewirePipe_withPipeMethod() {
-		final ValueHolder<Integer> preRewireValue = new ValueHolder<Integer>();
-		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
 
 		Callable<Integer> task = new Callable<Integer>() {
 			public Integer call() {
@@ -243,7 +56,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	}
 
 	@Test
-	public void testFailRewirePipe_withPipeMethod() {
+	public void testFailRewirePipe() {
 		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
 		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
 
@@ -272,7 +85,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	}
 
 	@Test
-	public void testAlwaysRewirePipeResolve_withPipeMethod() {
+	public void testAlwaysRewirePipeResolve() {
 		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
 		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
 
@@ -301,7 +114,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	}
 
 	@Test
-	public void testAlwaysRewirePipeFail_withPipeMethod() {
+	public void testAlwaysRewirePipeFail() {
 		final ValueHolder<String> preRewireValue = new ValueHolder<String>();
 		final ValueHolder<String> postRewireValue = new ValueHolder<String>();
 
@@ -330,7 +143,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	}
 
 	@Test
-	public void testNullDoneRewirePipe_withPipeMethod() {
+	public void testNullDoneRewirePipe() {
 		final ValueHolder<Boolean> failed = new ValueHolder<Boolean>(false);
 		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
 
@@ -363,7 +176,7 @@ public class PipedPromiseTest extends AbstractDeferredTest {
 	}
 
 	@Test
-	public void testDoneRewireToFail_withPipeMethod() {
+	public void testDoneRewireToFail() {
 		final ValueHolder<Integer> preRewireValue = new ValueHolder<Integer>();
 		final ValueHolder<Integer> postRewireValue = new ValueHolder<Integer>();
 		final ValueHolder<String> failed = new ValueHolder<String>();

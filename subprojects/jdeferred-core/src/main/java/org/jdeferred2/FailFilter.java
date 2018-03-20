@@ -24,8 +24,8 @@ package org.jdeferred2;
  * @param <F_OUT> Type of the failure output from this filter
  *
  * @author Ray Tsang
- * @see Promise#then(DoneFilter, FailFilter)
- * @see Promise#then(DoneFilter, FailFilter, ProgressFilter)
+ * @see Promise#filter(DoneFilter, FailFilter)
+ * @see Promise#filter(DoneFilter, FailFilter, ProgressFilter)
  */
 public interface FailFilter<F, F_OUT> {
 	F_OUT filterFail(final F result);
