@@ -136,7 +136,7 @@ d.resolve(3) -> 30.
 
 <a name="example-pipe"></a>Pipe
 ----
-> Use `.filter(...)` instead of `.pipe(...)` since 2.0.0-Beta2
+> Use `.pipe(...)` instead of `.then(...)` since 2.0.0-Beta2
 
 ```java
 Deferred d = ...;
