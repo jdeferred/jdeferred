@@ -113,6 +113,8 @@ deferred.notify("100%");
 
 <a name="example-filter"></a>Filter
 -----------
+> Use `.filter(...)` instead of `.then(...)` since 2.0.0-Beta2
+
 ```java
 Deferred d = …;
 Promise p = d.promise();
@@ -134,7 +136,7 @@ d.resolve(3) -> 30.
 
 <a name="example-pipe"></a>Pipe
 ----
-> Since 1.1.0-Beta1
+> Use `.filter(...)` instead of `.pipe(...)` since 2.0.0-Beta2
 
 ```java
 Deferred d = ...;
