@@ -24,9 +24,9 @@ package org.jdeferred2;
  * @param <D_OUT> Type of the output from this filter
  *
  * @author Ray Tsang
- * @see Promise#then(DoneFilter)
- * @see Promise#then(DoneFilter, FailFilter)
- * @see Promise#then(DoneFilter, FailFilter, ProgressFilter)
+ * @see Promise#filter(DoneFilter)
+ * @see Promise#filter(DoneFilter, FailFilter)
+ * @see Promise#filter(DoneFilter, FailFilter, ProgressFilter)
  */
 public interface DoneFilter<D, D_OUT> {
 	D_OUT filterDone(final D result);

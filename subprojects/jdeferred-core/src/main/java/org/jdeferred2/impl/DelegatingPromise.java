@@ -39,129 +39,121 @@ import org.jdeferred2.Promise;
  * @since 1.2.5
  */
 public abstract class DelegatingPromise<D, F, P> implements Promise<D, F, P> {
-    private final Promise<D, F, P> delegate;
+	private final Promise<D, F, P> delegate;
 
-    public DelegatingPromise(Promise<D, F, P> delegate) {
-        if (null == delegate) {
-            throw new NullPointerException("Argument 'delegate' must not be null");
-        }
-        this.delegate = delegate;
-    }
+	public DelegatingPromise(Promise<D, F, P> delegate) {
+		if (null == delegate) {
+			throw new NullPointerException("Argument 'delegate' must not be null");
+		}
+		this.delegate = delegate;
+	}
 
-    /**
-     * Returns the delegate Promise wrapped by this Promise.
-     *
-     * @return
-     */
-    protected Promise<D, F, P> getDelegate() {
-        return delegate;
-    }
+	/**
+	 * Returns the delegate Promise wrapped by this Promise.
+	 *
+	 * @return
+	 */
+	protected Promise<D, F, P> getDelegate() {
+		return delegate;
+	}
 
-    @Override
-    public State state() {
-        return getDelegate().state();
-    }
+	@Override
+	public State state() {
+		return getDelegate().state();
+	}
 
-    @Override
-    public boolean isPending() {
-        return getDelegate().isPending();
-    }
+	@Override
+	public boolean isPending() {
+		return getDelegate().isPending();
+	}
 
-    @Override
-    public boolean isResolved() {
-        return getDelegate().isResolved();
-    }
+	@Override
+	public boolean isResolved() {
+		return getDelegate().isResolved();
+	}
 
-    @Override
-    public boolean isRejected() {
-        return getDelegate().isRejected();
-    }
+	@Override
+	public boolean isRejected() {
+		return getDelegate().isRejected();
+	}
 
-    @Override
-    public Promise<D, F, P> then(DoneCallback<? super D> doneCallback) {
-        return getDelegate().then(doneCallback);
-    }
+	@Override
+	public Promise<D, F, P> then(DoneCallback<? super D> doneCallback) {
+		return getDelegate().then(doneCallback);
+	}
 
-    @Override
-    public Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback) {
-        return getDelegate().then(doneCallback, failCallback);
-    }
+	@Override
+	public Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback) {
+		return getDelegate().then(doneCallback, failCallback);
+	}
 
-    @Override
-    public Promise<D, F, P> then(DoneCallback<? super D> doneCallback,
-                                 FailCallback<? super F> failCallback,
-                                 ProgressCallback<? super P> progressCallback) {
-        return getDelegate().then(doneCallback, failCallback, progressCallback);
-    }
+	@Override
+	public Promise<D, F, P> then(DoneCallback<? super D> doneCallback, FailCallback<? super F> failCallback, ProgressCallback<? super P> progressCallback) {
+		return getDelegate().then(doneCallback, failCallback, progressCallback);
+	}
 
-    @Override
-    public <D_OUT> Promise<D_OUT, F, P> then(DoneFilter<? super D, ? extends D_OUT> doneFilter) {
-        return getDelegate().then(doneFilter);
-    }
+	@Override
+	public <D_OUT> Promise<D_OUT, F, P> filter(DoneFilter<? super D, ? extends D_OUT> doneFilter) {
+		return getDelegate().filter(doneFilter);
+	}
 
-    @Override
-    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(DoneFilter<? super D, ? extends D_OUT> doneFilter,
-                                                        FailFilter<? super F, ? extends F_OUT> failFilter) {
-        return getDelegate().then(doneFilter, failFilter);
-    }
+	@Override
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> filter(DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter) {
+		return getDelegate().filter(doneFilter, failFilter);
+	}
 
-    @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DoneFilter<? super D, ? extends D_OUT> doneFilter,
-                                                                   FailFilter<? super F,? extends  F_OUT> failFilter,
-                                                                   ProgressFilter<? super P, ? extends P_OUT> progressFilter) {
-        return getDelegate().then(doneFilter, failFilter, progressFilter);
-    }
+	@Override
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> filter(DoneFilter<? super D, ? extends D_OUT> doneFilter, FailFilter<? super F, ? extends F_OUT> failFilter, ProgressFilter<? super P, ? extends P_OUT> progressFilter) {
+		return getDelegate().filter(doneFilter, failFilter, progressFilter);
+	}
 
-    @Override
-    public <D_OUT> Promise<D_OUT, F, P> then(DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe) {
-        return getDelegate().then(donePipe);
-    }
+	@Override
+	public <D_OUT> Promise<D_OUT, F, P> pipe(DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe) {
+		return getDelegate().pipe(donePipe);
+	}
 
-    @Override
-    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe,
-                                                        FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe) {
-        return getDelegate().then(donePipe, failPipe);
-    }
+	@Override
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipe(DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe, FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe) {
+		return getDelegate().pipe(donePipe, failPipe);
+	}
 
-    @Override
-    public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe,
-                                                                   FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe,
-                                                                   ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe) {
-        return getDelegate().then(donePipe, failPipe, progressPipe);
-    }
+	@Override
+	public <D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> pipe(DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe, FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe, ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe) {
+		return getDelegate().pipe(donePipe, failPipe, progressPipe);
+	}
 
-    @Override
-    public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe) {
-        return getDelegate().always(alwaysPipe);
-    }
+	@Override
+	public <D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipeAlways(AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe) {
+		return getDelegate().pipeAlways(alwaysPipe);
+	}
 
-    @Override
-    public Promise<D, F, P> done(DoneCallback<? super D> callback) {
-        return getDelegate().done(callback);
-    }
+	@Override
+	public Promise<D, F, P> done(DoneCallback<? super D> callback) {
+		return getDelegate().done(callback);
+	}
 
-    @Override
-    public Promise<D, F, P> fail(FailCallback<? super F> callback) {
-        return getDelegate().fail(callback);
-    }
+	@Override
+	public Promise<D, F, P> fail(FailCallback<? super F> callback) {
+		return getDelegate().fail(callback);
+	}
 
-    @Override
-    public Promise<D, F, P> always(AlwaysCallback<? super D, ? super F> callback) {
-        return getDelegate().always(callback);
-    }
+	@Override
+	public Promise<D, F, P> always(AlwaysCallback<? super D, ? super F> callback) {
+		return getDelegate().always(callback);
+	}
 
-    @Override
-    public Promise<D, F, P> progress(ProgressCallback<? super P> callback) {
-        return getDelegate().progress(callback);
-    }
+	@Override
+	public Promise<D, F, P> progress(ProgressCallback<? super P> callback) {
+		return getDelegate().progress(callback);
+	}
 
-    @Override
-    public void waitSafely() throws InterruptedException {
-        getDelegate().waitSafely();
-    }
+	@Override
+	public void waitSafely() throws InterruptedException {
+		getDelegate().waitSafely();
+	}
 
-    @Override
-    public void waitSafely(long timeout) throws InterruptedException {
-        getDelegate().waitSafely(timeout);
-    }
+	@Override
+	public void waitSafely(long timeout) throws InterruptedException {
+		getDelegate().waitSafely(timeout);
+	}
 }

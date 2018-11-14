@@ -131,25 +131,25 @@ public interface Promise<D, F, P> {
 			FailCallback<? super F> failCallback, ProgressCallback<? super P> progressCallback);
 
 	/**
-	 * Equivalent to {@code then(doneFilter, null, null)}
+	 * Equivalent to {@code filter(doneFilter, null, null)}
 	 *
-	 * @see #then(DoneFilter, FailFilter, ProgressFilter)
+	 * @see #filter(DoneFilter, FailFilter, ProgressFilter)
 	 * @param doneFilter the filter to execute when a result is available
 	 * @return a new promise for the filtered result
 	 */
-	<D_OUT> Promise<D_OUT, F, P> then(DoneFilter<? super D, ? extends D_OUT> doneFilter);
+	<D_OUT> Promise<D_OUT, F, P> filter(DoneFilter<? super D, ? extends D_OUT> doneFilter);
 
 	/**
-	 * Equivalent to {@code then(doneFilter, failFilter, null)}
+	 * Equivalent to {@code filter(doneFilter, failFilter, null)}
 	 *
-	 * @see #then(DoneFilter, FailFilter, ProgressFilter)
+	 * @see #filter(DoneFilter, FailFilter, ProgressFilter)
 	 * @param doneFilter the filter to execute when a result is available
 	 * @param failFilter the filter to execute when a failure is available
 	 * @return a new promise for the filtered result and failure.
 	 */
-	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DoneFilter<? super D, ? extends D_OUT> doneFilter,
-			FailFilter<? super F, ? extends F_OUT> failFilter);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> filter(
+		DoneFilter<? super D, ? extends D_OUT> doneFilter,
+		FailFilter<? super F, ? extends F_OUT> failFilter);
 
 	/**
 	 * This method will register filters such that when a Deferred object is either
@@ -166,13 +166,13 @@ public interface Promise<D, F, P> {
 	 * to the map() method of the java stream API.
 	 *
 	 * If any of the filter is not specified ({@code null}), a default No Op filter is used.
-	 * If your filter is returning a {@link Promise} consider using {@link #then(DonePipe, FailPipe, ProgressPipe)}.
+	 * If your filter is returning a {@link Promise} consider using {@link #pipe(DonePipe, FailPipe, ProgressPipe)}.
 	 *
 	 * <pre>
 	 * <code>
 	 * Deferred deferred = new DeferredObject();
 	 * Promise promise = deferred.promise();
-	 * Promise filtered = promise.then(new DoneFilter<Integer, Integer>() {
+	 * Promise filtered = promise.filter(new DoneFilter<Integer, Integer>() {
 	 *   Integer filterDone(Integer result) {
 	 *     return result * 10;
 	 *   }
@@ -196,31 +196,31 @@ public interface Promise<D, F, P> {
 	 *                          If {@code null}, use {@link org.jdeferred2.impl.FilteredPromise.NoOpProgressFilter}
 	 * @return a new promise for the filtered result, failure and progress.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DoneFilter<? super D, ? extends D_OUT> doneFilter,
-			FailFilter<? super F, ? extends F_OUT> failFilter,
-			ProgressFilter<? super P, ? extends P_OUT> progressFilter);
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> filter(
+		DoneFilter<? super D, ? extends D_OUT> doneFilter,
+		FailFilter<? super F, ? extends F_OUT> failFilter,
+		ProgressFilter<? super P, ? extends P_OUT> progressFilter);
 
 	/**
-	 * Equivalent to {#code then(DonePipe, null, null)}
+	 * Equivalent to {#code pipe(DonePipe, null, null)}
 	 *
-	 * @see #then(DonePipe, FailPipe, ProgressPipe)
+	 * @see #pipe(DonePipe, FailPipe, ProgressPipe)
 	 * @param donePipe the pipe to invoke when a result is available
 	 * @return a new promise for the piped result.
 	 */
-	<D_OUT> Promise<D_OUT, F, P> then(DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe);
+	<D_OUT> Promise<D_OUT, F, P> pipe(DonePipe<? super D, ? extends D_OUT, ? extends F, ? extends P> donePipe);
 
 	/**
-	 * Equivalent to {@code then(DonePipe, FailPipe, null)}
+	 * Equivalent to {@code pipe(DonePipe, FailPipe, null)}
 	 *
-	 * @see #then(DonePipe, FailPipe, ProgressPipe)
+	 * @see #pipe(DonePipe, FailPipe, ProgressPipe)
 	 * @param donePipe the pipe to invoke when a result is available
 	 * @param failPipe the pipe to invoke when a failure is available
 	 * @return a new promise for the piped result and failure.
 	 */
-	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> then(
-			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe,
-			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipe(
+		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P> donePipe,
+		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> failPipe);
 
 	/**
 	 * This method will register pipes such that when a Deferred object is either
@@ -238,11 +238,11 @@ public interface Promise<D, F, P> {
 	 *
 	 * Pipes start a new {@link Deferred} object.  This allows to chain asynchronous calls.
 	 *
-	 * If your pipe does not do any asynchronous work consider using {@link #then(DoneFilter, FailFilter, ProgressFilter)}
+	 * If your pipe does not do any asynchronous work consider using {@link #filter(DoneFilter, FailFilter, ProgressFilter)}
 	 *
 	 * <pre>
 	 * <code>
-	 * promise.then(new DonePipe<Integer, Integer, String, Void>() {
+	 * promise.pipe(new DonePipe<Integer, Integer, String, Void>() {
 	 *   {@literal @}Override
 	 *   Deferred<Integer, Void, Void> pipeDone(Integer result) {
 	 *     // Reject values greater than 100
@@ -265,10 +265,10 @@ public interface Promise<D, F, P> {
 	 *                        If {@code null}, progress is piped unchanged
 	 * @return a new promise for the piped result, failure and progress.
 	 */
-	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> then(
-			DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe,
-			FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe,
-			ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe);
+	<D_OUT, F_OUT, P_OUT> Promise<D_OUT, F_OUT, P_OUT> pipe(
+		DonePipe<? super D, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> donePipe,
+		FailPipe<? super F, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> failPipe,
+		ProgressPipe<? super P, ? extends D_OUT, ? extends F_OUT, ? extends P_OUT> progressPipe);
 
 	/**
 	 * This method will register a pipe such that when a Deferred object is either
@@ -287,7 +287,7 @@ public interface Promise<D, F, P> {
 	 *
 	 * <pre>
 	 * <code>
-	 * promise.always(new AlwaysPipe<Integer, Integer, String, String, Void>() {
+	 * promise.pipeAlways(new pipe<Integer, Integer, String, String, Void>() {
 	 *   {@literal @}Override
 	 *   Promise<Integer, Void, Void> pipeAlways(State state, Integer resolved, Integer rejected) {
 	 *     if (state == State.RESOLVED) {
@@ -305,8 +305,8 @@ public interface Promise<D, F, P> {
 	 * @param alwaysPipe the pipe to invoke when a result or failure is available.
 	 * @return a new promise for the piped result or failure.
 	 */
-	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> always(
-			AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe);
+	<D_OUT, F_OUT> Promise<D_OUT, F_OUT, P> pipeAlways(
+		AlwaysPipe<? super D, ? super F, ? extends D_OUT, ? extends F_OUT, ? extends P> alwaysPipe);
 
 	/**
 	 * This method will register {@link DoneCallback} so that when a Deferred object

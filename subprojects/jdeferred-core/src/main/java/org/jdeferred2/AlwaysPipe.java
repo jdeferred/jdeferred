@@ -31,10 +31,9 @@ import org.jdeferred2.Promise.State;
  *
  * @author Stephan Classen
  * @since 2.0
- * @see Promise#always(AlwaysPipe)
+ * @see Promise#pipeAlways(AlwaysPipe)
  */
 public interface AlwaysPipe<D, F, D_OUT, F_OUT, P> {
-
 	/**
 	 * Invoked when the {@code Promise} resolves or rejects a value.
 	 *
