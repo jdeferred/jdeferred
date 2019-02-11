@@ -32,12 +32,19 @@ buildscript {
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.12.1'
+    id 'com.gradle.build-scan' version '1.16'
 }
 
 buildScan {
     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
     licenseAgree = 'yes'
+    publishAlways()
+    buildFinished { buildResult ->
+        buildScanPublished { scan ->
+            ['curl', '-s', '-d', "message=Build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/ef6326a88d0398551161'].execute()
+        }
+
+    }
 }
 
 apply plugin: 'jacoco'

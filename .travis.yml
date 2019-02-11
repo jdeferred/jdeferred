@@ -27,3 +27,10 @@ script:
 - ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
 after_success:
 - ./gradlew coveralls
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/d0ff955ce897cb77d2a5
+    on_success: change
+    on_failure: always
+    on_start: never
