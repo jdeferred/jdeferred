@@ -24,7 +24,7 @@ before_script:
 - echo "android.builder.sdkDownload=false" >> $TRAVIS_BUILD_DIR/local.properties
 - ./gradlew --version
 script:
-- ./gradlew -S -Dscan build jacocoTestReport jacocoRootReport
+- ./gradlew -S --scan build jacocoTestReport jacocoRootReport -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true
 after_success:
 - ./gradlew coveralls
 notifications:

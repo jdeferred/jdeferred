@@ -38,7 +38,7 @@ plugins {
 buildScan {
     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
     licenseAgree = 'yes'
-    publishAlways()
+
     buildFinished { buildResult ->
         buildScanPublished { scan ->
             ['curl', '-s', '-d', "message=Build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/ef6326a88d0398551161'].execute()
