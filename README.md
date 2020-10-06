@@ -518,7 +518,8 @@ public class AsyncServlet extends HttpServlet {
         actx.getRequest().setAttribute("exception", exception);
         actx.dispatch("/error.jsp");
       }
-    });
+    }
+   );
   }
 }
 ```
