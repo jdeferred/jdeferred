@@ -89,7 +89,9 @@ promise.done(new DoneCallback() {
   public void onDone(Object result) {
     ...
   }
-}).fail(new FailCallback() {
+}
+).
+fail(new FailCallback() {
   public void onFail(Object rejection) {
     ...
   }
