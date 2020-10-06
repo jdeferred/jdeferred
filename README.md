@@ -101,7 +101,8 @@ promise.done(new DoneCallback() {
   public void onAlways(State state, Object result, Object rejection) {
     ...
   }
-});
+ }
+);
 ```
 With the reference to deferred object, you can then trigger actions/updates:
 
